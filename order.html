@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout — Huapeng Magnetics</title>
+  <meta name="description" content="Place your neodymium magnet order with Huapeng Magnetics." />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* Checkout layout */
+    .checkout-container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .checkout-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 32px;
+      align-items: start;
+    }
+    .checkout-left {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .checkout-right {
+      position: sticky;
+      top: 20px;
+    }
+    .form-section {
+      background: var(--panel, rgba(255,255,255,0.02));
+      border: 1px solid var(--panel-br, rgba(255,255,255,0.1));
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .form-section h3 {
+      margin: 0 0 16px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .form-grid .field--full {
+      grid-column: span 2;
+    }
+    /* Order summary box */
+    .order-summary-box {
+      background: var(--panel, rgba(255,255,255,0.02));
+      border: 1px solid var(--panel-br, rgba(255,255,255,0.1));
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .order-summary-box h3 {
+      margin: 0 0 14px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px dashed rgba(255,255,255,0.08);
+      font-size: 13px;
+    }
+    .summary-row:last-child {
+      border-bottom: none;
+    }
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 12px;
+      margin-top: 8px;
+      border-top: 1px solid var(--panel-br, rgba(255,255,255,0.1));
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .summary-total span:last-child {
+      color: var(--cyan, #22d3ee);
+    }
+    /* PayPal deposit inline */
+    .paypal-box {
+      background: var(--panel, rgba(255,255,255,0.02));
+      border: 1px solid var(--panel-br, rgba(255,255,255,0.1));
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .paypal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .paypal-amount {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--cyan, #22d3ee);
+    }
+    .paypal-note {
+      font-size: 12px;
+      color: var(--ink-soft, #94a3b8);
+      margin-bottom: 14px;
+    }
+    #paypalBtnWrap { min-height: 48px; }
+    .paypal-hint {
+      font-size: 11px;
+      color: var(--ink-soft, #94a3b8);
+      margin-top: 10px;
+      min-height: 16px;
+    }
+    /* Footer buttons */
+    .checkout-footer {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 28px;
+    }
+    .footer-box {
+      background: var(--panel, rgba(255,255,255,0.02));
+      border: 1px solid var(--panel-br, rgba(255,255,255,0.1));
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .footer-box h4 {
+      margin: 0 0 10px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .footer-box p {
+      margin: 0 0 16px;
+      font-size: 12px;
+      color: var(--ink-soft, #94a3b8);
+      line-height: 1.6;
+    }
+    /* Drawings section */
+    .drawings-section {
+      background: var(--panel, rgba(255,255,255,0.02));
+      border: 1px solid var(--panel-br, rgba(255,255,255,0.1));
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .drawings-section h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .drawings-section p {
+      margin: 0 0 16px;
+      font-size: 12px;
+      color: var(--ink-soft, #94a3b8);
+    }
+    .drawings-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .drawing-slot {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .drawing-label {
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--ink, #e2e8f0);
+    }
+    @media (max-width: 900px) {
+      .checkout-grid {
+        grid-template-columns: 1fr;
+      }
+      .checkout-right {
+        position: static;
+      }
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .form-grid .field--full {
+        grid-column: span 1;
+      }
+      .checkout-footer {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header__inner">
+      <a href="index.html" class="brand" aria-label="Huapeng Magnetics home">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 40 40" width="34" height="34">
+            <defs>
+              <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#22d3ee"/>
+                <stop offset="1" stop-color="#3b82f6"/>
+              </linearGradient>
+            </defs>
+            <rect x="2" y="2" width="36" height="36" rx="9" fill="#0b1220" stroke="url(#bg2)" stroke-width="2"/>
+            <path d="M13 27V13h9a5 5 0 0 1 0 10h-4" fill="none" stroke="url(#bg2)" stroke-width="3.2" stroke-linecap="round"/>
+            <line x1="13" y1="23" x2="22" y2="23" stroke="url(#bg2)" stroke-width="3.2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="brand__text">HUAPENG<span>MAGNETICS</span></span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="index.html">← Back to Shop</a>
+      </nav>
+      <div class="header__actions">
+        <span class="cart" aria-label="Cart">🛒 <span class="cart__count" id="cartCount">0</span></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <section class="section">
+    <div class="container checkout-container">
+      <header class="section__head" style="text-align:center;">
+        <h1>Checkout</h1>
+        <p style="color:var(--ink-soft); margin-top:8px;">Fill in your details, then choose to submit an inquiry or pay a 30% deposit.</p>
+      </header>
+
+      <div class="checkout-grid">
+        <!-- LEFT: Form + Drawings -->
+        <div class="checkout-left">
+          <form class="form-section" id="checkoutForm" novalidate>
+            <h3>Contact Information</h3>
+            <div class="form-grid">
+              <div class="field"><label for="name">Full Name *</label><input id="name" name="name" type="text" required></div>
+              <div class="field"><label for="email">Email *</label><input id="email" name="email" type="email" required></div>
+              <div class="field"><label for="company">Company</label><input id="company" name="company" type="text"></div>
+              <div class="field"><label for="phone">Phone / WhatsApp</label><input id="phone" name="phone" type="text"></div>
+              <div class="field field--full"><label for="country">Country *</label><input id="country" name="country" type="text" required></div>
+              <div class="field field--full"><label for="address">Street Address *</label><input id="address" name="address" type="text" required></div>
+              <div class="field"><label for="city">City</label><input id="city" name="city" type="text"></div>
+              <div class="field"><label for="zip">Postal Code</label><input id="zip" name="zip" type="text"></div>
+            </div>
+            <div class="field field--full" style="margin-top:14px;">
+              <label for="notes">Order notes / special requests</label>
+              <textarea id="notes" name="notes" rows="2" placeholder="Coating, packaging, Incoterms, etc."></textarea>
+            </div>
+          </form>
+
+          <!-- Product Drawings -->
+          <div id="cartDrawingsField" class="drawings-section" hidden>
+            <h3>Product Drawings (optional)</h3>
+            <p>Upload a JPG drawing for each product if needed. Max 4 MB each.</p>
+            <div class="drawings-list" id="cartDrawingsList"></div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Order Summary + PayPal -->
+        <div class="checkout-right">
+          <div class="order-summary-box" id="orderSummary"></div>
+          <div class="paypal-box" id="paypalDeposit" hidden>
+            <div class="paypal-header">
+              <strong>Pay 30% Deposit</strong>
+              <span class="paypal-amount" id="depositAmount"></span>
+            </div>
+            <p class="paypal-note">Secure payment via PayPal. Locks production scheduling.</p>
+            <div id="paypalBtnWrap"></div>
+            <p class="paypal-hint" id="paypalHint"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Buttons -->
+      <div class="checkout-footer">
+        <div class="footer-box">
+          <h4>Submit Inquiry Only</h4>
+          <p>No payment now. Our team will reply within 1 business day with formal pricing, lead time, and payment options.</p>
+          <button type="button" id="inquiryBtn" class="btn btn--primary">Send Inquiry</button>
+        </div>
+        <div class="footer-box">
+          <h4>Pay 30% Deposit Now</h4>
+          <p>Pay now via PayPal to lock your order. Balance due on final confirmation. Your details go to our Feishu immediately after payment.</p>
+          <div id="depositBtnWrap" style="min-height:48px;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Success Overlay -->
+  <div class="checkout-done" id="checkoutDone" hidden>
+    <div class="checkout-done__card">
+      <div class="checkout-done__ico" id="checkoutDoneIco">✅</div>
+      <h2 id="checkoutDoneTitle">Done!</h2>
+      <p id="checkoutDoneMsg">Thanks — we'll be in touch shortly.</p>
+      <a href="index.html" class="btn btn--primary">Back to Shop</a>
+    </div>
+  </div>
+
+  <script src="js/checkout.js"></script>
+</body>
+</html>

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Halbach Array Designer | Huapeng Magnetics</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #0b1220; color: #fff; min-height: 100vh; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    header { padding: 1rem 0; border-bottom: 1px solid #1e293b; margin-bottom: 2rem; }
+    header a { color: #22d3ee; text-decoration: none; font-weight: 600; }
+    h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    .subtitle { color: #94a3b8; margin-bottom: 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr 300px; gap: 2rem; }
+    .canvas-container { background: #0f172a; border-radius: 12px; padding: 1rem; }
+    canvas { width: 100%; height: 400px; border-radius: 8px; display: block; cursor: grab; }
+    canvas:active { cursor: grabbing; }
+    .magnet-handle { position: absolute; width: 16px; height: 16px; border-radius: 50%; cursor: move; z-index: 10; }
+    .handle-corner { background: #22d3ee; width: 10px; height: 10px; cursor: nwse-resize; }
+    .handle-rotate { background: #f59e0b; top: -20px; left: 50%; transform: translateX(-50%); cursor: grab; }
+    .controls { background: #1e293b; border-radius: 12px; padding: 1.5rem; }
+    .btn { width: 100%; padding: 0.75rem; margin-bottom: 0.5rem; border-radius: 8px; border: none; cursor: pointer; font-size: 1rem; transition: all 0.2s; }
+    .btn-primary { background: linear-gradient(135deg, #22d3ee, #3b82f6); color: #fff; }
+    .btn-secondary { background: #334155; color: #fff; }
+    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .legend { display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #94a3b8; }
+    .legend-dot { width: 16px; height: 16px; border-radius: 4px; }
+    .legend-dot.north { background: #ef4444; }
+    .legend-dot.south { background: #3b82f6; }
+    .legend-dot.field { background: #22d3ee; }
+    .info-box { margin-top: 1rem; padding: 1rem; background: #0f172a; border-radius: 8px; font-size: 0.875rem; color: #94a3b8; }
+    .stats { margin-top: 1rem; padding: 1rem; background: #0f172a; border-radius: 8px; }
+    .stats h3 { margin-bottom: 0.5rem; color: #22d3ee; }
+    .stats p { font-size: 0.875rem; color: #94a3b8; }
+    .field-toggle { margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="index.html">← Back to Home</a>
+    </header>
+    
+    <h1>Halbach Array Designer</h1>
+    <p class="subtitle">Drag magnets to build your own Halbach array configuration</p>
+    <p class="subtitle" style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">
+      Drag corners to resize · Drag top handle to rotate
+    </p>
+    
+    <div class="grid">
+    <div class="canvas-container" style="position: relative;">
+    <canvas id="arrayCanvas"></canvas>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot north"></div><span>North Pole</span></div>
+          <div class="legend-item"><div class="legend-dot south"></div><span>South Pole</span></div>
+        </div>
+        <div class="info-box">
+          <strong>Note:</strong> This is a demonstration tool for educational purposes. The 3D visualization is simplified.
+        </div>
+      </div>
+      
+      <div class="controls">
+        <button class="btn btn-primary" onclick="addMagnet()">+ Add Magnet</button>
+        <button class="btn btn-secondary" onclick="clearArray()">Clear All</button>
+        <button class="btn btn-secondary" onclick="loadExample()">Load Example</button>
+        <button class="btn btn-secondary" onclick="saveDesign()">Save Design</button>
+        <button class="btn btn-secondary" id="fieldToggle" onclick="toggleFieldLines()">🔬 Show Field Lines</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('arrayCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    let interactionLog = JSON.parse(localStorage.getItem('halbach_interactions') || '[]');
+    let magnets = [];
+    let draggedMagnet = null;
+    let resizeHandle = null;
+    let rotateHandle = null;
+    let showFieldLines = false;
+    let startTime = Date.now();
+    let magnetCount = 0;
+    let savedDesigns = 0;
+
+    // Background session timer - logs to localStorage only
+    setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      localStorage.setItem('halbach_session_time', elapsed.toString());
+    }, 1000);
+
+    // Load existing stats
+    magnetCount = parseInt(localStorage.getItem('halbach_magnet_count') || '0');
+    savedDesigns = parseInt(localStorage.getItem('halbach_saved_designs') || '0');
+    
+    function resizeCanvas() {
+      canvas.width = canvas.offsetWidth * 2;
+      canvas.height = canvas.offsetHeight * 2;
+      ctx.scale(2, 2);
+    }
+    
+    function addMagnet(x, y) {
+      const offset = magnets.length * 70;
+      const magnet = {
+        id: Date.now(),
+        x: x || 100 + offset,
+        y: y || 100,
+        w: 60,
+        h: 40,
+        rotation: 0,
+        nSide: 'top'
+      };
+      magnets.push(magnet);
+      magnetCount++;
+      localStorage.setItem('halbach_magnet_count', magnetCount.toString());
+      logInteraction('add_magnet');
+      draw();
+    }
+    
+    function clearArray() {
+      magnets = [];
+      logInteraction('clear_array');
+      draw();
+    }
+    
+    function loadExample() {
+      magnets = [
+        { id: 1, x: 100, y: 100, w: 60, h: 40, rotation: 0, nSide: 'top' },
+        { id: 2, x: 170, y: 100, w: 60, h: 40, rotation: 90, nSide: 'right' },
+        { id: 3, x: 240, y: 100, w: 60, h: 40, rotation: 180, nSide: 'bottom' },
+        { id: 4, x: 310, y: 100, w: 60, h: 40, rotation: 270, nSide: 'left' }
+      ];
+      logInteraction('load_example_halbach');
+      draw();
+    }
+    
+    function saveDesign() {
+      const design = {
+        timestamp: new Date().toISOString(),
+        magnets: magnets,
+        userId: localStorage.getItem('user_id') || generateUserId()
+      };
+      
+      let saved = JSON.parse(localStorage.getItem('halbach_designs') || '[]');
+      saved.push(design);
+      localStorage.setItem('halbach_designs', JSON.stringify(saved));
+      savedDesigns++;
+      localStorage.setItem('halbach_saved_designs', savedDesigns.toString());
+      
+      logInteraction('save_design');
+      alert('Design saved! You will receive a notification.');
+    }
+    
+    function generateUserId() {
+      const id = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('user_id', id);
+      return id;
+    }
+    
+    function logInteraction(type) {
+      interactionLog.push({
+        type: type,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent
+      });
+      localStorage.setItem('halbach_interactions', JSON.stringify(interactionLog));
+    }
+    
+    canvas.addEventListener('mousedown', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      // Check rotate handle (top center)
+      for (let m of magnets) {
+        const handleX = m.x + m.w / 2;
+        const handleY = m.y - 10;
+        const dist = Math.sqrt((x - handleX) ** 2 + (y - handleY) ** 2);
+        if (dist < 15) {
+          rotateHandle = m;
+          rotateHandle._startAngle = Math.atan2(y - (m.y + m.h / 2), x - (m.x + m.w / 2));
+          logInteraction('rotate_start');
+          return;
+        }
+      }
+
+      // Check resize handle (bottom-right corner)
+      for (let i = magnets.length - 1; i >= 0; i--) {
+        const m = magnets[i];
+        const handleX = m.x + m.w - 5;
+        const handleY = m.y + m.h - 5;
+        const dist = Math.sqrt((x - handleX) ** 2 + (y - handleY) ** 2);
+        if (dist < 15) {
+          resizeHandle = m;
+          resizeHandle._startX = x;
+          resizeHandle._startY = y;
+          resizeHandle._startW = m.w;
+          resizeHandle._startH = m.h;
+          logInteraction('resize_start');
+          return;
+        }
+        // Check magnet body for dragging
+        if (x >= m.x && x <= m.x + m.w && y >= m.y && y <= m.y + m.h) {
+          draggedMagnet = m;
+          logInteraction('drag_start');
+          return;
+        }
+      }
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      // Handle rotation
+      if (rotateHandle) {
+        const cx = rotateHandle.x + rotateHandle.w / 2;
+        const cy = rotateHandle.y + rotateHandle.h / 2;
+        const currentAngle = Math.atan2(y - cy, x - cx);
+        const angleDiff = currentAngle - rotateHandle._startAngle;
+        rotateHandle.rotation += angleDiff * (180 / Math.PI);
+        rotateHandle._startAngle = currentAngle;
+        logInteraction('rotate_continuous');
+        draw();
+        return;
+      }
+
+      // Handle resize
+      if (resizeHandle) {
+        const dx = x - resizeHandle._startX;
+        const dy = y - resizeHandle._startY;
+        resizeHandle.w = Math.max(30, resizeHandle._startW + dx);
+        resizeHandle.h = Math.max(20, resizeHandle._startH + dy);
+        draw();
+        return;
+      }
+
+      // Handle drag
+      if (draggedMagnet) {
+        draggedMagnet.x = x - draggedMagnet.w / 2;
+        draggedMagnet.y = y - draggedMagnet.h / 2;
+        draw();
+      }
+    });
+    
+    canvas.addEventListener('mouseup', () => {
+      if (draggedMagnet) {
+        logInteraction('drag_end');
+        draggedMagnet = null;
+      }
+      if (resizeHandle) {
+        logInteraction('resize_end');
+        resizeHandle = null;
+      }
+      if (rotateHandle) {
+        logInteraction('rotate_end');
+        rotateHandle = null;
+      }
+    });
+
+    // Resize handler
+    canvas.addEventListener('mousedown', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      // Check resize handle (bottom-right corner)
+      for (let m of magnets) {
+        const handleX = m.x + m.w - 5;
+        const handleY = m.y + m.h - 5;
+        const dist = Math.sqrt((x - handleX) ** 2 + (y - handleY) ** 2);
+        if (dist < 15) {
+          resizeHandle = m;
+          resizeHandle._startX = x;
+          resizeHandle._startY = y;
+          resizeHandle._startW = m.w;
+          resizeHandle._startH = m.h;
+          logInteraction('resize_start');
+          return;
+        }
+      }
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      // Handle resize
+      if (resizeHandle) {
+        const dx = x - resizeHandle._startX;
+        const dy = y - resizeHandle._startY;
+        resizeHandle.w = Math.max(30, resizeHandle._startW + dx);
+        resizeHandle.h = Math.max(20, resizeHandle._startH + dy);
+        draw();
+        return;
+      }
+
+      // Handle drag
+      if (draggedMagnet) {
+        draggedMagnet.x = x - draggedMagnet.w / 2;
+        draggedMagnet.y = y - draggedMagnet.h / 2;
+        draw();
+      }
+    });
+    
+    canvas.addEventListener('dblclick', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      const nSides = ['top', 'right', 'bottom', 'left'];
+      for (let m of magnets) {
+        if (x >= m.x && x <= m.x + m.w && y >= m.y && y <= m.y + m.h) {
+          m.rotation = (m.rotation + 90) % 360;
+          m.nSide = nSides[m.rotation / 90];
+          logInteraction('rotate_magnet');
+          draw();
+          break;
+        }
+      }
+    });
+    
+    function toggleFieldLines() {
+      showFieldLines = !showFieldLines;
+      const btn = document.getElementById('fieldToggle');
+      btn.textContent = showFieldLines ? '🔬 Hide Field Lines' : '🔬 Show Field Lines';
+      btn.classList.toggle('btn-primary', showFieldLines);
+      btn.classList.toggle('btn-secondary', !showFieldLines);
+      draw();
+    }
+    
+    function drawFieldLines() {
+      if (!showFieldLines || magnets.length === 0) return;
+      
+      ctx.strokeStyle = 'rgba(34, 211, 238, 0.6)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([]);
+      
+      // Get all magnet positions and pole directions
+      const poles = [];
+      magnets.forEach(m => {
+        const cx = m.x + m.w / 2;
+        const cy = m.y + m.h / 2;
+
+        // Calculate pole positions based on rotation
+        const angle = (m.rotation || 0) * Math.PI / 180;
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
+
+        let nx, ny, sx, sy;
+        const baseNorth = { x: cx, y: m.y };
+        const baseSouth = { x: cx, y: m.y + m.h };
+
+        // Rotate pole positions
+        if (m.nSide === 'top') {
+          nx = baseNorth.x; ny = baseNorth.y;
+          sx = baseSouth.x; sy = baseSouth.y;
+        } else if (m.nSide === 'bottom') {
+          nx = baseSouth.x; ny = baseSouth.y;
+          sx = baseNorth.x; sy = baseNorth.y;
+        } else if (m.nSide === 'left') {
+          nx = m.x; ny = cy;
+          sx = m.x + m.w; sy = cy;
+        } else {
+          nx = m.x + m.w; ny = cy;
+          sx = m.x; sy = cy;
+        }
+
+        // Apply rotation
+        const rotatedN = {
+          x: cx + (nx - cx) * cos - (ny - cy) * sin,
+          y: cy + (nx - cx) * sin + (ny - cy) * cos
+        };
+        const rotatedS = {
+          x: cx + (sx - cx) * cos - (sy - cy) * sin,
+          y: cy + (sx - cx) * sin + (sy - cy) * cos
+        };
+
+        poles.push({ n: rotatedN, s: rotatedS, magnet: m });
+      });
+      
+      // Draw field lines from N to S poles
+      poles.forEach(pole => {
+        const {n, s} = pole;
+        
+        // Calculate field line path (simple curved path)
+        const dx = s.x - n.x;
+        const dy = s.y - n.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        
+        // Perpendicular offset for curvature
+        const perpX = -dy / dist * dist * 0.5;
+        const perpY = dx / dist * dist * 0.5;
+        
+        // Control point for quadratic curve
+        const cpX = (n.x + s.x) / 2 + perpX * 0.3;
+        const cpY = (n.y + s.y) / 2 + perpY * 0.3;
+        
+        // Draw field line
+        ctx.beginPath();
+        ctx.moveTo(n.x, n.y);
+        ctx.quadraticCurveTo(cpX, cpY, s.x, s.y);
+        ctx.stroke();
+        
+        // Draw arrow at midpoint
+        const midX = (n.x + 2*cpX + s.x) / 4;
+        const midY = (n.y + 2*cpY + s.y) / 4;
+        const angle = Math.atan2(s.y - n.y, s.x - n.x) + Math.PI/4;
+        
+        ctx.fillStyle = '#22d3ee';
+        ctx.beginPath();
+        ctx.moveTo(midX + 5*Math.cos(angle), midY + 5*Math.sin(angle));
+        ctx.lineTo(midX + 5*Math.cos(angle + 2.5), midY + 5*Math.sin(angle + 2.5));
+        ctx.lineTo(midX + 5*Math.cos(angle - 2.5), midY + 5*Math.sin(angle - 2.5));
+        ctx.closePath();
+        ctx.fill();
+      });
+      
+      // Draw external field lines (looping from N of one magnet to S of another)
+      for (let i = 0; i < poles.length; i++) {
+        for (let j = i + 1; j < poles.length; j++) {
+          const p1 = poles[i];
+          const p2 = poles[j];
+          
+          // Check if magnets are close enough to show interaction
+          const dx = p1.n.x - p2.s.x;
+          const dy = p1.n.y - p2.s.y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          
+          if (dist < 150) {
+            const midX = (p1.n.x + p2.s.x) / 2;
+            const midY = (p1.n.y + p2.s.y) / 2;
+            const offset = 30;
+            
+            ctx.beginPath();
+            ctx.moveTo(p1.n.x, p1.n.y);
+            ctx.quadraticCurveTo(midX + offset, midY - offset, p2.s.x, p2.s.y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+    
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width/2, canvas.height/2);
+      
+      // Draw grid
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < canvas.width/2; x += 40) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height/2);
+        ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height/2; y += 40) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width/2, y);
+        ctx.stroke();
+      }
+      
+      // Draw field lines first (behind magnets)
+      drawFieldLines();
+      
+      // Draw magnets
+      magnets.forEach(m => {
+        const cx = m.x + m.w / 2;
+        const cy = m.y + m.h / 2;
+
+        // Save context state
+        ctx.save();
+
+        // Translate to magnet center and rotate
+        ctx.translate(cx, cy);
+        if (m.rotation !== 0) {
+          ctx.rotate(m.rotation * Math.PI / 180);
+        }
+
+        // Draw magnet body (centered at origin after transform)
+        const halfW = m.w / 2;
+        const halfH = m.h / 2;
+
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(-halfW, -halfH, m.w, m.h);
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(-halfW, -halfH, m.w, m.h);
+
+        // Draw N pole (red)
+        ctx.fillStyle = '#ef4444';
+        if (m.nSide === 'top') {
+          ctx.fillRect(-halfW, -halfH, m.w, 10);
+        } else if (m.nSide === 'bottom') {
+          ctx.fillRect(-halfW, halfH - 10, m.w, 10);
+        } else if (m.nSide === 'left') {
+          ctx.fillRect(-halfW, -halfH, 10, m.h);
+        } else {
+          ctx.fillRect(halfW - 10, -halfH, 10, m.h);
+        }
+
+        // Draw S pole (blue)
+        ctx.fillStyle = '#3b82f6';
+        if (m.nSide === 'top') {
+          ctx.fillRect(-halfW, halfH - 10, m.w, 10);
+        } else if (m.nSide === 'bottom') {
+          ctx.fillRect(-halfW, -halfH, m.w, 10);
+        } else if (m.nSide === 'left') {
+          ctx.fillRect(halfW - 10, -halfH, 10, m.h);
+        } else {
+          ctx.fillRect(-halfW, -halfH, 10, m.h);
+        }
+
+        // Draw labels
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 14px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        if (m.nSide === 'top') {
+          ctx.fillText('N', 0, -halfH + 5);
+          ctx.fillText('S', 0, halfH - 5);
+        } else if (m.nSide === 'bottom') {
+          ctx.fillText('N', 0, halfH - 5);
+          ctx.fillText('S', 0, -halfH + 5);
+        } else if (m.nSide === 'left') {
+          ctx.fillText('N', -halfW + 5, 0);
+          ctx.fillText('S', halfW - 5, 0);
+        } else {
+          ctx.fillText('N', halfW - 5, 0);
+          ctx.fillText('S', -halfW + 5, 0);
+        }
+
+        // Restore context
+        ctx.restore();
+
+        // Draw rotate handle (top center)
+        const rotateHandleX = m.x + m.w / 2;
+        const rotateHandleY = m.y - 5;
+        ctx.beginPath();
+        ctx.arc(rotateHandleX, rotateHandleY, 6, 0, Math.PI * 2);
+        ctx.fillStyle = '#f59e0b';
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Draw resize handle (bottom-right corner)
+        const resizeHandleX = m.x + m.w - 8;
+        const resizeHandleY = m.y + m.h - 8;
+        ctx.beginPath();
+        ctx.arc(resizeHandleX, resizeHandleY, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#22d3ee';
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      });
+    }
+    
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    
+    logInteraction('page_view');
+    console.log('Halbach Array Simulator initialized');
+    console.log('Session time:', localStorage.getItem('halbach_session_time'));
+    console.log('Magnets placed:', localStorage.getItem('halbach_magnet_count'));
+    console.log('Designs saved:', localStorage.getItem('halbach_saved_designs'));
+  </script>
+</body>
+</html>

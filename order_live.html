@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout — Huapeng Magnetics</title>
+  <meta name="description" content="Place your neodymium magnet order with Huapeng Magnetics." />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ===== Header ===== -->
+  <header class="header">
+    <div class="container header__inner">
+      <a href="index.html" class="brand" aria-label="Huapeng Magnetics home">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 40 40" width="34" height="34">
+            <defs>
+              <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#22d3ee"/>
+                <stop offset="1" stop-color="#3b82f6"/>
+              </linearGradient>
+            </defs>
+            <rect x="2" y="2" width="36" height="36" rx="9" fill="#0b1220" stroke="url(#bg2)" stroke-width="2"/>
+            <path d="M13 27V13h9a5 5 0 0 1 0 10h-4" fill="none" stroke="url(#bg2)" stroke-width="3.2" stroke-linecap="round"/>
+            <line x1="13" y1="23" x2="22" y2="23" stroke="url(#bg2)" stroke-width="3.2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="brand__text">HUAPENG<span>MAGNETICS</span></span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="index.html">← Back to Shop</a>
+      </nav>
+      <div class="header__actions">
+        <span class="cart" aria-label="Cart">🛒 <span class="cart__count" id="cartCount">0</span></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Checkout ===== -->
+  <section class="section">
+    <div class="container">
+      <header class="section__head">
+        <span class="eyebrow">Secure Inquiry</span>
+        <h2>Checkout</h2>
+        <p>Review your items and tell us where to ship. We'll confirm pricing, lead time and payment with you by email.</p>
+      </header>
+
+      <div class="checkout" id="checkoutWrap">
+        <!-- Left: customer form -->
+        <form class="checkout__form" id="checkoutForm" novalidate>
+          <h3>Contact</h3>
+          <div class="field"><label for="name">Full Name *</label><input id="name" name="name" type="text" required></div>
+          <div class="field"><label for="email">Email *</label><input id="email" name="email" type="email" required></div>
+          <div class="field"><label for="company">Company</label><input id="company" name="company" type="text"></div>
+          <div class="field"><label for="phone">Phone / WhatsApp</label><input id="phone" name="phone" type="text"></div>
+
+          <h3 style="margin-top:22px;">Shipping Address</h3>
+          <div class="field field--full"><label for="country">Country *</label><input id="country" name="country" type="text" required></div>
+          <div class="field field--full"><label for="address">Street Address *</label><input id="address" name="address" type="text" required></div>
+          <div class="field"><label for="city">City</label><input id="city" name="city" type="text"></div>
+          <div class="field"><label for="zip">Postal Code</label><input id="zip" name="zip" type="text"></div>
+
+          <h3 style="margin-top:22px;">Notes</h3>
+          <div class="field field--full">
+            <label for="notes">Order notes / special requests</label>
+            <textarea id="notes" name="notes" rows="3" placeholder="Coating, packaging, Incoterms, etc."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn--primary" style="margin-top:18px;">Place Order Inquiry</button>
+        </form>
+
+        <!-- Right: order summary -->
+        <aside class="checkout__summary" id="orderSummary"></aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Success overlay ===== -->
+  <div class="checkout-done" id="checkoutDone" hidden>
+    <div class="checkout-done__card">
+      <div class="checkout-done__ico">✅</div>
+      <h2>Order inquiry sent!</h2>
+      <p>We've opened your email app with the order details. Send it and our sales team will reply within 1 business day with pricing and lead time.</p>
+      <a href="index.html" class="btn btn--primary">Back to Shop</a>
+    </div>
+  </div>
+
+  <script src="js/checkout.js"></script>
+</body>
+</html>

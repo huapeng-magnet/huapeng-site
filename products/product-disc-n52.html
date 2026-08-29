@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>N52 Neodymium Disc Magnets | Huapeng Magnetics</title>
+  <meta name="description" content="High-quality N52 grade neodymium disc magnets. Strong pull force, nickel/zinc coating available. Custom sizes from Huapeng Magnetics - precision NdFeB manufacturer." />
+  
+  <!-- Schema.org Product Markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "N52 Neodymium Disc Magnets",
+    "image": "assets/disc_n52.jpg",
+    "description": "Industrial-grade N52 grade NdFeB disc magnets with strong magnetic force",
+    "brand": {
+      "@type": "Brand",
+      "name": "Huapeng Magnetics"
+    },
+    "sku": "N52-DISC",
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "USD",
+      "price": "0.50",
+      "priceValidUntil": "2026-12-31",
+      "availability": "https://schema.org/InStock",
+      "seller": {
+        "@type": "Organization",
+        "name": "Huapeng Magnetics"
+      }
+    },
+    "category": "Neodymium Magnets > Disc Magnets > N52 Grade"
+  }
+  </script>
+  
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .product-hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      padding: 3rem 0;
+    }
+    .product-gallery {
+      position: relative;
+    }
+    .product-gallery__main {
+      width: 100%;
+      aspect-ratio: 1;
+      background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .magnetic-field-viz {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      height: 80%;
+      pointer-events: none;
+    }
+    .product-info h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    .product-info .grade-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #22d3ee, #3b82f6);
+      color: #fff;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+    .spec-table th,
+    .spec-table td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .spec-table th {
+      font-weight: 600;
+      color: #64748b;
+    }
+    .pole-demo-btn {
+      background: linear-gradient(135deg, #22d3ee, #3b82f6);
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .pole-demo-btn:hover {
+      transform: translateY(-2px);
+    }
+    .magnetic-simulation {
+      margin-top: 3rem;
+      padding: 2rem;
+      background: #f8fafc;
+      border-radius: 12px;
+    }
+    .sim-canvas {
+      width: 100%;
+      height: 400px;
+      background: #fff;
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header (same as main site) -->
+  <header class="header">
+    <div class="container header__inner">
+      <a href="../index.html" class="brand">
+        <span class="brand__text">HUAPENG<span>MAGNETICS</span></span>
+      </a>
+      <nav class="nav">
+        <a href="../index.html">Home</a>
+        <a href="../index.html#products">Products</a>
+        <a href="javascript:void(0)" class="active">Product Detail</a>
+        <a href="../request-quote.html">Quotation</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Product Hero -->
+    <section class="product-hero">
+      <div class="product-gallery">
+        <div class="product-gallery__main">
+          <!-- Product Image Placeholder -->
+          
+          
+          <svg viewBox="0 0 200 200" width="300" height="300" aria-label="Magnet - Radial Magnetization">
+            <defs>
+              <radialGradient id="disc3d" cx="35%" cy="35%" r="65%">
+                <stop offset="0%" stop-color="#f1f5f9"/>
+                <stop offset="40%" stop-color="#cbd5e1"/>
+                <stop offset="100%" stop-color="#64748b"/>
+              </radialGradient>
+              <marker id="arrowN" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L9,3 z" fill="#ef4444"/>
+              </marker>
+              <marker id="arrowS" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L9,3 z" fill="#3b82f6"/>
+              </marker>
+            </defs>
+            <!-- Disc body (3D cylinder) -->
+            <ellipse cx="100" cy="100" rx="75" ry="75" fill="url(#disc3d)" stroke="#475569" stroke-width="2"/>
+            <!-- N pole (top half arc) -->
+            <path d="M25 100 A75 75 0 0 1 175 100" fill="none" stroke="#ef4444" stroke-width="12" stroke-linecap="round" opacity="0.9"/>
+            <!-- S pole (bottom half arc) -->
+            <path d="M25 100 A75 75 0 0 0 175 100" fill="none" stroke="#3b82f6" stroke-width="12" stroke-linecap="round" opacity="0.9"/>
+            <!-- Radial arrows (N outward) -->
+            <line x1="100" y1="50" x2="100" y2="25" stroke="#ef4444" stroke-width="3" marker-end="url(#arrowN)"/>
+            <line x1="135" y1="58" x2="158" y2="40" stroke="#ef4444" stroke-width="3" marker-end="url(#arrowN)"/>
+            <line x1="65" y1="58" x2="42" y2="40" stroke="#ef4444" stroke-width="3" marker-end="url(#arrowN)"/>
+            <!-- Radial arrows (S inward) -->
+            <line x1="100" y1="150" x2="100" y2="175" stroke="#3b82f6" stroke-width="3" marker-end="url(#arrowS)"/>
+            <line x1="135" y1="142" x2="158" y2="160" stroke="#3b82f6" stroke-width="3" marker-end="url(#arrowS)"/>
+            <line x1="65" y1="142" x2="42" y2="160" stroke="#3b82f6" stroke-width="3" marker-end="url(#arrowS)"/>
+            <!-- Labels -->
+            <text x="100" y="18" text-anchor="middle" fill="#ef4444" font-size="18" font-weight="bold">N</text>
+            <text x="100" y="192" text-anchor="middle" fill="#3b82f6" font-size="18" font-weight="bold">S</text>
+          </svg>
+
+
+        </div>
+      </div>
+
+      <div class="product-info">
+        <span class="grade-badge">N52 Grade</span>
+        <h1>Neodymium Disc Magnets</h1>
+        <p class="product-desc">High-performance N52 grade NdFeB disc magnets with excellent magnetic properties. Ideal for motors, sensors, and magnetic assemblies.</p>
+        
+        <table class="spec-table">
+          <tr><th>Grade</th><td>N52</td></tr>
+          <tr><th>Shape</th><td>Disc</td></tr>
+          <tr><th>Max Energy</th><td>35 MGOe (278 kJ/m³)</td></tr>
+          <tr><th>Remanence</th><td>1.17-1.24 T</td></tr>
+          <tr><th>Intrinsic Coercivity</th><td>≥ 955 kA/m</td></tr>
+          <tr><th>Operating Temp</th><td>-40°C to +80°C</td></tr>
+          <tr><th>Coating</th><td>Ni-Cu-Ni / Zn (optional)</td></tr>
+        </table>
+
+        <button class="pole-demo-btn" onclick="openPoleDemo()">
+          🔬 View Magnetic Field Demo
+        </button>
+        
+        <a href="../request-quote.html" class="btn btn--primary" style="margin-left: 1rem;">
+          Get Quote
+        </a>
+      </div>
+    </section>
+
+    <!-- Magnetic Simulation Section -->
+    <section class="magnetic-simulation">
+      <h2>Magnetic Pole Distribution</h2>
+      <p>Interactive visualization showing N/S pole distribution on N52 disc magnet</p>
+      <div class="sim-canvas" id="simCanvas">
+        <canvas id="fieldCanvas" width="800" height="400"></canvas>
+      </div>
+      <div style="margin-top: 1rem; display: flex; gap: 1rem;">
+        <button class="btn btn--ghost" onclick="toggleFieldLines()">Toggle Field Lines</button>
+        <button class="btn btn--ghost" onclick="resetView()">Reset View</button>
+      </div>
+    </section>
+
+    <!-- Applications -->
+    <section style="padding: 3rem 0;">
+      <h2>Common Applications</h2>
+      <div class="product-grid">
+        <div class="product-card">
+          <h3>Electric Motors</h3>
+          <p>BLDC motors, stepper motors, servo motors</p>
+        </div>
+        <div class="product-card">
+          <h3>Sensors & Detectors</h3>
+          <p>Proximity sensors, Hall effect sensors</p>
+        </div>
+        <div class="product-card">
+          <h3>Magnetic Assemblies</h3>
+          <p>Magnetic couplings, holders, latches</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 Huapeng Magnetics. Precision NdFeB Magnets Manufacturer.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Magnetic field visualization
+    const canvas = document.getElementById('fieldCanvas');
+    const ctx = canvas.getContext('2d');
+    let showFieldLines = true;
+
+    function drawMagnet() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw magnet body (center)
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const width = 200;
+      const height = 80;
+      
+      // North pole (red)
+      ctx.fillStyle = '#ef4444';
+      ctx.fillRect(cx - width/2, cy - height/2, width/2, height);
+      
+      // South pole (blue)
+      ctx.fillStyle = '#3b82f6';
+      ctx.fillRect(cx, cy - height/2, width/2, height);
+      
+      // Labels
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 24px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('N', cx - width/4, cy + 8);
+      ctx.fillText('S', cx + width/4, cy + 8);
+    }
+
+    function drawFieldLines() {
+      if (!showFieldLines) return;
+      
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      
+      ctx.strokeStyle = 'rgba(100, 116, 139, 0.5)';
+      ctx.lineWidth = 1.5;
+      
+      // Draw field lines from N to S
+      for (let i = 0; i < 8; i++) {
+        const offset = (i - 3.5) * 20;
+        ctx.beginPath();
+        ctx.moveTo(cx - 100, cy + offset);
+        ctx.quadraticCurveTo(
+          cx - 150, cy + offset - 50,
+          cx - 150, cy + offset + 100
+        );
+        ctx.quadraticCurveTo(
+          cx - 100, cy + offset + 150,
+          cx, cy + offset
+        );
+        ctx.stroke();
+        
+        ctx.beginPath();
+        ctx.moveTo(cx + 100, cy + offset);
+        ctx.quadraticCurveTo(
+          cx + 150, cy + offset - 50,
+          cx + 150, cy + offset + 100
+        );
+        ctx.quadraticCurveTo(
+          cx + 100, cy + offset + 150,
+          cx, cy + offset
+        );
+        ctx.stroke();
+      }
+    }
+
+    function toggleFieldLines() {
+      showFieldLines = !showFieldLines;
+      drawMagnet();
+      drawFieldLines();
+    }
+
+    function resetView() {
+      showFieldLines = true;
+      drawMagnet();
+      drawFieldLines();
+    }
+
+    function openPoleDemo() {
+      alert('Three.js 3D demo would open here\n(Implementation needed)');
+    }
+
+    // Initialize
+    drawMagnet();
+    drawFieldLines();
+  </script>
+</body>
+</html>

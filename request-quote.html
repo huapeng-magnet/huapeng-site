@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quotation — Huapeng Magnetics</title>
+  <meta name="description" content="Get instant USD pricing for N35 nickel-coated NdFeB magnets. Real-time exchange rate, grade/shape/coating selector, and bulk price list." />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ===== Top Bar ===== -->
+  <div class="topbar">
+    <div class="container topbar__inner">
+      <span>🌐 English · USD $</span>
+      <span class="topbar__links">
+        <a href="index.html#promotions">Promotions</a>
+        <a href="index.html#about">About</a>
+        <a href="index.html#contact">Contact</a>
+      </span>
+    </div>
+  </div>
+
+  <!-- ===== Header / Nav ===== -->
+  <header class="header" id="top">
+    <div class="container header__inner">
+      <a href="index.html" class="brand" aria-label="Huapeng Magnetics home">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 40 40" width="34" height="34">
+            <defs>
+              <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#22d3ee"/>
+                <stop offset="1" stop-color="#3b82f6"/>
+              </linearGradient>
+            </defs>
+            <rect x="2" y="2" width="36" height="36" rx="9" fill="#0b1220" stroke="url(#bg)" stroke-width="2"/>
+            <path d="M13 27V13h9a5 5 0 0 1 0 10h-4" fill="none" stroke="url(#bg)" stroke-width="3.2" stroke-linecap="round"/>
+            <line x1="13" y1="23" x2="22" y2="23" stroke="url(#bg)" stroke-width="3.2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="brand__text">HUAPENG<span>MAGNETICS</span></span>
+      </a>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="index.html#categories">Categories</a>
+        <a href="index.html#products">Products</a>
+        <a href="request-quote.html" class="is-active">Quotation</a>
+        <a href="index.html#about">About</a>
+        <a href="index.html#promotions">Promotions</a>
+      </nav>
+
+      <div class="header__actions">
+        <a class="btn btn--ghost" href="index.html#contact">Get a Quote</a>
+        <button class="cart" id="cartBtn" aria-label="Cart">
+          🛒 <span class="cart__count" id="cartCount">0</span>
+        </button>
+        <button class="nav-toggle" id="navToggle" aria-label="Menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Hero ===== -->
+  <section class="quote-hero">
+    <div class="container">
+      <span class="eyebrow">Instant Pricing</span>
+      <h1>Online Quotation</h1>
+      <p>Real-time USD pricing for <strong>N35 nickel-coated NdFeB magnets</strong>. Select grade, shape, coating, dimensions and quantity to get an instant estimate. Higher grades and custom shapes are available on request.</p>
+    </div>
+  </section>
+
+  <!-- ===== Rate Bar ===== -->
+  <div class="rate-bar" id="rateBar">
+    <div class="container rate-bar__inner">
+      <span class="rate-bar__label">Real-time exchange rate <small>(for reference only)</small></span>
+      <strong class="rate-bar__value">1 USD = <span id="rateValue">--</span> CNY</strong>
+      <span class="rate-bar__source" id="rateSource">Loading…</span>
+    </div>
+  </div>
+
+  <!-- ===== Calculator ===== -->
+  <section class="quote-calc section">
+    <div class="container">
+      <div class="calc-grid">
+        <form class="calc-form card" id="quoteForm">
+          <h2>Quick Quote</h2>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="qGrade">Grade</label>
+              <select id="qGrade">
+                <option value="N35" selected>N35 — instant price</option>
+                <option value="N38">N38 — request quote</option>
+                <option value="N40">N40 — request quote</option>
+                <option value="N42">N42 — request quote</option>
+                <option value="N45">N45 — request quote</option>
+                <option value="N48">N48 — request quote</option>
+                <option value="N50">N50 — request quote</option>
+                <option value="N52">N52 — request quote</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="qShape">Shape</label>
+              <select id="qShape">
+                <option value="disc" selected>Disc</option>
+                <option value="block">Block</option>
+                <option value="ring">Ring</option>
+                <option value="arc">Arc / Segment</option>
+                <option value="custom">Custom / Irregular</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row" id="qDims">
+            <!-- dynamic inputs -->
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="qCoating">Coating</label>
+              <select id="qCoating">
+                <option value="nickel" selected>Nickel</option>
+                <option value="zinc">Zinc</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="qQty">Quantity</label>
+              <select id="qQty">
+                <option value="1000">1,000 pcs</option>
+                <option value="10000" selected>10,000 pcs</option>
+                <option value="100000">100,000 pcs</option>
+                <option value="1000000">1,000,000 pcs</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn--primary btn--wide">Calculate Price</button>
+        </form>
+
+        <div class="calc-result card" id="calcResult">
+          <h2>Estimate</h2>
+          <div class="calc-result__empty">
+            <p>Fill in the form and click <strong>Calculate Price</strong> to see your estimate.</p>
+            <p class="muted">Non-N35 grades and custom / arc shapes are quoted manually.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Standard Price List ===== -->
+  <section class="quote-table section" id="priceList">
+    <div class="container">
+      <header class="section__head">
+        <span class="eyebrow">Standard List</span>
+        <h2>N35 Nickel-Coated Price List</h2>
+        <p>FOB China basis. Tax included. Prices are listed directly in USD per piece, no currency conversion needed. Other grades and coatings — <a href="index.html#contact">request a quote</a>.</p>
+      </header>
+
+      <div class="table-filter" id="tableFilter">
+        <button class="is-active" data-filter="all">All</button>
+        <button data-filter="disc">Disc</button>
+        <button data-filter="block">Block</button>
+        <button data-filter="ring">Ring</button>
+      </div>
+
+      <div class="table-wrap">
+        <table class="price-table">
+          <thead>
+            <tr>
+              <th>Spec</th>
+              <th>Shape</th>
+              <th>Dimensions (mm)</th>
+              <th>Price @ 1K pcs</th>
+              <th>Price @ 10K pcs</th>
+              <th>Price @ 100K pcs</th>
+              <th>Price @ 1M pcs</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="priceTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Grade Specs ===== -->
+  <section class="grade-specs section">
+    <div class="container">
+      <header class="section__head">
+        <span class="eyebrow">Technical Reference</span>
+        <h2>Grade &amp; Performance Reference</h2>
+        <p>Select the right energy product and operating temperature for your application.</p>
+      </header>
+
+      <div class="table-wrap">
+        <table class="spec-table">
+          <thead>
+            <tr>
+              <th>Grade</th>
+              <th>Br (kGs)</th>
+              <th>Hcj (kOe)</th>
+              <th>BHmax (MGOe)</th>
+              <th>Max Working Temp</th>
+              <th>Typical Use</th>
+            </tr>
+          </thead>
+          <tbody id="gradeTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="section section--cta">
+    <div class="container cta-box">
+      <div>
+        <h2>Need a formal quote or a custom shape?</h2>
+        <p>Tell us your grade, coating, tolerance and quantity. We'll reply within 24 hours.</p>
+      </div>
+      <a href="index.html#contact" class="btn btn--primary">Contact Sales</a>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="container footer__grid">
+      <div>
+        <a href="index.html" class="brand">
+          <span class="brand__text">HUAPENG<span>MAGNETICS</span></span>
+        </a>
+        <p class="footer__desc">Industrial-grade neodymium magnets for motors, sensors, speakers and magnetic assemblies. Global delivery, export-ready documentation.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="index.html#categories">Categories</a></li>
+          <li><a href="request-quote.html">Quotation</a></li>
+          <li><a href="index.html#about">About</a></li>
+          <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li>Email: <a href="mailto:info@huapeng-magnet.com">info@huapeng-magnet.com</a></li>
+          <li>Tel / WhatsApp: +86 — (to be added)</li>
+          <li>Address: No. 859 Shijia Rd, Zonghan, Cixi, Ningbo, Zhejiang, China</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Compliance</h4>
+        <p class="muted small">NdFeB magnets may be subject to export-control and dual-use regulations in your country. We only supply for industrial, electronic and consumer applications.</p>
+      </div>
+    </div>
+    <div class="container footer__bottom">
+      <p>© 2026 Huapeng Magnetics. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/quote.js"></script>
+</body>
+</html>

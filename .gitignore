@@ -1,0 +1,24 @@
+# === 部署副本 / 备份（非源码） ===
+huapeng-magnetics/
+huapeng-magnetics-site/
+huapeng-magnetics-site-*/
+pages-deploy-*/
+_归档/
+
+# === 测试 / 开发脚本 ===
+*.mjs
+_test_*
+test_*
+e2e_*
+fix_*
+delete_*
+_validate*
+_worker_check*
+delete_test_leads.py
+fix_endpoint.py
+test_all_endpoints.py
+价格验算报告*.html
+
+# === Cloudflare Worker 源（独立部署，不入静态仓库） ===
+hp-forms-worker*.js
+hp-forms-worker*.mjs

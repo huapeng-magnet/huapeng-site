@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Magnetic Field Simulator | Huapeng Magnetics</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0b1220;
+      color: #fff;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    header {
+      padding: 1rem 0;
+      border-bottom: 1px solid #1e293b;
+      margin-bottom: 2rem;
+    }
+    header a {
+      color: #22d3ee;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      color: #94a3b8;
+      margin-bottom: 2rem;
+    }
+    .controls {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #22d3ee, #3b82f6);
+      color: #fff;
+    }
+    .btn-secondary {
+      background: #1e293b;
+      color: #fff;
+      border: 1px solid #334155;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      opacity: 0.9;
+    }
+    .canvas-container {
+      background: #0f172a;
+      border-radius: 12px;
+      padding: 1rem;
+      position: relative;
+    }
+    canvas {
+      width: 100%;
+      height: 500px;
+      border-radius: 8px;
+      display: block;
+    }
+    .info-panel {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #1e293b;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      color: #94a3b8;
+    }
+    .legend {
+      display: flex;
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .legend-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+    }
+    .legend-dot.north { background: #ef4444; }
+    .legend-dot.south { background: #3b82f6; }
+    .legend-dot.field { background: #22d3ee; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="../index.html">← Back to Home</a>
+    </header>
+    
+    <h1>Magnetic Field Simulator</h1>
+    <p class="subtitle">Interactive visualization of magnetic pole distribution and field lines</p>
+    
+    <div class="controls">
+      <button class="btn btn-primary" onclick="setMagnetType('disc')">Disc Magnet</button>
+      <button class="btn btn-secondary" onclick="setMagnetType('block')">Block Magnet</button>
+      <button class="btn btn-secondary" onclick="setMagnetType('ring')">Ring Magnet</button>
+      <button class="btn btn-secondary" onclick="toggleFieldLines()">Toggle Field Lines</button>
+      <button class="btn btn-secondary" onclick="resetView()">Reset View</button>
+    </div>
+    
+    <div class="canvas-container">
+      <canvas id="simCanvas"></canvas>
+      <div class="info-panel" id="infoPanel">
+        Select a magnet type to view its magnetic field distribution
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot north"></div><span>North Pole (N)</span></div>
+        <div class="legend-item"><div class="legend-dot south"></div><span>South Pole (S)</span></div>
+        <div class="legend-item"><div class="legend-dot field"></div><span>Field Lines</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    const infoPanel = document.getElementById('infoPanel');
+    
+    let showFieldLines = true;
+    let currentType = 'disc';
+    let animationId;
+    
+    function resizeCanvas() {
+      canvas.width = canvas.offsetWidth * 2;
+      canvas.height = canvas.offsetHeight * 2;
+      ctx.scale(2, 2);
+    }
+    
+    function drawDisc() {
+      const cx = canvas.width / 4;
+      const cy = canvas.height / 4;
+      const r = 80;
+      
+      // Draw disc
+      const gradient = ctx.createRadialGradient(cx - r*0.3, cy - r*0.3, 0, cx, cy, r);
+      gradient.addColorStop(0, '#e2e8f0');
+      gradient.addColorStop(1, '#94a3b8');
+      
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.fillStyle = gradient;
+      ctx.fill();
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      
+      // North pole (top half)
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, -Math.PI/2, 0);
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.3)';
+      ctx.fill();
+      ctx.fillStyle = '#ef4444';
+      ctx.font = 'bold 24px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('N', cx, cy - r/2);
+      
+      // South pole (bottom half)
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, Math.PI, Math.PI * 1.5);
+      ctx.fillStyle = 'rgba(59, 130, 246, 0.3)';
+      ctx.fill();
+      ctx.fillStyle = '#3b82f6';
+      ctx.fillText('S', cx, cy + r/2);
+      
+      infoPanel.textContent = 'Disc magnet: Magnetic poles on flat faces (N on top, S on bottom)';
+    }
+    
+    function drawBlock() {
+      const cx = canvas.width / 4;
+      const cy = canvas.height / 4;
+      const w = 160;
+      const h = 100;
+      
+      // Draw block
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillRect(cx - w/2, cy - h/2, w, h);
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(cx - w/2, cy - h/2, w, h);
+      
+      // North pole (top)
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.5)';
+      ctx.fillRect(cx - w/2, cy - h/2, w, h/2);
+      ctx.fillStyle = '#ef4444';
+      ctx.font = 'bold 20px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('N', cx, cy - h/4 + 7);
+      
+      // South pole (bottom)
+      ctx.fillStyle = 'rgba(59, 130, 246, 0.5)';
+      ctx.fillRect(cx - w/2, cy, w, h/2);
+      ctx.fillStyle = '#3b82f6';
+      ctx.fillText('S', cx, cy + h/4 + 7);
+      
+      infoPanel.textContent = 'Block magnet: Magnetic poles on large faces (N on top, S on bottom)';
+    }
+    
+    function drawRing() {
+      const cx = canvas.width / 4;
+      const cy = canvas.height / 4;
+      const outerR = 100;
+      const innerR = 50;
+      
+      // Draw ring
+      ctx.beginPath();
+      ctx.arc(cx, cy, outerR, 0, Math.PI * 2);
+      ctx.arc(cx, cy, innerR, 0, Math.PI * 2, true);
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fill();
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      
+      // N/S labels
+      ctx.fillStyle = '#ef4444';
+      ctx.font = 'bold 20px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('N', cx, cy - outerR - 15);
+      ctx.fillStyle = '#3b82f6';
+      ctx.fillText('S', cx, cy + outerR + 25);
+      
+      infoPanel.textContent = 'Ring magnet: Radial magnetization (N on outer surface, S on inner surface)';
+    }
+    
+    function drawFieldLines() {
+      if (!showFieldLines) return;
+      
+      const cx = canvas.width / 4;
+      const cy = canvas.height / 4;
+      
+      ctx.strokeStyle = 'rgba(34, 211, 238, 0.5)';
+      ctx.lineWidth = 1.5;
+      
+      // Draw curved field lines from N to S
+      for (let i = -3; i <= 3; i++) {
+        const offset = i * 30;
+        
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - 80);
+        ctx.quadraticCurveTo(
+          cx + offset * 2, cy - 120,
+          cx + offset, cy + 60
+        );
+        ctx.stroke();
+        
+        ctx.beginPath();
+        ctx.moveTo(cx, cy + 80);
+        ctx.quadraticCurveTo(
+          cx + offset * 2, cy + 120,
+          cx + offset, cy - 60
+        );
+        ctx.stroke();
+      }
+      
+      // Arrow heads
+      ctx.fillStyle = '#22d3ee';
+      for (let i = -2; i <= 2; i++) {
+        const x = cx + i * 60;
+        const y = cy + 20;
+        ctx.beginPath();
+        ctx.moveTo(x, y - 5);
+        ctx.lineTo(x + 5, y);
+        ctx.lineTo(x, y + 5);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+    
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width/2, canvas.height/2);
+      
+      switch(currentType) {
+        case 'disc': drawDisc(); break;
+        case 'block': drawBlock(); break;
+        case 'ring': drawRing(); break;
+      }
+      
+      drawFieldLines();
+      
+      animationId = requestAnimationFrame(animate);
+    }
+    
+    function setMagnetType(type) {
+      currentType = type;
+      document.querySelectorAll('.btn').forEach(btn => {
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-secondary');
+      });
+      event.target.classList.remove('btn-secondary');
+      event.target.classList.add('btn-primary');
+    }
+    
+    function toggleFieldLines() {
+      showFieldLines = !showFieldLines;
+    }
+    
+    function resetView() {
+      showFieldLines = true;
+      currentType = 'disc';
+      ctx.clearRect(0, 0, canvas.width/2, canvas.height/2);
+      animate();
+    }
+    
+    // Initialize
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    animate();
+  </script>
+</body>
+</html>

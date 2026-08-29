@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>清除华鹏磁业缓存</title>
+  <style>
+    body { font-family: system-ui; max-width: 600px; margin: 50px auto; padding: 20px; }
+    .btn { padding: 10px 20px; background: #22d3ee; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; }
+    .result { margin-top: 20px; padding: 15px; background: #f0f9ff; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h2>清除华鹏磁业网站缓存</h2>
+  <p>这将清除购物车数据和本地存储的缓存。</p>
+  <button class="btn" onclick="clearCache()">清除缓存</button>
+  <div id="result" class="result" style="display:none;"></div>
+  
+  <script>
+    function clearCache() {
+      // 清除所有 localStorage
+      localStorage.clear();
+      
+      // 清除 sessionStorage
+      sessionStorage.clear();
+      
+      // 清除 IndexedDB（如果有）
+      if (window.indexedDB) {
+        indexedDB.databases().then(dbs => {
+          dbs.forEach(db => indexedDB.deleteDatabase(db.name));
+        });
+      }
+      
+      document.getElementById('result').style.display = 'block';
+      document.getElementById('result').innerHTML = '<b>✅ 缓存已清除！</b><br>请刷新页面。';
+    }
+  </script>
+</body>
+</html>
