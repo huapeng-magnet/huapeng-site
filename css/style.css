@@ -744,6 +744,13 @@ select option:checked{ background:#d1f4ff linear-gradient(0deg,#d1f4ff,#d1f4ff);
 .magnetic-svg{ width:100%; max-width:420px; height:auto; background:#0e1622; border-radius:8px; padding:8px; }
 .magnetic-caption{ font-size:12px; color:var(--ink-soft); margin-top:4px; text-align:center; }
 
+/* Magneteization toggle */
+.mag-toggle{ display:flex; gap:8px; margin-bottom:12px; }
+.mag-btn{ padding:6px 16px; border-radius:8px; border:1px solid rgba(34,211,238,0.3); background:transparent; color:var(--ink-soft); font-size:13px; font-weight:600; cursor:pointer; transition:all .15s ease; }
+.mag-btn:hover{ border-color:var(--cyan); color:var(--cyan); }
+.mag-btn--active{ background:rgba(34,211,238,0.15); border-color:var(--cyan); color:var(--cyan); }
+.mag-svg-wrap{ width:100%; overflow-x:auto; }
+
 /* ---------- Modal maximize toggle ---------- */
 .modal__maximize{ position:absolute; top:14px; right:54px; width:32px; height:32px; border-radius:8px; background:transparent; color:#cfd6df; border:1px solid rgba(255,255,255,.14); cursor:pointer; font-size:16px; line-height:1; display:grid; place-items:center; transition:all .15s ease; }
 .modal__maximize:hover{ background:var(--cyan); color:#03121f; border-color:var(--cyan); }

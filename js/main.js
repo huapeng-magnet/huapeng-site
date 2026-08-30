@@ -951,7 +951,11 @@
           '</div>' +
           '<div class="detail__magnetic">' +
             '<h4>Magnetic Path &amp; Poles</h4>' +
-            magneticSvg(product) +
+            '<div class="mag-toggle">' +
+              '<button type="button" class="mag-btn mag-btn--active" data-mag="axial">Axial</button>' +
+              '<button type="button" class="mag-btn" data-mag="radial">Radial</button>' +
+            '</div>' +
+            '<div class="mag-svg-wrap" id="magSvgWrap">' + magneticSvg(product, "axial") + '</div>' +
           '</div>' +
           '<div class="detail__actions">' +
             '<a class="btn btn--primary" href="index.html#contact">Request Quote</a>' +
@@ -967,6 +971,23 @@
       closeDetailModal();
       openConfigurator(product, null);
     });
+
+    // Magnetization toggle
+    var wrap = detailBody.querySelector("#magSvgWrap");
+    var btns = detailBody.querySelectorAll(".mag-btn");
+    if (wrap && btns.length) {
+      var currentMag = "axial";
+      btns.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var mag = btn.getAttribute("data-mag");
+          if (mag === currentMag) return;
+          currentMag = mag;
+          btns.forEach(function (b) { b.classList.remove("mag-btn--active"); });
+          btn.classList.add("mag-btn--active");
+          wrap.innerHTML = magneticSvg(product, mag);
+        });
+      });
+    }
   }
 
   function openDetail(id) {
@@ -999,9 +1020,9 @@
   }
 
   /* ---------- Magnetic path & pole SVG (5 shapes) — 3D style ---------- */
-  function magneticSvg(product) {
+  function magneticSvg(product, mag) {
     var shape = String((product && product.shape) || "disc").toLowerCase();
-    var mag = String(((product && product.magnetization) || "axial")).toLowerCase();
+    mag = mag || "axial";
     if (shape === "disc") return discSvg3d(mag);
     if (shape === "block") return blockSvg3d(mag);
     if (shape === "ring") return ringSvg3d(mag);
