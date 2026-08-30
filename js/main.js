@@ -953,9 +953,13 @@
             '<h4>Magnetic Path &amp; Poles</h4>' +
             '<div class="mag-toggle">' +
               '<button type="button" class="mag-btn mag-btn--active" data-mag="axial">Axial</button>' +
+              '<button type="button" class="mag-btn" data-mag="diametrical">Diametrical</button>' +
               '<button type="button" class="mag-btn" data-mag="radial">Radial</button>' +
+              '<button type="button" class="mag-btn" data-mag="multi-axial">Multi-Axial</button>' +
+              '<button type="button" class="mag-btn" data-mag="chord">Chord</button>' +
             '</div>' +
             '<div class="mag-svg-wrap" id="magSvgWrap">' + magneticSvg(product, "axial") + '</div>' +
+            '<p class="mag-note">Select direction to see pole positions • Custom magnetization per RFQ</p>' +
           '</div>' +
           '<div class="detail__actions">' +
             '<a class="btn btn--primary" href="index.html#contact">Request Quote</a>' +
@@ -1019,7 +1023,7 @@
     reveals.forEach(function (el) { el.classList.add("in"); });
   }
 
-  /* ---------- Magnetic path & pole SVG (5 shapes) — 3D style ---------- */
+  /* ---------- Magnetic path & pole SVG (5 shapes × 5 mag types) — 3D style ---------- */
   function magneticSvg(product, mag) {
     var shape = String((product && product.shape) || "disc").toLowerCase();
     mag = mag || "axial";
@@ -1027,7 +1031,7 @@
     if (shape === "block") return blockSvg3d(mag);
     if (shape === "ring") return ringSvg3d(mag);
     if (shape === "arc") return arcSvg3d(mag);
-    return customSvg3d();
+    return customSvg3d(mag);
   }
 
   function sharedDefs3d() {
@@ -1050,114 +1054,219 @@
   }
 
   // 3D disc — shows top ellipse to make it look cylindrical
+  // mag: axial | diametrical | radial | multi-axial | chord
   function discSvg3d(mag) {
+    var isAxial = /axial/.test(mag) && !/multi/.test(mag);
+    var isDiametrical = /diametrical/.test(mag);
     var isRadial = /radial/.test(mag);
+    var isChord = /chord/.test(mag);
+    var isMulti = /multi/.test(mag);
     var body, top;
-    if (isRadial) {
-      // 径向：左右分色，左红(N)右蓝(S)
+
+    if (isDiametrical) {
+      // 直径向：左右分色，左红(N)右蓝(S)
       body = '<rect x="100" y="65" width="60" height="85" rx="2" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
              '<rect x="160" y="65" width="60" height="85" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
       top = '<ellipse cx="130" cy="65" rx="30" ry="18" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>' +
             '<ellipse cx="190" cy="65" rx="30" ry="18" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>' +
             '<ellipse cx="160" cy="65" rx="60" ry="18" fill="none" stroke="#475569" stroke-width="1.5"/>';
+    } else if (isRadial) {
+      // 径向：外圆N极（红色），内孔S极（蓝色虚线）
+      body = '<rect x="100" y="65" width="120" height="85" rx="2" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
+             '<rect x="140" y="65" width="40" height="85" fill="#0b1220" stroke="#475569" stroke-width="1.5"/>';
+      top = '<ellipse cx="160" cy="65" rx="60" ry="18" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>' +
+            '<ellipse cx="160" cy="65" rx="20" ry="6" fill="#0b1220" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="4,3"/>';
+    } else if (isChord) {
+      // 弦向：上下分色但顶部有斜切效果
+      body = '<rect x="100" y="65" width="120" height="42" rx="2" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
+             '<rect x="100" y="107" width="120" height="43" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
+      top = '<ellipse cx="160" cy="65" rx="60" ry="18" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
+    } else if (isMulti) {
+      // 多极：环向多对N/S极
+      body = '<rect x="100" y="65" width="120" height="85" rx="2" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
+             '<rect x="100" y="65" width="120" height="21" fill="#3b82f6" fill-opacity="0.7"/>' +
+             '<rect x="100" y="106" width="120" height="21" fill="#3b82f6" fill-opacity="0.7"/>';
+      top = '<ellipse cx="160" cy="65" rx="60" ry="18" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>' +
+            '<ellipse cx="160" cy="65" rx="45" ry="13" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="8,4"/>' +
+            '<ellipse cx="160" cy="65" rx="30" ry="8" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="8,4"/>';
     } else {
       // 轴向：上下分色，上半红(N)下半蓝(S)
       body = '<rect x="100" y="65" width="120" height="42" rx="2" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
              '<rect x="100" y="107" width="120" height="43" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
       top = '<ellipse cx="160" cy="65" rx="60" ry="18" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
     }
-    var labels = isRadial
-      ? '<text x="130" y="175" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-        '<text x="190" y="175" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>'
-      : '<text x="160" y="50" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-        '<text x="160" y="178" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
+
+    var labels;
+    if (isDiametrical) {
+      labels = '<text x="130" y="175" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
+               '<text x="190" y="175" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
+    } else if (isRadial) {
+      labels = '<text x="160" y="175" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N (outer)</text>' +
+               '<text x="160" y="190" font-size="14" font-weight="bold" fill="#3b82f6" text-anchor="middle">S (inner)</text>';
+    } else if (isMulti) {
+      labels = '<text x="160" y="175" font-size="14" font-weight="bold" fill="#ef4444" text-anchor="middle">Multi-pole N/S</text>';
+    } else if (isChord) {
+      labels = '<text x="160" y="50" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
+               '<text x="160" y="178" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
+    } else {
+      labels = '<text x="160" y="50" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
+               '<text x="160" y="178" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
+    }
+
+    var magLabel = {
+      'axial': 'Axial',
+      'diametrical': 'Diametrical',
+      'radial': 'Radial',
+      'multi-axial': 'Multi-Axial',
+      'chord': 'Chord'
+    }[mag] || mag;
+
     return '<div class="magnetic-view">' +
       '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">' +
         sharedDefs3d() + body + top + labels +
       '</svg>' +
-      '<p class="magnetic-caption">Disc magnet (3D view) · ' + escHtml(mag) + ' magnetization</p>' +
+      '<p class="magnetic-caption">Disc magnet (3D view) · ' + escHtml(magLabel) + ' magnetization</p>' +
     '</div>';
   }
 
   // 3D ring — shows outer ellipse + inner hole (dashed)
+  // mag: axial | diametrical | radial | multi-axial | chord
   function ringSvg3d(mag) {
+    var isAxial = /axial/.test(mag) && !/multi/.test(mag);
     var isRadial = /radial/.test(mag);
+    var isMulti = /multi/.test(mag);
+    var isChord = /chord/.test(mag);
     var body, top;
+
     if (isRadial) {
-      // 径向：左右分色，左红(N)右蓝(S)，带内孔
-      body = '<path d="M 95 65 L 160 65 L 160 150 L 95 150 Z" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
-             '<path d="M 160 65 L 225 65 L 225 150 L 160 150 Z" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
-      top = '<path d="M 95 65 A 65 20 0 0 1 225 65" fill="none" stroke="#475569" stroke-width="1.5"/>' +
-            '<path d="M 95 65 A 32 10 0 0 1 160 65" fill="none" stroke="#475569" stroke-width="1.5" stroke-dasharray="3,2"/>' +
-            '<path d="M 160 65 A 32 10 0 0 1 225 65" fill="none" stroke="#475569" stroke-width="1.5" stroke-dasharray="3,2"/>' +
-            '<ellipse cx="127" cy="65" rx="32" ry="10" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.2"/>' +
-            '<ellipse cx="192" cy="65" rx="32" ry="10" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.2"/>';
+      // 径向：内外表面分色，外圆红(N)，内孔蓝(S)
+      body = '<path d="M 95 65 L 225 65 L 225 150 L 95 150 Z" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
+             '<path d="M 95 65 L 160 65 L 160 150 L 95 150 Z" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
+      top = '<ellipse cx="160" cy="65" rx="65" ry="20" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>' +
+            '<ellipse cx="160" cy="65" rx="25" ry="8" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
+    } else if (isMulti) {
+      // 多极：环向多对N/S极
+      body = '<path d="M 95 65 L 225 65 L 225 150 L 95 150 Z" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
+             '<path d="M 95 65 L 160 65 L 160 85 L 95 85 Z" fill="#3b82f6" fill-opacity="0.7"/>' +
+             '<path d="M 160 105 L 225 105 L 225 125 L 160 125 Z" fill="#3b82f6" fill-opacity="0.7"/>';
+      top = '<ellipse cx="160" cy="65" rx="65" ry="20" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>' +
+            '<ellipse cx="160" cy="65" rx="25" ry="8" fill="#0b1220" stroke="#475569" stroke-width="1.5" stroke-dasharray="4,3"/>';
     } else {
-      // 轴向：上下分色，上半红(N)下半蓝(S)
+      // 轴向/弦向：上下分色，上半红(N)下半蓝(S)
       body = '<path d="M 95 65 L 225 65 L 225 108 L 95 108 Z" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
              '<path d="M 95 108 L 225 108 L 225 150 L 95 150 Z" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
       top = '<ellipse cx="160" cy="65" rx="65" ry="20" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>' +
             '<ellipse cx="160" cy="65" rx="25" ry="8" fill="none" stroke="#475569" stroke-width="1.5" stroke-dasharray="4,3"/>';
     }
-    var labels = isRadial
-      ? '<text x="127" y="180" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-        '<text x="192" y="180" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>'
-      : '<text x="160" y="50" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-        '<text x="160" y="175" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
+
+    var labels;
+    if (isRadial) {
+      labels = '<text x="160" y="180" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N (outer)</text>' +
+               '<text x="160" y="195" font-size="14" font-weight="bold" fill="#3b82f6" text-anchor="middle">S (inner)</text>';
+    } else if (isMulti) {
+      labels = '<text x="160" y="180" font-size="14" font-weight="bold" fill="#ef4444" text-anchor="middle">Multi-pole N/S</text>';
+    } else {
+      labels = '<text x="160" y="50" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
+               '<text x="160" y="175" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
+    }
+
+    var magLabel = {
+      'axial': 'Axial',
+      'diametrical': 'Diametrical',
+      'radial': 'Radial',
+      'multi-axial': 'Multi-Axial',
+      'chord': 'Chord'
+    }[mag] || mag;
+
     return '<div class="magnetic-view">' +
       '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">' +
         sharedDefs3d() + body + top + labels +
       '</svg>' +
-      '<p class="magnetic-caption">Ring magnet (3D view) · ' + escHtml(mag) + ' magnetization</p>' +
+      '<p class="magnetic-caption">Ring magnet (3D view) · ' + escHtml(magLabel) + ' magnetization</p>' +
     '</div>';
   }
 
   // 3D block — shows top face + side face for cuboid effect
+  // mag: axial | diametrical | radial | multi-axial | chord
   function blockSvg3d(mag) {
+    var isAxial = /axial/.test(mag) && !/multi/.test(mag);
+    var isDiametrical = /diametrical/.test(mag);
     var isRadial = /radial/.test(mag);
+    var isChord = /chord/.test(mag);
+    var isMulti = /multi/.test(mag);
     var body, top, side;
-    if (isRadial) {
-      // 径向：左右分色，左红(N)右蓝(S)
+
+    if (isDiametrical) {
+      // 直径向：左右分色，左红(N)右蓝(S)
       body = '<rect x="90" y="55" width="70" height="95" rx="3" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
              '<rect x="160" y="55" width="70" height="95" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
       top = '<polygon points="90,55 115,35 185,35 160,55" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>' +
             '<polygon points="160,55 185,35 255,35 230,55" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
       side = '<polygon points="230,55 255,35 255,130 230,150" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
-    } else {
-      // 轴向：上下分色，上半红(N)下半蓝(S)
+    } else if (isChord) {
+      // 弦向：上下分色，上半红(N)下半蓝(S)
       body = '<rect x="90" y="55" width="140" height="47" rx="3" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
              '<rect x="90" y="102" width="140" height="48" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
       top = '<polygon points="90,55 115,35 255,35 230,55" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
       side = '<polygon points="230,55 255,35 255,102 230,150" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
+    } else {
+      // 轴向：前后分色，前红(N)后蓝(S)
+      body = '<rect x="90" y="55" width="140" height="95" rx="3" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>';
+      top = '<polygon points="90,55 115,35 255,35 230,55" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
+      side = '<polygon points="230,55 255,35 255,150 230,150" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
     }
-    var labels = isRadial
-      ? '<text x="125" y="170" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-        '<text x="195" y="170" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>'
-      : '<text x="160" y="42" font-size="15" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-        '<text x="160" y="178" font-size="15" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
+
+    var labels;
+    if (isDiametrical) {
+      labels = '<text x="125" y="170" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
+               '<text x="195" y="170" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
+    } else if (isChord) {
+      labels = '<text x="160" y="42" font-size="15" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
+               '<text x="160" y="178" font-size="15" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
+    } else {
+      labels = '<text x="245" y="170" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
+    }
+
+    var magLabel = {
+      'axial': 'Axial',
+      'diametrical': 'Diametrical',
+      'radial': 'Radial',
+      'multi-axial': 'Multi-Axial',
+      'chord': 'Chord'
+    }[mag] || mag;
+
     return '<div class="magnetic-view">' +
       '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">' +
         sharedDefs3d() + body + top + side + labels +
       '</svg>' +
-      '<p class="magnetic-caption">Block magnet (3D view) · ' + escHtml(mag) + ' magnetization</p>' +
+      '<p class="magnetic-caption">Block magnet (3D view) · ' + escHtml(magLabel) + ' magnetization</p>' +
     '</div>';
   }
 
   // 3D arc segment — curved wedge shape
   function arcSvg3d(mag) {
+    var isAxial = /axial/.test(mag) && !/multi/.test(mag);
     var isRadial = /radial/.test(mag);
+    var isMulti = /multi/.test(mag);
     var body, topEdge, labels;
+
     if (isRadial) {
       // 径向：外侧弧面红(N)，内侧弧面蓝(S)
       body = '<path d="M 70 140 Q 160 40 250 140 L 235 140 Q 160 60 85 140 Z" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
-             '<path d="M 70 140 Q 160 40 250 140 L 235 140 Q 160 60 85 140 Z" fill="none" stroke="none"/>' +
              '<path d="M 85 140 Q 160 60 235 140 L 250 140 Q 160 40 70 140 Z" fill="#3b82f6" fill-opacity="0.95"/>';
       topEdge = '<path d="M 70 140 Q 160 40 250 140" fill="none" stroke="#fca5a5" stroke-width="2" stroke-opacity="0.8"/>' +
                 '<path d="M 85 140 Q 160 60 235 140" fill="none" stroke="#93c5fd" stroke-width="2" stroke-opacity="0.8"/>';
       labels = '<text x="160" y="165" font-size="13" font-weight="bold" fill="#ef4444" text-anchor="middle">N (outer)</text>' +
                '<text x="160" y="55" font-size="13" font-weight="bold" fill="#3b82f6" text-anchor="middle">S (inner)</text>';
+    } else if (isMulti) {
+      // 多极：环向多对N/S
+      body = '<path d="M 75 100 Q 160 45 245 100 L 245 140 Q 160 85 75 140 Z" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
+             '<path d="M 75 100 Q 160 60 245 100 L 245 115 Q 160 75 75 115 Z" fill="#3b82f6" fill-opacity="0.7"/>' +
+             '<path d="M 75 130 Q 160 95 245 130 L 245 140 Q 160 85 75 140 Z" fill="#3b82f6" fill-opacity="0.7"/>';
+      topEdge = '<path d="M 75 100 Q 160 45 245 100" fill="none" stroke="#fca5a5" stroke-width="2" stroke-opacity="0.8"/>';
+      labels = '<text x="160" y="165" font-size="13" font-weight="bold" fill="#ef4444" text-anchor="middle">Multi-pole N/S</text>';
     } else {
-      // 轴向：上半红(N)，下半蓝(S)
+      // 轴向/弦向：上半红(N)，下半蓝(S)
       body = '<path d="M 75 100 Q 160 45 245 100 L 245 140 Q 160 85 75 140 Z" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
              '<path d="M 75 140 Q 160 85 245 140 L 235 140 Q 160 60 85 140 Z" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
       topEdge = '<path d="M 75 100 Q 160 45 245 100" fill="none" stroke="#fca5a5" stroke-width="2" stroke-opacity="0.8"/>' +
@@ -1165,11 +1274,20 @@
       labels = '<text x="160" y="40" font-size="13" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
                '<text x="160" y="180" font-size="13" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
     }
+
+    var magLabel = {
+      'axial': 'Axial',
+      'diametrical': 'Diametrical',
+      'radial': 'Radial',
+      'multi-axial': 'Multi-Axial',
+      'chord': 'Chord'
+    }[mag] || mag;
+
     return '<div class="magnetic-view">' +
       '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">' +
         sharedDefs3d() + body + topEdge + labels +
       '</svg>' +
-      '<p class="magnetic-caption">Arc segment (3D view) · ' + escHtml(mag) + ' magnetization</p>' +
+      '<p class="magnetic-caption">Arc segment (3D view) · ' + escHtml(magLabel) + ' magnetization</p>' +
     '</div>';
   }
 
