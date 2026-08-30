@@ -386,18 +386,23 @@
     }).render("#paypalBtnWrap");
   }
 
+  // Also render PayPal button to the footer box (depositBtnWrap) for better UX
+  var depositBtnWrapEl = document.getElementById("depositBtnWrap");
+
   async function initPaypal() {
     if (!depositEl) return;
     var v = readForm();
     var deposit = calcDeposit(cart);
     if (deposit <= 0) {
       depositEl.hidden = true;
+      if (depositBtnWrapEl) depositBtnWrapEl.innerHTML = '<p style="color:var(--ink-soft);font-size:13px;padding:8px 0;">Add items to cart and fill in your contact details to unlock the deposit option.</p>';
       return;
     }
     if (depositAmountEl) depositAmountEl.textContent = "Deposit: " + fmt(deposit);
     var cfg = await fetchPaypalConfig();
     if (!cfg || !cfg.configured) {
       depositEl.hidden = true;
+      if (depositBtnWrapEl) depositBtnWrapEl.innerHTML = '<p style="color:var(--ink-soft);font-size:13px;padding:8px 0;">Payment configuration unavailable. Please use the inquiry form or contact us at info@huapeng-magnet.com.</p>';
       return;
     }
     depositEl.hidden = false;
@@ -422,11 +427,171 @@
         // Force English locale so PayPal's auto-rendered labels
         // Force English locale so PayPal's auto-rendered labels (e.g. "Debit or credit card", "Powered by PayPal") stay in English.
         script.src = "https://www.paypal.com/sdk/js?client-id=" + encodeURIComponent(cfg.clientId) + "&currency=USD&locale=en_US";
-        script.onload = function () { renderPaypalButton(cfg.clientId, paypalOrderId, customer); };
+        script.onload = function () {
+          renderPaypalButton(cfg.clientId, paypalOrderId, customer);
+          // Also render to footer box if it exists
+          if (depositBtnWrapEl && window.paypal) {
+            try {
+              paypal.Buttons({
+                style: { layout: "vertical", color: "blue", shape: "pill" },
+                createOrder: function () { return paypalOrderId; },
+                onApprove: function (data) {
+                  if (hintEl) hintEl.textContent = "Verifying payment… please wait.";
+                  fetch("https://huapeng-magnet.com/paypal/capture-order", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      paypalOrderId: data.orderID,
+                      customer: customer,
+                      cartSummary: {
+                        items: cart.map(function (it) {
+                          return { name: it.name, qty: it.qty, line: +itemLineTotal(it).toFixed(2) };
+                        }),
+                        subtotal: +cart.reduce(function (s, it) { return s + itemLineTotal(it); }, 0).toFixed(2),
+                      }
+                    }),
+                  })
+                    .then(function (r) { return r.json(); })
+                    .then(function (j) {
+                      if (!j.ok) {
+                        alert("Payment capture failed: " + (j.error || "unknown"));
+                        if (hintEl) hintEl.textContent = "";
+                        return;
+                      }
+                      var payNote = "PayPal deposit captured · $ " + calcDeposit(cart).toFixed(2) + " USD · PayPal Order " + data.orderID;
+                      fetch("https://huapeng-magnet.com/contact", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json; charset=utf-8" },
+                        body: JSON.stringify({
+                          name: customer.name,
+                          email: customer.email,
+                          company: customer.company,
+                          phone: customer.phone,
+                          country: customer.country,
+                          address: customer.address,
+                          city: customer.city,
+                          zip: customer.zip,
+                          notes: payNote,
+                          items: cart.map(function (it) {
+                            return { name: it.name, qty: it.qty, line: +itemLineTotal(it).toFixed(2) };
+                          }),
+                          subtotal: +cart.reduce(function (s, it) { return s + itemLineTotal(it); }, 0).toFixed(2),
+                          source: "checkout-deposit",
+                        })
+                      }).catch(function () { /* non-fatal */ })
+                        .then(function () {
+                          try { localStorage.removeItem(CART_KEY); } catch (e) {}
+                          if (cartCountEl) cartCountEl.textContent = "0";
+                          showDone({
+                            ico: "💳",
+                            title: "Deposit received!",
+                            msg: "Thanks " + (customer.name || "") + " — your 30% deposit of " + fmt(calcDeposit(cart)) +
+                              " has been captured. We'll email " + (customer.email || "") +
+                              " balance, production schedule and shipping details within 1 business day."
+                          });
+                        });
+                    })
+                    .catch(function () {
+                      alert("Network error. Please try again or contact sales.");
+                      if (hintEl) hintEl.textContent = "";
+                    });
+                },
+                onError: function (err) {
+                  alert("PayPal error: " + (err && err.message ? err.message : "unknown error"));
+                  if (hintEl) hintEl.textContent = "";
+                },
+                onClick: function () {
+                  if (hintEl) hintEl.textContent = "Clicking PayPal will open a secure payment page.";
+                },
+              }).render("#depositBtnWrap");
+            } catch (e) {
+              console.warn("Footer PayPal render failed:", e);
+            }
+          }
+        };
         script.onerror = function () { if (hintEl) hintEl.textContent = "PayPal SDK failed to load. Please check your connection."; };
         document.head.appendChild(script);
       } else {
         renderPaypalButton(cfg.clientId, paypalOrderId, customer);
+        // Also render to footer box
+        if (depositBtnWrapEl) {
+          try {
+            paypal.Buttons({
+              style: { layout: "vertical", color: "blue", shape: "pill" },
+              createOrder: function () { return paypalOrderId; },
+              onApprove: function (data) {
+                if (hintEl) hintEl.textContent = "Verifying payment… please wait.";
+                fetch("https://huapeng-magnet.com/paypal/capture-order", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    paypalOrderId: data.orderID,
+                    customer: customer,
+                    cartSummary: {
+                      items: cart.map(function (it) {
+                        return { name: it.name, qty: it.qty, line: +itemLineTotal(it).toFixed(2) };
+                      }),
+                      subtotal: +cart.reduce(function (s, it) { return s + itemLineTotal(it); }, 0).toFixed(2),
+                    }
+                  }),
+                })
+                  .then(function (r) { return r.json(); })
+                  .then(function (j) {
+                    if (!j.ok) {
+                      alert("Payment capture failed: " + (j.error || "unknown"));
+                      if (hintEl) hintEl.textContent = "";
+                      return;
+                    }
+                    var payNote = "PayPal deposit captured · $ " + calcDeposit(cart).toFixed(2) + " USD · PayPal Order " + data.orderID;
+                    fetch("https://huapeng-magnet.com/contact", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json; charset=utf-8" },
+                      body: JSON.stringify({
+                        name: customer.name,
+                        email: customer.email,
+                        company: customer.company,
+                        phone: customer.phone,
+                        country: customer.country,
+                        address: customer.address,
+                        city: customer.city,
+                        zip: customer.zip,
+                        notes: payNote,
+                        items: cart.map(function (it) {
+                          return { name: it.name, qty: it.qty, line: +itemLineTotal(it).toFixed(2) };
+                        }),
+                        subtotal: +cart.reduce(function (s, it) { return s + itemLineTotal(it); }, 0).toFixed(2),
+                        source: "checkout-deposit",
+                      })
+                    }).catch(function () { /* non-fatal */ })
+                      .then(function () {
+                        try { localStorage.removeItem(CART_KEY); } catch (e) {}
+                        if (cartCountEl) cartCountEl.textContent = "0";
+                        showDone({
+                          ico: "💳",
+                          title: "Deposit received!",
+                          msg: "Thanks " + (customer.name || "") + " — your 30% deposit of " + fmt(calcDeposit(cart)) +
+                            " has been captured. We'll email " + (customer.email || "") +
+                            " balance, production schedule and shipping details within 1 business day."
+                        });
+                      });
+                  })
+                  .catch(function () {
+                    alert("Network error. Please try again or contact sales.");
+                    if (hintEl) hintEl.textContent = "";
+                  });
+              },
+              onError: function (err) {
+                alert("PayPal error: " + (err && err.message ? err.message : "unknown error"));
+                if (hintEl) hintEl.textContent = "";
+              },
+              onClick: function () {
+                if (hintEl) hintEl.textContent = "Clicking PayPal will open a secure payment page.";
+              },
+            }).render("#depositBtnWrap");
+          } catch (e) {
+            console.warn("Footer PayPal render failed:", e);
+          }
+        }
       }
     } catch (e) {
       alert("Could not initialize PayPal: " + e.message);
