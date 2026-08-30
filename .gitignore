@@ -22,3 +22,6 @@ test_all_endpoints.py
 # === Cloudflare Worker 源（独立部署，不入静态仓库） ===
 hp-forms-worker*.js
 hp-forms-worker*.mjs
+
+# === 本地工作记忆（不入库） ===
+.workbuddy/

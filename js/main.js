@@ -868,6 +868,7 @@
   var detailModal = document.getElementById("detailModal");
   var detailOverlay = document.getElementById("detailModalOverlay");
   var detailClose = document.getElementById("detailModalClose");
+  var detailMaximize = document.getElementById("detailModalMaximize");
   var detailBody = document.getElementById("detailModalBody");
   var productsCache = null;
 
@@ -882,9 +883,17 @@
     detailModal.setAttribute("aria-hidden", "true");
     detailModal.hidden = true;
     document.body.style.overflow = "";
+    if (detailModal) detailModal.classList.remove("modal--maximized");
+    if (detailMaximize) detailMaximize.textContent = "⛶";
+  }
+  function toggleMaximize() {
+    if (!detailModal) return;
+    var isMax = detailModal.classList.toggle("modal--maximized");
+    if (detailMaximize) detailMaximize.textContent = isMax ? "🗗" : "⛶";
   }
   if (detailOverlay) detailOverlay.addEventListener("click", closeDetailModal);
   if (detailClose) detailClose.addEventListener("click", closeDetailModal);
+  if (detailMaximize) detailMaximize.addEventListener("click", toggleMaximize);
   closeDetailModal();
 
   function fetchProducts() {
