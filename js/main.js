@@ -943,11 +943,11 @@
             detailRow("Coatings", detailChips(d.coatings || ["Nickel (Ni-Cu-Ni)","Zinc","Epoxy","Black Nickel"])) +
             detailRow("Dimensions", '<p>' + escHtml(d.dimensions || "Custom per drawing") + '</p>') +
             detailRow("Magnetization", '<p>' + escHtml(d.magnetization || "Axial / radial (per spec)") + '</p>') +
-            detailRow("Tolerance", '<p>' + escHtml(d.tolerance || "±0.05 mm standard") + '</p>') +
+            detailRow("Tolerance", '<p>' + escHtml(d.tolerance || "±0.1 mm standard") + '</p>') +
             detailRow("Applications", detailList(d.applications || [])) +
             detailRow("Lead Time", '<p>' + escHtml(d.leadTime || "Samples 3–5 days; mass production 2–3 weeks") + '</p>') +
             detailRow("MOQ", '<p>' + escHtml(d.moq || "100 pcs sampling; 1,000 pcs production") + '</p>') +
-            detailRow("Certifications", detailList(d.certs || ["Material certificate (per lot)","RoHS","REACH","ISO 9001 managed"])) +
+            detailRow("Certifications", detailList(d.certs || ["Material certificate (per lot)","RoHS","REACH",""])) +
           '</div>' +
           '<div class="detail__magnetic">' +
             '<h4>Magnetic Path &amp; Poles</h4>' +
