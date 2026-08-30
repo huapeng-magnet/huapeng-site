@@ -600,8 +600,4 @@
   }
 
   initPaypal();
-
-
-    // E2E TEST HOOK - captures form submissions
-    );
 })();
