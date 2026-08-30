@@ -1054,16 +1054,25 @@
     var isRadial = /radial/.test(mag);
     var body = '<rect x="100" y="65" width="120" height="85" rx="2" fill="url(#body-grad)" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>';
     var top = '<ellipse cx="160" cy="65" rx="60" ry="18" fill="url(#top-grad)" stroke="#475569" stroke-width="1.5"/>';
-    var labels = isRadial
-      ? '<text x="275" y="60" font-size="13" font-weight="bold" fill="#ef4444">N (outer)</text>' +
-        '<text x="275" y="175" font-size="13" font-weight="bold" fill="#3b82f6">S (inner)</text>' +
-        '<line x1="220" y1="100" x2="260" y2="100" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>'
-      : '<text x="160" y="48" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-        '<text x="160" y="178" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>' +
-        '<line x1="235" y1="70" x2="235" y2="150" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>';
+    var lines;
+    if (isRadial) {
+      // 径向：N 在外圈，S 在内圈，磁感线从外圈向内侧弯曲
+      lines = '<text x="275" y="60" font-size="13" font-weight="bold" fill="#ef4444">N (outer)</text>' +
+              '<text x="275" y="175" font-size="13" font-weight="bold" fill="#3b82f6">S (inner)</text>' +
+              '<path d="M 220 75 Q 190 60 160 65" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>' +
+              '<path d="M 220 125 Q 190 140 160 135" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>';
+    } else {
+      // 轴向：N 在上，S 在下，磁感线从 N 极出发，向上弯曲绕回 S 极
+      lines = '<text x="160" y="48" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
+              '<text x="160" y="178" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>' +
+              '<path d="M 140 65 Q 140 35 160 50" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>' +
+              '<path d="M 180 65 Q 180 35 160 50" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>' +
+              '<path d="M 140 135 Q 140 165 160 150" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>' +
+              '<path d="M 180 135 Q 180 165 160 150" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>';
+    }
     return '<div class="magnetic-view">' +
       '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">' +
-        sharedDefs3d() + body + top + labels +
+        sharedDefs3d() + body + top + lines +
       '</svg>' +
       '<p class="magnetic-caption">Disc magnet (3D view) · ' + escHtml(mag) + ' magnetization</p>' +
     '</div>';
@@ -1071,31 +1080,59 @@
 
   // 3D ring — shows outer ellipse + inner hole (dashed)
   function ringSvg3d(mag) {
+    var isRadial = /radial/.test(mag);
     var body = '<path d="M 95 65 L 225 65 L 225 150 L 95 150 Z" fill="url(#body-grad)" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>';
     var top = '<ellipse cx="160" cy="65" rx="65" ry="20" fill="none" stroke="#475569" stroke-width="1.5"/>' +
               '<ellipse cx="160" cy="65" rx="25" ry="8" fill="none" stroke="#475569" stroke-width="1.5" stroke-dasharray="4,3"/>';
-    var labels = '<text x="160" y="45" font-size="14" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-                 '<text x="160" y="180" font-size="14" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>' +
-                 '<line x1="235" y1="100" x2="285" y2="100" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>';
+    var lines;
+    if (isRadial) {
+      // 径向：N 在外圈，S 在内圈
+      lines = '<text x="285" y="60" font-size="13" font-weight="bold" fill="#ef4444">N</text>' +
+              '<text x="285" y="175" font-size="13" font-weight="bold" fill="#3b82f6">S</text>' +
+              '<path d="M 220 80 Q 250 65 220 50" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>' +
+              '<path d="M 220 120 Q 250 135 220 150" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>';
+    } else {
+      // 轴向：N 在上，S 在下
+      lines = '<text x="160" y="45" font-size="14" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
+              '<text x="160" y="180" font-size="14" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>' +
+              '<path d="M 140 65 Q 140 40 160 55" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>' +
+              '<path d="M 180 65 Q 180 40 160 55" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>' +
+              '<path d="M 140 135 Q 140 160 160 145" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>' +
+              '<path d="M 180 135 Q 180 160 160 145" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>';
+    }
     return '<div class="magnetic-view">' +
       '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">' +
-        sharedDefs3d() + body + top + labels +
+        sharedDefs3d() + body + top + lines +
       '</svg>' +
-      '<p class="magnetic-caption">Ring magnet (3D view) · ' + escHtml(mag) + ' (poles on top/bottom faces)</p>' +
+      '<p class="magnetic-caption">Ring magnet (3D view) · ' + escHtml(mag) + ' magnetization</p>' +
     '</div>';
   }
 
   // 3D block — shows top face + side face for cuboid effect
   function blockSvg3d(mag) {
+    var isRadial = /radial/.test(mag);
     var body = '<rect x="90" y="55" width="140" height="95" rx="3" fill="url(#body-grad)" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>';
     var top = '<polygon points="90,55 115,35 255,35 230,55" fill="#fca5a5" fill-opacity="0.7" stroke="#475569" stroke-width="1.5"/>';
     var side = '<polygon points="230,55 255,35 255,130 230,150" fill="#f87171" fill-opacity="0.5" stroke="#475569" stroke-width="1.5"/>';
-    var labels = '<text x="160" y="42" font-size="15" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-                 '<text x="160" y="178" font-size="15" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>' +
-                 '<line x1="240" y1="100" x2="285" y2="100" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>';
+    var lines;
+    if (isRadial) {
+      // 径向：N 在左侧面，S 在右侧面
+      lines = '<text x="70" y="100" font-size="14" font-weight="bold" fill="#ef4444">N</text>' +
+              '<text x="290" y="100" font-size="14" font-weight="bold" fill="#3b82f6">S</text>' +
+              '<line x1="90" y1="100" x2="85" y2="100" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>' +
+              '<line x1="230" y1="100" x2="285" y2="100" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>';
+    } else {
+      // 轴向：N 在上，S 在下，磁感线从 N 极出发，向上弯曲绕回 S 极
+      lines = '<text x="160" y="42" font-size="15" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
+              '<text x="160" y="178" font-size="15" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>' +
+              '<path d="M 130 55 Q 130 25 160 40" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>' +
+              '<path d="M 190 55 Q 190 25 160 40" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>' +
+              '<path d="M 130 150 Q 130 180 160 165" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>' +
+              '<path d="M 190 150 Q 190 180 160 165" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>';
+    }
     return '<div class="magnetic-view">' +
       '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">' +
-        sharedDefs3d() + body + top + side + labels +
+        sharedDefs3d() + body + top + side + lines +
       '</svg>' +
       '<p class="magnetic-caption">Block magnet (3D view) · ' + escHtml(mag) + ' magnetization</p>' +
     '</div>';
@@ -1103,15 +1140,28 @@
 
   // 3D arc segment — curved wedge shape
   function arcSvg3d(mag) {
+    var isRadial = /radial/.test(mag);
     var body = '<path d="M 70 140 Q 160 40 250 140 L 235 140 Q 160 60 85 140 Z" fill="url(#body-grad)" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>';
     var topEdge = '<path d="M 70 140 Q 160 40 250 140" fill="none" stroke="#fca5a5" stroke-width="2" stroke-opacity="0.8"/>';
-    var labels = '<text x="160" y="165" font-size="13" font-weight="bold" fill="#ef4444" text-anchor="middle">N (outer)</text>' +
-                 '<text x="160" y="55" font-size="13" font-weight="bold" fill="#3b82f6" text-anchor="middle">S (inner)</text>';
+    var lines;
+    if (isRadial) {
+      // 径向：N 在外侧弧面，S 在内侧弧面
+      lines = '<text x="160" y="165" font-size="13" font-weight="bold" fill="#ef4444" text-anchor="middle">N (outer)</text>' +
+              '<text x="160" y="55" font-size="13" font-weight="bold" fill="#3b82f6" text-anchor="middle">S (inner)</text>' +
+              '<path d="M 130 130 Q 120 100 160 90" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>' +
+              '<path d="M 190 130 Q 200 100 160 90" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>';
+    } else {
+      // 轴向：N 在上表面，S 在下表面（较少见但支持）
+      lines = '<text x="160" y="35" font-size="13" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
+              '<text x="160" y="180" font-size="13" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>' +
+              '<path d="M 130 130 Q 130 70 160 55" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>' +
+              '<path d="M 190 130 Q 190 70 160 55" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>';
+    }
     return '<div class="magnetic-view">' +
       '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">' +
-        sharedDefs3d() + body + topEdge + labels +
+        sharedDefs3d() + body + topEdge + lines +
       '</svg>' +
-      '<p class="magnetic-caption">Arc segment (3D view) · poles on outer/inner arcs</p>' +
+      '<p class="magnetic-caption">Arc segment (3D view) · ' + escHtml(mag) + ' magnetization</p>' +
     '</div>';
   }
 
