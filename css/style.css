@@ -738,6 +738,11 @@ select option:checked{ background:#d1f4ff linear-gradient(0deg,#d1f4ff,#d1f4ff);
 .detail__chip{ font-size:12px; font-weight:600; padding:5px 11px; border-radius:999px; background:rgba(34,211,238,0.1); border:1px solid var(--panel-br); color:var(--cyan); white-space:nowrap; }
 .detail__actions{ display:flex; gap:12px; margin-top:20px; flex-wrap:wrap; }
 .detail__loading, .detail__error{ padding:40px; text-align:center; color:var(--ink-soft); }
+.detail__magnetic{ margin-top:22px; padding:18px 20px 14px; border:1px solid rgba(34,211,238,0.22); border-radius:12px; background:rgba(34,211,238,0.04); }
+.detail__magnetic h4{ font-size:12px; letter-spacing:.04em; text-transform:uppercase; color:var(--cyan); margin-bottom:12px; font-weight:700; }
+.magnetic-view{ display:flex; flex-direction:column; align-items:center; gap:6px; }
+.magnetic-svg{ width:100%; max-width:420px; height:auto; background:#0e1622; border-radius:8px; padding:8px; }
+.magnetic-caption{ font-size:12px; color:var(--ink-soft); margin-top:4px; text-align:center; }
 
 /* ---------- Modal maximize toggle ---------- */
 .modal__maximize{ position:absolute; top:14px; right:54px; width:32px; height:32px; border-radius:8px; background:transparent; color:#cfd6df; border:1px solid rgba(255,255,255,.14); cursor:pointer; font-size:16px; line-height:1; display:grid; place-items:center; transition:all .15s ease; }

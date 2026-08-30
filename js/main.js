@@ -949,6 +949,10 @@
             detailRow("MOQ", '<p>' + escHtml(d.moq || "100 pcs sampling; 1,000 pcs production") + '</p>') +
             detailRow("Certifications", detailList(d.certs || ["Material certificate (per lot)","RoHS","REACH","ISO 9001 managed"])) +
           '</div>' +
+          '<div class="detail__magnetic">' +
+            '<h4>Magnetic Path &amp; Poles</h4>' +
+            magneticSvg(product) +
+          '</div>' +
           '<div class="detail__actions">' +
             '<a class="btn btn--primary" href="index.html#contact">Request Quote</a>' +
             '<button type="button" class="btn btn--ghost" data-detail-add>Configure &amp; Add</button>' +
@@ -992,5 +996,103 @@
     reveals.forEach(function (el) { io.observe(el); });
   } else {
     reveals.forEach(function (el) { el.classList.add("in"); });
+  }
+
+  /* ---------- Magnetic path & pole SVG (5 shapes) ---------- */
+  function magneticSvg(product) {
+    var shape = String((product && product.shape) || "disc").toLowerCase();
+    var mag = String(((product && product.magnetization) || "axial")).toLowerCase();
+    if (shape === "disc") return discSvg(mag);
+    if (shape === "block") return blockSvg(mag);
+    if (shape === "ring") return ringSvg(mag);
+    if (shape === "arc") return arcSvg(mag);
+    return customSvg();
+  }
+
+  function sharedDefs() {
+    return '<defs>' +
+      '<marker id="mag-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#22d3ee"/></marker>' +
+      '<linearGradient id="mag-grad" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ef4444" stop-opacity="0.85"/><stop offset="1" stop-color="#3b82f6" stop-opacity="0.85"/></linearGradient>' +
+      '</defs>';
+  }
+
+  function discSvg(mag) {
+    var isRadial = /radial/.test(mag);
+    var cap = isRadial
+      ? '<text x="20" y="50" font-size="14" font-weight="bold" fill="#ef4444">N (outer)</text><text x="20" y="165" font-size="14" font-weight="bold" fill="#3b82f6">S (inner)</text>'
+      : '<text x="100" y="42" font-size="20" font-weight="bold" fill="#ef4444">N</text><text x="100" y="178" font-size="20" font-weight="bold" fill="#3b82f6">S</text>';
+    var arrow = isRadial
+      ? '<line x1="245" y1="100" x2="290" y2="100" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/><text x="248" y="92" font-size="10" fill="#94a3b8">radial</text>'
+      : '<line x1="255" y1="60" x2="255" y2="155" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/><text x="262" y="110" font-size="10" fill="#94a3b8">axial</text>';
+    return '<div class="magnetic-view">' +
+      '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">' +
+        sharedDefs() +
+        '<rect x="80" y="60" width="160" height="80" rx="4" fill="url(#mag-grad)" stroke="#6b7280" stroke-width="2" opacity="0.95"/>' +
+        '<path d="M 160 60 Q 50 100 160 140" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="4,3"/>' +
+        '<path d="M 180 60 Q 250 30 290 100 Q 250 170 180 140" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="4,3"/>' +
+        '<path d="M 140 60 Q 30 130 140 140" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="4,3"/>' +
+        cap + arrow +
+      '</svg>' +
+      '<p class="magnetic-caption">Disc magnet cross-section · ' + escHtml(mag) + ' magnetization</p>' +
+    '</div>';
+  }
+
+  function blockSvg(mag) {
+    return '<div class="magnetic-view">' +
+      '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">' +
+        sharedDefs() +
+        '<rect x="70" y="55" width="160" height="90" rx="4" fill="url(#mag-grad)" stroke="#6b7280" stroke-width="2" opacity="0.95"/>' +
+        '<text x="130" y="45" font-size="20" font-weight="bold" fill="#ef4444">N</text>' +
+        '<text x="130" y="172" font-size="20" font-weight="bold" fill="#3b82f6">S</text>' +
+        '<path d="M 150 55 Q 30 100 150 145" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="4,3"/>' +
+        '<path d="M 170 55 Q 280 30 300 100 Q 280 170 170 145" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="4,3"/>' +
+        '<line x1="250" y1="55" x2="250" y2="150" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>' +
+        '<text x="258" y="105" font-size="10" fill="#94a3b8">M</text>' +
+      '</svg>' +
+      '<p class="magnetic-caption">Block magnet cross-section · ' + escHtml(mag) + ' magnetization (through thickness)</p>' +
+    '</div>';
+  }
+
+  function ringSvg(mag) {
+    return '<div class="magnetic-view">' +
+      '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">' +
+        sharedDefs() +
+        '<path d="M 70 50 L 250 50 L 250 80 L 130 80 L 130 130 L 250 130 L 250 160 L 70 160 Z" fill="url(#mag-grad)" stroke="#6b7280" stroke-width="2" opacity="0.95"/>' +
+        '<text x="100" y="42" font-size="16" font-weight="bold" fill="#ef4444">N (top face)</text>' +
+        '<text x="100" y="180" font-size="16" font-weight="bold" fill="#3b82f6">S (bottom face)</text>' +
+        '<path d="M 90 50 Q 30 80 90 110 Q 30 130 90 160" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="4,3"/>' +
+        '<path d="M 230 50 Q 290 80 230 110 Q 290 130 230 160" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="4,3"/>' +
+        '<line x1="190" y1="100" x2="240" y2="100" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>' +
+      '</svg>' +
+      '<p class="magnetic-caption">Ring magnet cross-section · ' + escHtml(mag) + ' (poles on top/bottom faces)</p>' +
+    '</div>';
+  }
+
+  function arcSvg(mag) {
+    return '<div class="magnetic-view">' +
+      '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">' +
+        sharedDefs() +
+        '<path d="M 50 150 Q 160 30 270 150 L 245 150 Q 160 60 75 150 Z" fill="url(#mag-grad)" stroke="#6b7280" stroke-width="2" opacity="0.95"/>' +
+        '<text x="40" y="170" font-size="14" font-weight="bold" fill="#ef4444">N (outer arc)</text>' +
+        '<text x="180" y="105" font-size="14" font-weight="bold" fill="#3b82f6">S (inner arc)</text>' +
+        '<path d="M 70 135 Q 160 60 250 135" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="4,3"/>' +
+        '<path d="M 95 150 Q 160 105 225 150" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="4,3"/>' +
+      '</svg>' +
+      '<p class="magnetic-caption">Arc / curved magnet · poles on outer/inner arc surfaces</p>' +
+    '</div>';
+  }
+
+  function customSvg() {
+    return '<div class="magnetic-view">' +
+      '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">' +
+        sharedDefs() +
+        '<polygon points="160,30 250,75 250,135 160,180 70,135 70,75" fill="url(#mag-grad)" stroke="#6b7280" stroke-width="2" opacity="0.95"/>' +
+        '<text x="135" y="22" font-size="20" font-weight="bold" fill="#ef4444">N</text>' +
+        '<text x="135" y="200" font-size="20" font-weight="bold" fill="#3b82f6">S</text>' +
+        '<path d="M 100 50 Q 30 100 100 150" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="4,3"/>' +
+        '<path d="M 220 50 Q 290 100 220 150" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="4,3"/>' +
+      '</svg>' +
+      '<p class="magnetic-caption">Custom / irregular shape · please specify magnetization direction in your RFQ</p>' +
+    '</div>';
   }
 })();
