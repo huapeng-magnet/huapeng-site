@@ -792,3 +792,54 @@ select option:checked{ background:#d1f4ff linear-gradient(0deg,#d1f4ff,#d1f4ff);
 .paypal-deposit__hint{
   margin:10px 0 0; font-size:12px; color:var(--ink-soft); min-height:18px;
 }
+
+/* ===========================================================
+   Grade-Temperature Table
+   =========================================================== */
+.grade-table-wrap{ max-width:900px; margin:0 auto; }
+.grade-table{ width:100%; border-collapse:collapse; font-size:14px; }
+.grade-table th{ text-align:left; padding:12px 16px; background:rgba(34,211,238,0.08); color:var(--cyan); font-weight:700; border-bottom:2px solid rgba(34,211,238,0.25); white-space:nowrap; }
+.grade-table td{ padding:11px 16px; border-bottom:1px solid rgba(255,255,255,0.06); vertical-align:middle; }
+.grade-table tr:hover td{ background:rgba(34,211,238,0.04); }
+.grade-table tr:last-child td{ border-bottom:none; }
+.grade-table td:first-child{ font-weight:700; color:var(--cyan); white-space:nowrap; }
+.grade-note{ text-align:center; color:var(--ink-soft); font-size:13px; margin-top:14px; }
+
+/* ===========================================================
+   Industries / Applications Grid
+   =========================================================== */
+.app-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:20px; }
+.app-card{ background:var(--panel); border:1px solid var(--panel-br); border-radius:var(--radius); padding:28px 24px; transition:.3s; }
+.app-card:hover{ transform:translateY(-5px); border-color:var(--cyan); box-shadow:0 12px 34px rgba(34,211,238,0.14); }
+.app-card__ico{ font-size:36px; margin-bottom:14px; display:block; }
+.app-card h3{ font-size:17px; margin-bottom:8px; color:var(--ink); }
+.app-card p{ color:var(--ink-soft); font-size:13px; line-height:1.6; margin:0; }
+
+/* ===========================================================
+   Manufacturing Process Timeline
+   =========================================================== */
+.process-timeline{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(280px,1fr));
+  gap:18px;
+  max-width:960px;
+  margin:0 auto;
+}
+.process-step{
+  background:var(--panel);
+  border:1px solid var(--panel-br);
+  border-radius:var(--radius);
+  padding:22px 24px 20px;
+  position:relative;
+  transition:.3s;
+}
+.process-step:hover{ border-color:var(--cyan); transform:translateY(-4px); }
+.process-step__num{
+  font-size:40px; font-weight:900;
+  background:linear-gradient(135deg, rgba(34,211,238,0.18), rgba(34,211,238,0.04));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+  line-height:1; margin-bottom:10px;
+}
+.process-step h3{ font-size:15px; margin-bottom:6px; color:var(--ink); }
+.process-step p{ color:var(--ink-soft); font-size:13px; line-height:1.6; margin:0; }
