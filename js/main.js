@@ -1054,23 +1054,23 @@
     var isRadial = /radial/.test(mag);
     var body, top;
     if (isRadial) {
-      // 径向：左右分色，左红(N)右白(S)
+      // 径向：左右分色，左红(N)右蓝(S)
       body = '<rect x="100" y="65" width="60" height="85" rx="2" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
-             '<rect x="160" y="65" width="60" height="85" fill="#f1f5f9" fill-opacity="1" stroke="#475569" stroke-width="1.5"/>';
+             '<rect x="160" y="65" width="60" height="85" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
       top = '<ellipse cx="130" cy="65" rx="30" ry="18" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>' +
-            '<ellipse cx="190" cy="65" rx="30" ry="18" fill="#f1f5f9" fill-opacity="1" stroke="#475569" stroke-width="1.5"/>' +
+            '<ellipse cx="190" cy="65" rx="30" ry="18" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>' +
             '<ellipse cx="160" cy="65" rx="60" ry="18" fill="none" stroke="#475569" stroke-width="1.5"/>';
     } else {
-      // 轴向：上下分色，上半红(N)下半白(S)
+      // 轴向：上下分色，上半红(N)下半蓝(S)
       body = '<rect x="100" y="65" width="120" height="42" rx="2" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
-             '<rect x="100" y="107" width="120" height="43" fill="#f1f5f9" fill-opacity="1" stroke="#475569" stroke-width="1.5"/>';
+             '<rect x="100" y="107" width="120" height="43" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
       top = '<ellipse cx="160" cy="65" rx="60" ry="18" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
     }
     var labels = isRadial
       ? '<text x="130" y="175" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-        '<text x="190" y="175" font-size="16" font-weight="bold" fill="#475569" text-anchor="middle">S</text>'
+        '<text x="190" y="175" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>'
       : '<text x="160" y="50" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-        '<text x="160" y="178" font-size="16" font-weight="bold" fill="#475569" text-anchor="middle">S</text>';
+        '<text x="160" y="178" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
     return '<div class="magnetic-view">' +
       '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">' +
         sharedDefs3d() + body + top + labels +
@@ -1084,26 +1084,26 @@
     var isRadial = /radial/.test(mag);
     var body, top;
     if (isRadial) {
-      // 径向：左右分色，左红(N)右白(S)，带内孔
+      // 径向：左右分色，左红(N)右蓝(S)，带内孔
       body = '<path d="M 95 65 L 160 65 L 160 150 L 95 150 Z" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
-             '<path d="M 160 65 L 225 65 L 225 150 L 160 150 Z" fill="#f1f5f9" fill-opacity="1" stroke="#475569" stroke-width="1.5"/>';
+             '<path d="M 160 65 L 225 65 L 225 150 L 160 150 Z" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
       top = '<path d="M 95 65 A 65 20 0 0 1 225 65" fill="none" stroke="#475569" stroke-width="1.5"/>' +
             '<path d="M 95 65 A 32 10 0 0 1 160 65" fill="none" stroke="#475569" stroke-width="1.5" stroke-dasharray="3,2"/>' +
             '<path d="M 160 65 A 32 10 0 0 1 225 65" fill="none" stroke="#475569" stroke-width="1.5" stroke-dasharray="3,2"/>' +
             '<ellipse cx="127" cy="65" rx="32" ry="10" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.2"/>' +
-            '<ellipse cx="192" cy="65" rx="32" ry="10" fill="#f1f5f9" fill-opacity="1" stroke="#475569" stroke-width="1.2"/>';
+            '<ellipse cx="192" cy="65" rx="32" ry="10" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.2"/>';
     } else {
-      // 轴向：上下分色，上半红(N)下半白(S)
+      // 轴向：上下分色，上半红(N)下半蓝(S)
       body = '<path d="M 95 65 L 225 65 L 225 108 L 95 108 Z" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
-             '<path d="M 95 108 L 225 108 L 225 150 L 95 150 Z" fill="#f1f5f9" fill-opacity="1" stroke="#475569" stroke-width="1.5"/>';
+             '<path d="M 95 108 L 225 108 L 225 150 L 95 150 Z" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
       top = '<ellipse cx="160" cy="65" rx="65" ry="20" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>' +
             '<ellipse cx="160" cy="65" rx="25" ry="8" fill="none" stroke="#475569" stroke-width="1.5" stroke-dasharray="4,3"/>';
     }
     var labels = isRadial
       ? '<text x="127" y="180" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-        '<text x="192" y="180" font-size="16" font-weight="bold" fill="#475569" text-anchor="middle">S</text>'
+        '<text x="192" y="180" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>'
       : '<text x="160" y="50" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-        '<text x="160" y="175" font-size="16" font-weight="bold" fill="#475569" text-anchor="middle">S</text>';
+        '<text x="160" y="175" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
     return '<div class="magnetic-view">' +
       '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">' +
         sharedDefs3d() + body + top + labels +
@@ -1117,24 +1117,24 @@
     var isRadial = /radial/.test(mag);
     var body, top, side;
     if (isRadial) {
-      // 径向：左右分色，左红(N)右白(S)
+      // 径向：左右分色，左红(N)右蓝(S)
       body = '<rect x="90" y="55" width="70" height="95" rx="3" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
-             '<rect x="160" y="55" width="70" height="95" fill="#f1f5f9" fill-opacity="1" stroke="#475569" stroke-width="1.5"/>';
+             '<rect x="160" y="55" width="70" height="95" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
       top = '<polygon points="90,55 115,35 185,35 160,55" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>' +
-            '<polygon points="160,55 185,35 255,35 230,55" fill="#f1f5f9" fill-opacity="1" stroke="#475569" stroke-width="1.5"/>';
-      side = '<polygon points="230,55 255,35 255,130 230,150" fill="#f1f5f9" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
+            '<polygon points="160,55 185,35 255,35 230,55" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
+      side = '<polygon points="230,55 255,35 255,130 230,150" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
     } else {
-      // 轴向：上下分色，上半红(N)下半白(S)
+      // 轴向：上下分色，上半红(N)下半蓝(S)
       body = '<rect x="90" y="55" width="140" height="47" rx="3" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
-             '<rect x="90" y="102" width="140" height="48" fill="#f1f5f9" fill-opacity="1" stroke="#475569" stroke-width="1.5"/>';
+             '<rect x="90" y="102" width="140" height="48" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
       top = '<polygon points="90,55 115,35 255,35 230,55" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
-      side = '<polygon points="230,55 255,35 255,102 230,150" fill="#f1f5f9" fill-opacity="1" stroke="#475569" stroke-width="1.5"/>';
+      side = '<polygon points="230,55 255,35 255,102 230,150" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
     }
     var labels = isRadial
       ? '<text x="125" y="170" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-        '<text x="195" y="170" font-size="16" font-weight="bold" fill="#475569" text-anchor="middle">S</text>'
+        '<text x="195" y="170" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>'
       : '<text x="160" y="42" font-size="15" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-        '<text x="160" y="178" font-size="15" font-weight="bold" fill="#475569" text-anchor="middle">S</text>';
+        '<text x="160" y="178" font-size="15" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
     return '<div class="magnetic-view">' +
       '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">' +
         sharedDefs3d() + body + top + side + labels +
@@ -1146,25 +1146,28 @@
   // 3D arc segment — curved wedge shape
   function arcSvg3d(mag) {
     var isRadial = /radial/.test(mag);
-    var body = '<path d="M 70 140 Q 160 40 250 140 L 235 140 Q 160 60 85 140 Z" fill="url(#body-grad)" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>';
-    var topEdge = '<path d="M 70 140 Q 160 40 250 140" fill="none" stroke="#fca5a5" stroke-width="2" stroke-opacity="0.8"/>';
-    var lines;
+    var body, topEdge, labels;
     if (isRadial) {
-      // 径向：N 在外侧弧面，S 在内侧弧面
-      lines = '<text x="160" y="165" font-size="13" font-weight="bold" fill="#ef4444" text-anchor="middle">N (outer)</text>' +
-              '<text x="160" y="55" font-size="13" font-weight="bold" fill="#3b82f6" text-anchor="middle">S (inner)</text>' +
-              '<path d="M 130 130 Q 120 100 160 90" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>' +
-              '<path d="M 190 130 Q 200 100 160 90" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>';
+      // 径向：外侧弧面红(N)，内侧弧面蓝(S)
+      body = '<path d="M 70 140 Q 160 40 250 140 L 235 140 Q 160 60 85 140 Z" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
+             '<path d="M 70 140 Q 160 40 250 140 L 235 140 Q 160 60 85 140 Z" fill="none" stroke="none"/>' +
+             '<path d="M 85 140 Q 160 60 235 140 L 250 140 Q 160 40 70 140 Z" fill="#3b82f6" fill-opacity="0.95"/>';
+      topEdge = '<path d="M 70 140 Q 160 40 250 140" fill="none" stroke="#fca5a5" stroke-width="2" stroke-opacity="0.8"/>' +
+                '<path d="M 85 140 Q 160 60 235 140" fill="none" stroke="#93c5fd" stroke-width="2" stroke-opacity="0.8"/>';
+      labels = '<text x="160" y="165" font-size="13" font-weight="bold" fill="#ef4444" text-anchor="middle">N (outer)</text>' +
+               '<text x="160" y="55" font-size="13" font-weight="bold" fill="#3b82f6" text-anchor="middle">S (inner)</text>';
     } else {
-      // 轴向：N 在上表面，S 在下表面（较少见但支持）
-      lines = '<text x="160" y="35" font-size="13" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-              '<text x="160" y="180" font-size="13" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>' +
-              '<path d="M 130 130 Q 130 70 160 55" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>' +
-              '<path d="M 190 130 Q 190 70 160 55" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#mag-arrow)"/>';
+      // 轴向：上半红(N)，下半蓝(S)
+      body = '<path d="M 75 100 Q 160 45 245 100 L 245 140 Q 160 85 75 140 Z" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
+             '<path d="M 75 140 Q 160 85 245 140 L 235 140 Q 160 60 85 140 Z" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
+      topEdge = '<path d="M 75 100 Q 160 45 245 100" fill="none" stroke="#fca5a5" stroke-width="2" stroke-opacity="0.8"/>' +
+                '<path d="M 75 140 Q 160 85 245 140" fill="none" stroke="#93c5fd" stroke-width="2" stroke-opacity="0.8"/>';
+      labels = '<text x="160" y="40" font-size="13" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
+               '<text x="160" y="180" font-size="13" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
     }
     return '<div class="magnetic-view">' +
       '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">' +
-        sharedDefs3d() + body + topEdge + lines +
+        sharedDefs3d() + body + topEdge + labels +
       '</svg>' +
       '<p class="magnetic-caption">Arc segment (3D view) · ' + escHtml(mag) + ' magnetization</p>' +
     '</div>';
