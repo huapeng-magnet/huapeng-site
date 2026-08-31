@@ -1102,6 +1102,7 @@
     var isDiametrical = /diametrical/.test(mag);
     var isRadial = /radial/.test(mag);
     var isMulti = /multi/.test(mag);
+    var isChord = /chord/.test(mag);
     var svg = '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">';
     var caption = '';
 
@@ -1114,6 +1115,15 @@
       svg += '<text x="'+cx+'" y="'+(cy-r*0.4)+'" font-size="16" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
       svg += '<text x="'+cx+'" y="'+(cy+r*0.5)+'" font-size="16" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
       caption = 'Axial — poles on flat faces (top/bottom)';
+    } else if (isChord) {
+      // Chord: N/S on opposite flat chord faces (vertical split like diametrical but rotated)
+      svg += '<path d="M '+cx+' '+(cy-r)+' A '+r+' '+r+' 0 0 0 '+cx+' '+(cy+r)+' Z" fill="'+MAG_RED+'" opacity="0.9"/>';
+      svg += '<path d="M '+cx+' '+(cy-r)+' A '+r+' '+r+' 0 0 1 '+cx+' '+(cy+r)+' Z" fill="'+MAG_BLUE+'" opacity="0.9"/>';
+      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+      svg += '<line x1="'+(cx-r)+'" y1="'+cy+'" x2="'+(cx+r)+'" y2="'+cy+'" stroke="'+MAG_STROKE+'" stroke-width="1" stroke-dasharray="4,3"/>';
+      svg += '<text x="'+(cx-r*0.4)+'" y="'+cy+'" font-size="16" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
+      svg += '<text x="'+(cx+r*0.4)+'" y="'+cy+'" font-size="16" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
+      caption = 'Chord — poles on flat chord faces';
     } else if (isDiametrical) {
       // Left half red (N), right half blue (S)
       svg += '<path d="M '+cx+' '+(cy-r)+' A '+r+' '+r+' 0 0 0 '+cx+' '+(cy+r)+' Z" fill="'+MAG_RED+'" opacity="0.9"/>';
@@ -1149,14 +1159,6 @@
       svg += '<text x="'+cx+'" y="'+(cy-r-6)+'" font-size="11" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
       svg += '<text x="'+cx+'" y="'+(cy+r+12)+'" font-size="11" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
       caption = 'Multi-Axial — multiple N/S pairs around circumference';
-    } else {
-      // Chord: similar to axial
-      svg += '<path d="M '+(cx-r)+' '+cy+' A '+r+' '+r+' 0 0 1 '+(cx+r)+' '+cy+' Z" fill="'+MAG_RED+'" opacity="0.9"/>';
-      svg += '<path d="M '+(cx-r)+' '+cy+' A '+r+' '+r+' 0 0 0 '+(cx+r)+' '+cy+' Z" fill="'+MAG_BLUE+'" opacity="0.9"/>';
-      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
-      svg += '<text x="'+(cx-r*0.4)+'" y="'+(cy-r*0.5)+'" font-size="14" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
-      svg += '<text x="'+(cx+r*0.4)+'" y="'+(cy+r*0.6)+'" font-size="14" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
-      caption = 'Chord — poles on flat chord faces';
     }
     svg += '</svg>';
     return '<div class="magnetic-view">'+svg+'<p class="magnetic-caption">'+caption+'</p></div>';
