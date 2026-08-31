@@ -1239,7 +1239,7 @@
     var svg = '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">';
 
     if (isDiametrical) {
-      // Left red (N), right blue (S)
+      // Left red (N), right blue (S) - 3D block split left/right
       svg += '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+MAG_RED+'" opacity="0.9" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
       svg += '<rect x="'+(x+w)+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+MAG_BLUE+'" opacity="0.9" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
       // Top face
@@ -1249,15 +1249,33 @@
       svg += '<text x="'+(x+w+w/2)+'" y="'+(y+h/2+5)+'" font-size="14" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
       caption = 'Diametrical — poles on left/right faces';
     } else {
-      // Axial: front red (N), back blue (S) - shown as split
-      svg += '<rect x="'+x+'" y="'+y+'" width="'+w*2+'" height="'+h+'" fill="'+MAG_RED+'" opacity="0.9" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
-      // Top face (red)
-      svg += '<polygon points="'+x+','+(y-d)+' '+(x+w*2)+','+(y-d)+' '+(x+w*2+w/2)+','+y+' '+x+','+y+'" fill="'+MAG_RED+'" opacity="0.85" stroke="'+MAG_STROKE+'" stroke-width="1"/>';
-      // Side face (blue)
-      svg += '<polygon points="'+(x+w*2)+','+y+' '+(x+w*2+w/2)+','+(y-d)+' '+(x+w*2+w/2)+','+(y+h-d)+' '+(x+w*2)+','+(y+h)+'" fill="'+MAG_BLUE+'" opacity="0.85" stroke="'+MAG_STROKE+'" stroke-width="1"/>';
-      svg += '<text x="'+(x+w)+'" y="'+(y+h/2+5)+'" font-size="14" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
-      svg += '<text x="'+(x+w*2+w/4)+'" y="'+(y+h/2)+'" font-size="14" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
-      caption = 'Axial — poles on front/back faces';
+      // Axial: 上下两个独立 3D 长方体（N 极上块 + S 极下块），中间有间隔
+      var bW = 100, bH = 38, bD = 20, gap = 18; // 每个长方体宽/高/3D深度 + 中间间隔
+      var startX = 35, topY = 25, botY = topY + bH + gap; // botY = 81
+      // 上块（N 极，红色）
+      // 前面
+      svg += '<rect x="'+startX+'" y="'+topY+'" width="'+bW+'" height="'+bH+'" fill="'+MAG_RED+'" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+      // 顶面（3D 透视）
+      svg += '<polygon points="'+startX+','+topY+' '+(startX+bW)+','+topY+' '+(startX+bW+bD)+','+(topY-bD)+' '+(startX+bD)+','+(topY-bD)+'" fill="'+MAG_RED+'" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+      // 右侧面（3D 透视）
+      svg += '<polygon points="'+(startX+bW)+','+topY+' '+(startX+bW+bD)+','+(topY-bD)+' '+(startX+bW+bD)+','+(topY+bH-bD)+' '+(startX+bW)+','+(topY+bH)+'" fill="'+MAG_RED+'" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+      // 上块 N 文字
+      svg += '<text x="'+(startX+bW/2)+'" y="'+(topY+bH/2+5)+'" font-size="20" font-weight="bold" fill="#fff" text-anchor="middle">N</text>';
+      // 中间隔虚线（上面块底面 + 下面块顶面）
+      svg += '<line x1="'+startX+'" y1="'+(topY+bH)+'" x2="'+(startX+bW)+'" y2="'+(topY+bH)+'" stroke="'+MAG_STROKE+'" stroke-width="1" stroke-dasharray="4,3"/>';
+      svg += '<line x1="'+(startX+bD)+'" y1="'+(topY+bH-bD)+'" x2="'+(startX+bW+bD)+'" y2="'+(topY+bH-bD)+'" stroke="'+MAG_STROKE+'" stroke-width="1" stroke-dasharray="4,3"/>';
+      svg += '<line x1="'+startX+'" y1="'+botY+'" x2="'+(startX+bW)+'" y2="'+botY+'" stroke="'+MAG_STROKE+'" stroke-width="1" stroke-dasharray="4,3"/>';
+      svg += '<line x1="'+(startX+bD)+'" y1="'+(botY-bD)+'" x2="'+(startX+bW+bD)+'" y2="'+(botY-bD)+'" stroke="'+MAG_STROKE+'" stroke-width="1" stroke-dasharray="4,3"/>';
+      // 下块（S 极，灰白色）
+      // 前面
+      svg += '<rect x="'+startX+'" y="'+botY+'" width="'+bW+'" height="'+bH+'" fill="#cbd5e1" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+      // 顶面
+      svg += '<polygon points="'+startX+','+botY+' '+(startX+bW)+','+botY+' '+(startX+bW+bD)+','+(botY-bD)+' '+(startX+bD)+','+(botY-bD)+'" fill="#cbd5e1" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+      // 右侧面
+      svg += '<polygon points="'+(startX+bW)+','+botY+' '+(startX+bW+bD)+','+(botY-bD)+' '+(startX+bW+bD)+','+(botY+bH-bD)+' '+(startX+bW)+','+(botY+bH)+'" fill="#cbd5e1" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+      // 下块 S 文字
+      svg += '<text x="'+(startX+bW/2)+'" y="'+(botY+bH/2+5)+'" font-size="20" font-weight="bold" fill="#0f172a" text-anchor="middle">S</text>';
+      caption = 'Through thickness — N pole top block, S pole bottom block';
     }
     svg += '</svg>';
     return '<div class="magnetic-view">'+svg+'<p class="magnetic-caption">'+caption+'</p></div>';
