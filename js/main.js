@@ -982,14 +982,8 @@
           '</div>' +
           '<div class="detail__magnetic">' +
             '<h4>Magnetic Path &amp; Poles</h4>' +
-            '<div class="mag-toggle">' +
-              '<button type="button" class="mag-btn mag-btn--active" data-mag="axial">Axial</button>' +
-              '<button type="button" class="mag-btn" data-mag="diametrical">Diametrical</button>' +
-              '<button type="button" class="mag-btn" data-mag="radial">Radial</button>' +
-              '<button type="button" class="mag-btn" data-mag="multi-axial">Multi-Axial</button>' +
-              '<button type="button" class="mag-btn" data-mag="chord">Chord</button>' +
-            '</div>' +
-            '<div class="mag-svg-wrap" id="magSvgWrap">' + magneticSvg(product, "axial") + '</div>' +
+            '<div class="mag-toggle" id="magToggle"></div>' +
+            '<div class="mag-svg-wrap" id="magSvgWrap"></div>' +
             '<p class="mag-note">Select direction to see pole positions • Custom magnetization per RFQ</p>' +
           '</div>' +
           '<div class="detail__actions">' +
@@ -1009,9 +1003,13 @@
 
     // Magnetization toggle
     var wrap = detailBody.querySelector("#magSvgWrap");
+    var toggleDiv = detailBody.querySelector("#magToggle");
+    var magData = buildMagToggle(product);
+    if (toggleDiv) toggleDiv.innerHTML = magData.buttons;
+    if (wrap) wrap.innerHTML = magData.svg;
     var btns = detailBody.querySelectorAll(".mag-btn");
     if (wrap && btns.length) {
-      var currentMag = "axial";
+      var currentMag = magData.defaultMag || "axial";
       btns.forEach(function (btn) {
         btn.addEventListener("click", function () {
           var mag = btn.getAttribute("data-mag");
@@ -1083,6 +1081,42 @@
   var MAG_RED = '#ef4444';
   var MAG_BLUE = '#3b82f6';
   var MAG_STROKE = '#64748b';
+
+  // ── Get appropriate magnetization buttons per shape ────────────────────────
+  function getShapeMagnets(shape) {
+    var s = String(shape || "disc").toLowerCase();
+    if (s === "disc") return [
+      { value: "axial", label: "Axial" },
+      { value: "diametrical", label: "Diametrical" },
+      { value: "multi-axial", label: "Multi-Axial" }
+    ];
+    if (s === "ring") return [
+      { value: "radial", label: "Radial" },
+      { value: "multi-axial", label: "Multi-Axial" }
+    ];
+    if (s === "block") return [
+      { value: "axial", label: "Through thickness" },
+      { value: "diametrical", label: "Through width" }
+    ];
+    if (s === "arc") return [
+      { value: "diametrical", label: "Diametrical" },
+      { value: "chord", label: "Chord" },
+      { value: "axial", label: "Axial" }
+    ];
+    // assembly / custom
+    return [{ value: "axial", label: "Axial" }];
+  }
+
+  // ── Build magnetic toggle HTML ─────────────────────────────────────────────
+  function buildMagToggle(product) {
+    var magnets = getShapeMagnets(product && product.shape);
+    var defaultMag = magnets[0] && magnets[0].value;
+    var buttons = magnets.map(function (m) {
+      var active = m.value === defaultMag ? " mag-btn--active" : "";
+      return '<button type="button" class="mag-btn' + active + '" data-mag="' + m.value + '">' + m.label + '</button>';
+    }).join("");
+    return { buttons: buttons, defaultMag: defaultMag, svg: magneticSvg(product, defaultMag) };
+  }
 
   function magneticSvg(product, mag) {
     var shape = String((product && product.shape) || "disc").toLowerCase();
