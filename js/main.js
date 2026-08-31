@@ -17,7 +17,9 @@
   var coatingLabel = Pricing.coatingLabel || function (c) { return c; };
   var GRADES = Pricing.GRADES || [
     { grade: "N35" }, { grade: "N38" }, { grade: "N40" }, { grade: "N42" },
-    { grade: "N45" }, { grade: "N48" }, { grade: "N50" }, { grade: "N52" }
+    { grade: "N45" }, { grade: "N48" }, { grade: "N50" }, { grade: "N52" },
+    { grade: "M35" }, { grade: "M40" }, { grade: "H35" }, { grade: "H40" },
+    { grade: "SH35" }, { grade: "UH35" }, { grade: "EH35" }, { grade: "AH35" }
   ];
 
   /* ---------- Toast ---------- */
@@ -925,6 +927,30 @@
     return '<div class="detail__row"><h4>' + title + '</h4>' + content + '</div>';
   }
 
+  // NdFeB grade-temperature data for display
+  var GRADE_TEMP_DATA = {
+    'N35':  { bhMax: '33-36', hcj: '≥11', tMax: 80 },
+    'N38':  { bhMax: '36-39', hcj: '≥12', tMax: 80 },
+    'N40':  { bhMax: '38-42', hcj: '≥12', tMax: 80 },
+    'N42':  { bhMax: '40-43', hcj: '≥12', tMax: 80 },
+    'N45':  { bhMax: '43-46', hcj: '≥12', tMax: 80 },
+    'N48':  { bhMax: '46-49', hcj: '≥12', tMax: 80 },
+    'N50':  { bhMax: '48-51', hcj: '≥11', tMax: 80 },
+    'N52':  { bhMax: '50-53', hcj: '≥10', tMax: 80 },
+    'M35':  { bhMax: '33-36', hcj: '≥14', tMax: 100 },
+    'M40':  { bhMax: '36-39', hcj: '≥14', tMax: 100 },
+    'H35':  { bhMax: '33-36', hcj: '≥16', tMax: 120 },
+    'H40':  { bhMax: '36-39', hcj: '≥16', tMax: 120 },
+    'SH35': { bhMax: '33-36', hcj: '≥19', tMax: 150 },
+    'UH35': { bhMax: '30-33', hcj: '≥22', tMax: 180 },
+    'EH35': { bhMax: '28-31', hcj: '≥25', tMax: 200 },
+    'AH35': { bhMax: '28-31', hcj: '≥28', tMax: 230 }
+  };
+
+  function getGradeTemp(grade) {
+    return GRADE_TEMP_DATA[grade] || null;
+  }
+
   function renderDetail(product, detail) {
     if (!detailBody) return;
     var d = detail || {};
@@ -948,6 +974,11 @@
             detailRow("Lead Time", '<p>' + escHtml(d.leadTime || "Samples 3–5 days; mass production 2–3 weeks") + '</p>') +
             detailRow("MOQ", '<p>' + escHtml(d.moq || "100 pcs sampling; 1,000 pcs production") + '</p>') +
             detailRow("Certifications", detailList(d.certs || ["Material certificate (per lot)","RoHS","REACH",""])) +
+          '</div>' +
+          '<div class="grade-temp-box">' +
+            '<h4>Grade Performance &amp; Temperature</h4>' +
+            '<div class="grade-temp-grid" id="gradeTempGrid"></div>' +
+            '<p class="grade-temp-note">Br = residual flux density · Hcj = intrinsic coercivity · T<sub>max</sub> = maximum operating temperature</p>' +
           '</div>' +
           '<div class="detail__magnetic">' +
             '<h4>Magnetic Path &amp; Poles</h4>' +
@@ -992,6 +1023,31 @@
         });
       });
     }
+
+    // Grade-Temperature performance table
+    var gtpl = detailBody.querySelector("#gradeTempGrid");
+    if (gtpl) {
+      var grades = d.grades || ["N35","N38","N40","N42","N45","N48","N50","N52"];
+      var html = '<table class="grade-perf-table"><thead><tr>' +
+        '<th>Grade</th><th>(BH)max MGOe</th><th>Hcj kOe</th><th>T<sub>max</sub> °C</th><th>Typical Use</th>' +
+        '</tr></thead><tbody>';
+      var uses = {
+        'N35':'General purpose', 'N38':'Speakers, fixtures', 'N40':'Motors', 'N42':'Motors, sensors',
+        'N45':'High-performance motors', 'N48':'Compact high-power', 'N50':'Maximum pull force', 'N52':'Top energy',
+        'M35':'Medium-temp auto', 'M40':'Medium-temp sensors', 'H35':'EV motors 120°C', 'H40':'Industrial 120°C',
+        'SH35':'Aerospace 150°C', 'UH35':'Extreme high-temp', 'EH35':'Ultra-high-temp', 'AH35':'Premium 230°C'
+      };
+      grades.forEach(function (g) {
+        var t = getGradeTemp(g);
+        var bh = t ? t.bhMax : '—';
+        var hcj = t ? t.hcj : '—';
+        var tm = t ? t.tMax : '—';
+        var use = uses[g] || '';
+        html += '<tr><td class="gpt-grade">' + escHtml(g) + '</td><td>' + escHtml(bh) + '</td><td>' + escHtml(hcj) + '</td><td>' + escHtml(String(tm)) + '</td><td class="gpt-use">' + escHtml(use) + '</td></tr>';
+      });
+      html += '</tbody></table>';
+      gtpl.innerHTML = html;
+    }
   }
 
   function openDetail(id) {
@@ -1023,286 +1079,214 @@
     reveals.forEach(function (el) { el.classList.add("in"); });
   }
 
-  /* ---------- Magnetic path & pole SVG (5 shapes × 5 mag types) — 3D style ---------- */
+  /* ---------- Clean 2D magnetic visualization ---------- */
+  var MAG_RED = '#ef4444';
+  var MAG_BLUE = '#3b82f6';
+  var MAG_STROKE = '#64748b';
+
   function magneticSvg(product, mag) {
     var shape = String((product && product.shape) || "disc").toLowerCase();
     mag = mag || "axial";
-    if (shape === "disc") return discSvg3d(mag);
-    if (shape === "block") return blockSvg3d(mag);
-    if (shape === "ring") return ringSvg3d(mag);
-    if (shape === "arc") return arcSvg3d(mag);
-    return customSvg3d(mag);
+    if (shape === "disc") return discSvg2d(mag);
+    if (shape === "block") return blockSvg2d(mag);
+    if (shape === "ring") return ringSvg2d(mag);
+    if (shape === "arc") return arcSvg2d(mag);
+    return customSvg2d(mag);
   }
 
-  function sharedDefs3d() {
-    return '<defs>' +
-      '<marker id="mag-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#22d3ee"/></marker>' +
-      '<linearGradient id="body-grad" x1="0" x2="1" y1="0" y2="0">' +
-        '<stop offset="0%" stop-color="#ef4444" stop-opacity="0.88"/>' +
-        '<stop offset="40%" stop-color="#f87171" stop-opacity="0.75"/>' +
-        '<stop offset="60%" stop-color="#60a5fa" stop-opacity="0.75"/>' +
-        '<stop offset="100%" stop-color="#3b82f6" stop-opacity="0.88"/>' +
-      '</linearGradient>' +
-      '<linearGradient id="top-grad" x1="0" x2="0" y1="0" y2="1">' +
-        '<stop offset="0%" stop-color="#fca5a5" stop-opacity="0.95"/>' +
-        '<stop offset="100%" stop-color="#f87171" stop-opacity="0.75"/>' +
-      '</linearGradient>' +
-      '<filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">' +
-        '<feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.25"/>' +
-      '</filter>' +
-      '</defs>';
-  }
+  // ── Clean 2D magnetic visualization (simple red/blue split) ─────────────────
 
-  // 3D disc — shows top ellipse to make it look cylindrical
-  // mag: axial | diametrical | radial | multi-axial | chord
-  function discSvg3d(mag) {
+  function discSvg2d(mag) {
+    var cx = 100, cy = 100, r = 65;
     var isAxial = /axial/.test(mag) && !/multi/.test(mag);
     var isDiametrical = /diametrical/.test(mag);
     var isRadial = /radial/.test(mag);
-    var isChord = /chord/.test(mag);
     var isMulti = /multi/.test(mag);
-    var body, top;
+    var svg = '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">';
+    var caption = '';
 
-    if (isDiametrical) {
-      // 直径向：左右分色，左红(N)右蓝(S)
-      body = '<rect x="100" y="65" width="60" height="85" rx="2" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
-             '<rect x="160" y="65" width="60" height="85" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
-      top = '<ellipse cx="130" cy="65" rx="30" ry="18" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>' +
-            '<ellipse cx="190" cy="65" rx="30" ry="18" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>' +
-            '<ellipse cx="160" cy="65" rx="60" ry="18" fill="none" stroke="#475569" stroke-width="1.5"/>';
+    if (isAxial) {
+      // Top half red (N), bottom half blue (S)
+      svg += '<path d="M '+(cx-r)+' '+cy+' A '+r+' '+r+' 0 0 1 '+(cx+r)+' '+cy+' Z" fill="'+MAG_RED+'" opacity="0.9"/>';
+      svg += '<path d="M '+(cx-r)+' '+cy+' A '+r+' '+r+' 0 0 0 '+(cx+r)+' '+cy+' Z" fill="'+MAG_BLUE+'" opacity="0.9"/>';
+      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+      svg += '<line x1="'+cx+'" y1="'+(cy-r)+'" x2="'+cx+'" y2="'+(cy+r)+'" stroke="'+MAG_STROKE+'" stroke-width="1" stroke-dasharray="4,3"/>';
+      svg += '<text x="'+cx+'" y="'+(cy-r*0.4)+'" font-size="16" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
+      svg += '<text x="'+cx+'" y="'+(cy+r*0.5)+'" font-size="16" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
+      caption = 'Axial — poles on flat faces (top/bottom)';
+    } else if (isDiametrical) {
+      // Left half red (N), right half blue (S)
+      svg += '<path d="M '+cx+' '+(cy-r)+' A '+r+' '+r+' 0 0 0 '+cx+' '+(cy+r)+' Z" fill="'+MAG_RED+'" opacity="0.9"/>';
+      svg += '<path d="M '+cx+' '+(cy-r)+' A '+r+' '+r+' 0 0 1 '+cx+' '+(cy+r)+' Z" fill="'+MAG_BLUE+'" opacity="0.9"/>';
+      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+      svg += '<line x1="'+(cx-r)+'" y1="'+cy+'" x2="'+(cx+r)+'" y2="'+cy+'" stroke="'+MAG_STROKE+'" stroke-width="1" stroke-dasharray="4,3"/>';
+      svg += '<text x="'+(cx-r*0.4)+'" y="'+cy+'" font-size="16" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
+      svg += '<text x="'+(cx+r*0.4)+'" y="'+cy+'" font-size="16" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
+      caption = 'Diametrical — poles on opposite sides of diameter';
     } else if (isRadial) {
-      // 径向：外圆N极（红色），内孔S极（蓝色虚线）
-      body = '<rect x="100" y="65" width="120" height="85" rx="2" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
-             '<rect x="140" y="65" width="40" height="85" fill="#0b1220" stroke="#475569" stroke-width="1.5"/>';
-      top = '<ellipse cx="160" cy="65" rx="60" ry="18" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>' +
-            '<ellipse cx="160" cy="65" rx="20" ry="6" fill="#0b1220" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="4,3"/>';
-    } else if (isChord) {
-      // 弦向：上下分色但顶部有斜切效果
-      body = '<rect x="100" y="65" width="120" height="42" rx="2" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
-             '<rect x="100" y="107" width="120" height="43" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
-      top = '<ellipse cx="160" cy="65" rx="60" ry="18" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
+      // Outer ring red (N), inner circle blue (S)
+      var innerR = Math.round(r * 0.35);
+      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="'+MAG_RED+'" opacity="0.9"/>';
+      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+innerR+'" fill="'+MAG_BLUE+'" opacity="0.9"/>';
+      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+innerR+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+      svg += '<text x="'+cx+'" y="'+(cy-r*0.6)+'" font-size="11" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
+      svg += '<text x="'+cx+'" y="'+cy+'" font-size="11" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
+      caption = 'Radial — N on outer surface, S on inner hole';
     } else if (isMulti) {
-      // 多极：环向多对N/S极
-      body = '<rect x="100" y="65" width="120" height="85" rx="2" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
-             '<rect x="100" y="65" width="120" height="21" fill="#3b82f6" fill-opacity="0.7"/>' +
-             '<rect x="100" y="106" width="120" height="21" fill="#3b82f6" fill-opacity="0.7"/>';
-      top = '<ellipse cx="160" cy="65" rx="60" ry="18" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>' +
-            '<ellipse cx="160" cy="65" rx="45" ry="13" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="8,4"/>' +
-            '<ellipse cx="160" cy="65" rx="30" ry="8" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="8,4"/>';
+      // 4-pole pattern: alternating N/S segments
+      var nPoles = 4, arcAngle = 360 / nPoles;
+      for (var i = 0; i < nPoles; i++) {
+        var startDeg = i * arcAngle - 90, endDeg = (i+1) * arcAngle - 90;
+        var sRad = startDeg * Math.PI / 180, eRad = endDeg * Math.PI / 180;
+        var x1 = cx + r * Math.cos(sRad), y1 = cy + r * Math.sin(sRad);
+        var x2 = cx + r * Math.cos(eRad), y2 = cy + r * Math.sin(eRad);
+        var largeArc = arcAngle > 180 ? 1 : 0;
+        var color = i % 2 === 0 ? MAG_RED : MAG_BLUE;
+        svg += '<path d="M '+cx+' '+cy+' L '+x1+' '+y1+' A '+r+' '+r+' 0 '+largeArc+' 1 '+x2+' '+y2+' Z" fill="'+color+'" opacity="0.85"/>';
+      }
+      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+      svg += '<text x="'+cx+'" y="'+(cy-r-6)+'" font-size="11" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
+      svg += '<text x="'+cx+'" y="'+(cy+r+12)+'" font-size="11" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
+      caption = 'Multi-Axial — multiple N/S pairs around circumference';
     } else {
-      // 轴向：上下分色，上半红(N)下半蓝(S)
-      body = '<rect x="100" y="65" width="120" height="42" rx="2" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
-             '<rect x="100" y="107" width="120" height="43" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
-      top = '<ellipse cx="160" cy="65" rx="60" ry="18" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
+      // Chord: similar to axial
+      svg += '<path d="M '+(cx-r)+' '+cy+' A '+r+' '+r+' 0 0 1 '+(cx+r)+' '+cy+' Z" fill="'+MAG_RED+'" opacity="0.9"/>';
+      svg += '<path d="M '+(cx-r)+' '+cy+' A '+r+' '+r+' 0 0 0 '+(cx+r)+' '+cy+' Z" fill="'+MAG_BLUE+'" opacity="0.9"/>';
+      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+      svg += '<text x="'+(cx-r*0.4)+'" y="'+(cy-r*0.5)+'" font-size="14" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
+      svg += '<text x="'+(cx+r*0.4)+'" y="'+(cy+r*0.6)+'" font-size="14" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
+      caption = 'Chord — poles on flat chord faces';
     }
-
-    var labels;
-    if (isDiametrical) {
-      labels = '<text x="130" y="175" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-               '<text x="190" y="175" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
-    } else if (isRadial) {
-      labels = '<text x="160" y="175" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N (outer)</text>' +
-               '<text x="160" y="190" font-size="14" font-weight="bold" fill="#3b82f6" text-anchor="middle">S (inner)</text>';
-    } else if (isMulti) {
-      labels = '<text x="160" y="175" font-size="14" font-weight="bold" fill="#ef4444" text-anchor="middle">Multi-pole N/S</text>';
-    } else if (isChord) {
-      labels = '<text x="160" y="50" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-               '<text x="160" y="178" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
-    } else {
-      labels = '<text x="160" y="50" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-               '<text x="160" y="178" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
-    }
-
-    var magLabel = {
-      'axial': 'Axial',
-      'diametrical': 'Diametrical',
-      'radial': 'Radial',
-      'multi-axial': 'Multi-Axial',
-      'chord': 'Chord'
-    }[mag] || mag;
-
-    return '<div class="magnetic-view">' +
-      '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">' +
-        sharedDefs3d() + body + top + labels +
-      '</svg>' +
-      '<p class="magnetic-caption">Disc magnet (3D view) · ' + escHtml(magLabel) + ' magnetization</p>' +
-    '</div>';
+    svg += '</svg>';
+    return '<div class="magnetic-view">'+svg+'<p class="magnetic-caption">'+caption+'</p></div>';
   }
 
-  // 3D ring — shows outer ellipse + inner hole (dashed)
-  // mag: axial | diametrical | radial | multi-axial | chord
-  function ringSvg3d(mag) {
-    var isAxial = /axial/.test(mag) && !/multi/.test(mag);
-    var isRadial = /radial/.test(mag);
-    var isMulti = /multi/.test(mag);
-    var isChord = /chord/.test(mag);
-    var body, top;
-
-    if (isRadial) {
-      // 径向：内外表面分色，外圆红(N)，内孔蓝(S)
-      body = '<path d="M 95 65 L 225 65 L 225 150 L 95 150 Z" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
-             '<path d="M 95 65 L 160 65 L 160 150 L 95 150 Z" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
-      top = '<ellipse cx="160" cy="65" rx="65" ry="20" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>' +
-            '<ellipse cx="160" cy="65" rx="25" ry="8" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
-    } else if (isMulti) {
-      // 多极：环向多对N/S极
-      body = '<path d="M 95 65 L 225 65 L 225 150 L 95 150 Z" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
-             '<path d="M 95 65 L 160 65 L 160 85 L 95 85 Z" fill="#3b82f6" fill-opacity="0.7"/>' +
-             '<path d="M 160 105 L 225 105 L 225 125 L 160 125 Z" fill="#3b82f6" fill-opacity="0.7"/>';
-      top = '<ellipse cx="160" cy="65" rx="65" ry="20" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>' +
-            '<ellipse cx="160" cy="65" rx="25" ry="8" fill="#0b1220" stroke="#475569" stroke-width="1.5" stroke-dasharray="4,3"/>';
-    } else {
-      // 轴向/弦向：上下分色，上半红(N)下半蓝(S)
-      body = '<path d="M 95 65 L 225 65 L 225 108 L 95 108 Z" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
-             '<path d="M 95 108 L 225 108 L 225 150 L 95 150 Z" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
-      top = '<ellipse cx="160" cy="65" rx="65" ry="20" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>' +
-            '<ellipse cx="160" cy="65" rx="25" ry="8" fill="none" stroke="#475569" stroke-width="1.5" stroke-dasharray="4,3"/>';
-    }
-
-    var labels;
-    if (isRadial) {
-      labels = '<text x="160" y="180" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N (outer)</text>' +
-               '<text x="160" y="195" font-size="14" font-weight="bold" fill="#3b82f6" text-anchor="middle">S (inner)</text>';
-    } else if (isMulti) {
-      labels = '<text x="160" y="180" font-size="14" font-weight="bold" fill="#ef4444" text-anchor="middle">Multi-pole N/S</text>';
-    } else {
-      labels = '<text x="160" y="50" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-               '<text x="160" y="175" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
-    }
-
-    var magLabel = {
-      'axial': 'Axial',
-      'diametrical': 'Diametrical',
-      'radial': 'Radial',
-      'multi-axial': 'Multi-Axial',
-      'chord': 'Chord'
-    }[mag] || mag;
-
-    return '<div class="magnetic-view">' +
-      '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">' +
-        sharedDefs3d() + body + top + labels +
-      '</svg>' +
-      '<p class="magnetic-caption">Ring magnet (3D view) · ' + escHtml(magLabel) + ' magnetization</p>' +
-    '</div>';
-  }
-
-  // 3D block — shows top face + side face for cuboid effect
-  // mag: axial | diametrical | radial | multi-axial | chord
-  function blockSvg3d(mag) {
+  // ── Block magnet 2D ──────────────────────────────────────────────────────────
+  function blockSvg2d(mag) {
+    var w = 100, h = 70, d = 35; // width, height, depth
+    var x = 50, y = 75;
     var isAxial = /axial/.test(mag) && !/multi/.test(mag);
     var isDiametrical = /diametrical/.test(mag);
-    var isRadial = /radial/.test(mag);
-    var isChord = /chord/.test(mag);
-    var isMulti = /multi/.test(mag);
-    var body, top, side;
+    var caption = '';
+
+    var svg = '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">';
 
     if (isDiametrical) {
-      // 直径向：左右分色，左红(N)右蓝(S)
-      body = '<rect x="90" y="55" width="70" height="95" rx="3" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
-             '<rect x="160" y="55" width="70" height="95" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
-      top = '<polygon points="90,55 115,35 185,35 160,55" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>' +
-            '<polygon points="160,55 185,35 255,35 230,55" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
-      side = '<polygon points="230,55 255,35 255,130 230,150" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
-    } else if (isChord) {
-      // 弦向：上下分色，上半红(N)下半蓝(S)
-      body = '<rect x="90" y="55" width="140" height="47" rx="3" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
-             '<rect x="90" y="102" width="140" height="48" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
-      top = '<polygon points="90,55 115,35 255,35 230,55" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
-      side = '<polygon points="230,55 255,35 255,102 230,150" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
+      // Left red (N), right blue (S)
+      svg += '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+MAG_RED+'" opacity="0.9" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+      svg += '<rect x="'+(x+w)+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+MAG_BLUE+'" opacity="0.9" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+      // Top face
+      svg += '<polygon points="'+x+','+(y-d)+' '+(x+w)+','+(y-d)+' '+(x+w+w/2)+','+y+' '+x+','+y+'" fill="'+MAG_RED+'" opacity="0.85" stroke="'+MAG_STROKE+'" stroke-width="1"/>';
+      svg += '<polygon points="'+(x+w)+','+(y-d)+' '+(x+w+w)+','+(y-d)+' '+(x+w+w/2)+','+y+' '+(x+w)+','+y+'" fill="'+MAG_BLUE+'" opacity="0.85" stroke="'+MAG_STROKE+'" stroke-width="1"/>';
+      svg += '<text x="'+(x+w/2)+'" y="'+(y+h/2+5)+'" font-size="14" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
+      svg += '<text x="'+(x+w+w/2)+'" y="'+(y+h/2+5)+'" font-size="14" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
+      caption = 'Diametrical — poles on left/right faces';
     } else {
-      // 轴向：前后分色，前红(N)后蓝(S)
-      body = '<rect x="90" y="55" width="140" height="95" rx="3" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>';
-      top = '<polygon points="90,55 115,35 255,35 230,55" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
-      side = '<polygon points="230,55 255,35 255,150 230,150" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
+      // Axial: front red (N), back blue (S) - shown as split
+      svg += '<rect x="'+x+'" y="'+y+'" width="'+w*2+'" height="'+h+'" fill="'+MAG_RED+'" opacity="0.9" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+      // Top face (red)
+      svg += '<polygon points="'+x+','+(y-d)+' '+(x+w*2)+','+(y-d)+' '+(x+w*2+w/2)+','+y+' '+x+','+y+'" fill="'+MAG_RED+'" opacity="0.85" stroke="'+MAG_STROKE+'" stroke-width="1"/>';
+      // Side face (blue)
+      svg += '<polygon points="'+(x+w*2)+','+y+' '+(x+w*2+w/2)+','+(y-d)+' '+(x+w*2+w/2)+','+(y+h-d)+' '+(x+w*2)+','+(y+h)+'" fill="'+MAG_BLUE+'" opacity="0.85" stroke="'+MAG_STROKE+'" stroke-width="1"/>';
+      svg += '<text x="'+(x+w)+'" y="'+(y+h/2+5)+'" font-size="14" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
+      svg += '<text x="'+(x+w*2+w/4)+'" y="'+(y+h/2)+'" font-size="14" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
+      caption = 'Axial — poles on front/back faces';
     }
-
-    var labels;
-    if (isDiametrical) {
-      labels = '<text x="125" y="170" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-               '<text x="195" y="170" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
-    } else if (isChord) {
-      labels = '<text x="160" y="42" font-size="15" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-               '<text x="160" y="178" font-size="15" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
-    } else {
-      labels = '<text x="245" y="170" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
-    }
-
-    var magLabel = {
-      'axial': 'Axial',
-      'diametrical': 'Diametrical',
-      'radial': 'Radial',
-      'multi-axial': 'Multi-Axial',
-      'chord': 'Chord'
-    }[mag] || mag;
-
-    return '<div class="magnetic-view">' +
-      '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">' +
-        sharedDefs3d() + body + top + side + labels +
-      '</svg>' +
-      '<p class="magnetic-caption">Block magnet (3D view) · ' + escHtml(magLabel) + ' magnetization</p>' +
-    '</div>';
+    svg += '</svg>';
+    return '<div class="magnetic-view">'+svg+'<p class="magnetic-caption">'+caption+'</p></div>';
   }
 
-  // 3D arc segment — curved wedge shape
-  function arcSvg3d(mag) {
+  // ── Ring magnet 2D ───────────────────────────────────────────────────────────
+  function ringSvg2d(mag) {
+    var cx = 100, cy = 100, r = 65, hole = 25;
     var isAxial = /axial/.test(mag) && !/multi/.test(mag);
     var isRadial = /radial/.test(mag);
     var isMulti = /multi/.test(mag);
-    var body, topEdge, labels;
+    var caption = '';
+
+    var svg = '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">';
 
     if (isRadial) {
-      // 径向：外侧弧面红(N)，内侧弧面蓝(S)
-      body = '<path d="M 70 140 Q 160 40 250 140 L 235 140 Q 160 60 85 140 Z" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
-             '<path d="M 85 140 Q 160 60 235 140 L 250 140 Q 160 40 70 140 Z" fill="#3b82f6" fill-opacity="0.95"/>';
-      topEdge = '<path d="M 70 140 Q 160 40 250 140" fill="none" stroke="#fca5a5" stroke-width="2" stroke-opacity="0.8"/>' +
-                '<path d="M 85 140 Q 160 60 235 140" fill="none" stroke="#93c5fd" stroke-width="2" stroke-opacity="0.8"/>';
-      labels = '<text x="160" y="165" font-size="13" font-weight="bold" fill="#ef4444" text-anchor="middle">N (outer)</text>' +
-               '<text x="160" y="55" font-size="13" font-weight="bold" fill="#3b82f6" text-anchor="middle">S (inner)</text>';
+      // Outer ring red (N), inner hole blue (S)
+      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="'+MAG_RED+'" opacity="0.9"/>';
+      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+hole+'" fill="'+MAG_BLUE+'" opacity="0.9"/>';
+      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+hole+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+      svg += '<text x="'+cx+'" y="'+(cy-r*0.5)+'" font-size="12" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
+      svg += '<text x="'+cx+'" y="'+cy+'" font-size="12" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
+      caption = 'Radial — N on outer surface, S on inner hole';
     } else if (isMulti) {
-      // 多极：环向多对N/S
-      body = '<path d="M 75 100 Q 160 45 245 100 L 245 140 Q 160 85 75 140 Z" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
-             '<path d="M 75 100 Q 160 60 245 100 L 245 115 Q 160 75 75 115 Z" fill="#3b82f6" fill-opacity="0.7"/>' +
-             '<path d="M 75 130 Q 160 95 245 130 L 245 140 Q 160 85 75 140 Z" fill="#3b82f6" fill-opacity="0.7"/>';
-      topEdge = '<path d="M 75 100 Q 160 45 245 100" fill="none" stroke="#fca5a5" stroke-width="2" stroke-opacity="0.8"/>';
-      labels = '<text x="160" y="165" font-size="13" font-weight="bold" fill="#ef4444" text-anchor="middle">Multi-pole N/S</text>';
+      // Multi-pole: alternating segments
+      var nPoles = 6, arcAngle = 360 / nPoles;
+      for (var i = 0; i < nPoles; i++) {
+        var startDeg = i * arcAngle - 90, endDeg = (i+1) * arcAngle - 90;
+        var sRad = startDeg * Math.PI / 180, eRad = endDeg * Math.PI / 180;
+        var x1 = cx + r * Math.cos(sRad), y1 = cy + r * Math.sin(sRad);
+        var x2 = cx + r * Math.cos(eRad), y2 = cy + r * Math.sin(eRad);
+        var hs1 = cx + hole * Math.cos(sRad), hs2 = cy + hole * Math.sin(sRad);
+        var hs3 = cx + hole * Math.cos(eRad), hs4 = cy + hole * Math.sin(eRad);
+        var color = i % 2 === 0 ? MAG_RED : MAG_BLUE;
+        svg += '<path d="M '+hs1+' '+hs2+' L '+x1+' '+y1+' A '+r+' '+r+' 0 0 1 '+x2+' '+y2+' L '+hs3+' '+hs4+' A '+hole+' '+hole+' 0 0 0 '+hs1+' '+hs2+' Z" fill="'+color+'" opacity="0.85"/>';
+      }
+      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+hole+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+      caption = 'Multi-Axial — multiple N/S pairs around circumference';
     } else {
-      // 轴向/弦向：上半红(N)，下半蓝(S)
-      body = '<path d="M 75 100 Q 160 45 245 100 L 245 140 Q 160 85 75 140 Z" fill="#ef4444" fill-opacity="0.95" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
-             '<path d="M 75 140 Q 160 85 245 140 L 235 140 Q 160 60 85 140 Z" fill="#3b82f6" fill-opacity="0.95" stroke="#475569" stroke-width="1.5"/>';
-      topEdge = '<path d="M 75 100 Q 160 45 245 100" fill="none" stroke="#fca5a5" stroke-width="2" stroke-opacity="0.8"/>' +
-                '<path d="M 75 140 Q 160 85 245 140" fill="none" stroke="#93c5fd" stroke-width="2" stroke-opacity="0.8"/>';
-      labels = '<text x="160" y="40" font-size="13" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-               '<text x="160" y="180" font-size="13" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>';
+      // Axial: top red (N), bottom blue (S)
+      svg += '<path d="M '+(cx-r)+' '+cy+' A '+r+' '+r+' 0 0 1 '+(cx+r)+' '+cy+' Z" fill="'+MAG_RED+'" opacity="0.9"/>';
+      svg += '<path d="M '+(cx-r)+' '+cy+' A '+r+' '+r+' 0 0 0 '+(cx+r)+' '+cy+' Z" fill="'+MAG_BLUE+'" opacity="0.9"/>';
+      svg += '<ellipse cx="'+cx+'" cy="'+cy+'" rx="'+r+'" ry="'+hole+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5" stroke-dasharray="4,3"/>';
+      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+      svg += '<text x="'+cx+'" y="'+(cy-r*0.4)+'" font-size="14" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
+      svg += '<text x="'+cx+'" y="'+(cy+r*0.5)+'" font-size="14" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
+      caption = 'Axial — poles on flat faces (top/bottom)';
     }
-
-    var magLabel = {
-      'axial': 'Axial',
-      'diametrical': 'Diametrical',
-      'radial': 'Radial',
-      'multi-axial': 'Multi-Axial',
-      'chord': 'Chord'
-    }[mag] || mag;
-
-    return '<div class="magnetic-view">' +
-      '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">' +
-        sharedDefs3d() + body + topEdge + labels +
-      '</svg>' +
-      '<p class="magnetic-caption">Arc segment (3D view) · ' + escHtml(magLabel) + ' magnetization</p>' +
-    '</div>';
+    svg += '</svg>';
+    return '<div class="magnetic-view">'+svg+'<p class="magnetic-caption">'+caption+'</p></div>';
   }
 
-  function customSvg3d() {
-    return '<div class="magnetic-view">' +
-      '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">' +
-        sharedDefs3d() +
-        '<polygon points="160,35 245,80 245,145 160,190 75,145 75,80" fill="url(#body-grad)" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>' +
-        '<polygon points="160,35 245,80 160,125 75,80" fill="#fca5a5" fill-opacity="0.6" stroke="#475569" stroke-width="1.5"/>' +
-        '<text x="160" y="28" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">N</text>' +
-        '<text x="160" y="200" font-size="16" font-weight="bold" fill="#3b82f6" text-anchor="middle">S</text>' +
-        '<path d="M 100 60 Q 40 100 100 140" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="4,3"/>' +
-        '<path d="M 220 60 Q 280 100 220 140" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="4,3"/>' +
-      '</svg>' +
-      '<p class="magnetic-caption">Custom shape · please specify magnetization direction in your RFQ</p>' +
-    '</div>';
+  // ── Arc segment 2D ──────────────────────────────────────────────────────────
+  function arcSvg2d(mag) {
+    var cx = 100, cy = 120, r = 70, hole = 35, angle = 60;
+    var isAxial = /axial/.test(mag) && !/multi/.test(mag);
+    var isRadial = /radial/.test(mag);
+    var caption = '';
+
+    var svg = '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">';
+
+    if (isRadial) {
+      // Radial: outer arc red (N), inner arc blue (S)
+      var halfAngle = angle / 2 * Math.PI / 180;
+      var x1 = cx + r * Math.cos(-halfAngle), y1 = cy - r * Math.sin(-halfAngle);
+      var x2 = cx + r * Math.cos(halfAngle), y2 = cy - r * Math.sin(halfAngle);
+      var x3 = cx + hole * Math.cos(-halfAngle), y3 = cy - hole * Math.sin(-halfAngle);
+      var x4 = cx + hole * Math.cos(halfAngle), y4 = cy - hole * Math.sin(halfAngle);
+      svg += '<path d="M '+x3+' '+y3+' L '+x1+' '+y1+' A '+r+' '+r+' 0 0 1 '+x2+' '+y2+' L '+x4+' '+y4+' A '+hole+' '+hole+' 0 0 0 '+x3+' '+y3+' Z" fill="'+MAG_RED+'" opacity="0.9" stroke="'+MAG_STROKE+'" stroke-width="1"/>';
+      svg += '<text x="'+cx+'" y="'+(cy-r*0.6)+'" font-size="13" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N (outer)</text>';
+      svg += '<text x="'+cx+'" y="'+(cy-hole*0.5)+'" font-size="13" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S (inner)</text>';
+      caption = 'Radial — N on outer curve, S on inner curve';
+    } else {
+      // Axial: split horizontally
+      svg += '<path d="M '+(cx-r)+' '+cy+' A '+r+' '+r+' 0 0 1 '+(cx+r)+' '+cy+' L '+(cx+r*0.5)+','+cy+' A '+(r*0.5)+' '+(r*0.5)+' 0 0 0 '+(cx-r*0.5)+','+cy+' Z" fill="'+MAG_RED+'" opacity="0.9"/>';
+      svg += '<path d="M '+(cx-r)+' '+cy+' A '+r+' '+r+' 0 0 0 '+(cx+r)+' '+cy+' L '+(cx+r*0.5)+','+cy+' A '+(r*0.5)+' '+(r*0.5)+' 0 0 1 '+(cx-r*0.5)+','+cy+' Z" fill="'+MAG_BLUE+'" opacity="0.9"/>';
+      svg += '<text x="'+cx+'" y="'+(cy-r*0.4)+'" font-size="14" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
+      svg += '<text x="'+cx+'" y="'+(cy+r*0.5)+'" font-size="14" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
+      caption = 'Axial — poles on flat faces';
+    }
+    svg += '</svg>';
+    return '<div class="magnetic-view">'+svg+'<p class="magnetic-caption">'+caption+'</p></div>';
   }
+
+  // ── Custom shape 2D ─────────────────────────────────────────────────────────
+  function customSvg2d() {
+    var svg = '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">';
+    svg += '<rect x="50" y="60" width="100" height="80" rx="4" fill="'+MAG_RED+'" opacity="0.7" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+    svg += '<rect x="50" y="100" width="100" height="40" fill="'+MAG_BLUE+'" opacity="0.7" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+    svg += '<text x="100" y="85" font-size="16" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
+    svg += '<text x="100" y="125" font-size="16" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
+    svg += '</svg>';
+    return '<div class="magnetic-view">'+svg+'<p class="magnetic-caption">Custom shape — please specify magnetization in your RFQ</p></div>';
+  }
+
 })();

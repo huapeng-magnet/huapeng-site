@@ -843,3 +843,17 @@ select option:checked{ background:#d1f4ff linear-gradient(0deg,#d1f4ff,#d1f4ff);
 }
 .process-step h3{ font-size:15px; margin-bottom:6px; color:var(--ink); }
 .process-step p{ color:var(--ink-soft); font-size:13px; line-height:1.6; margin:0; }
+
+
+/* Grade performance table in product detail */
+.grade-temp-box{ margin-top:20px; padding:18px 20px; border:1px solid rgba(34,211,238,0.22); border-radius:12px; background:rgba(34,211,238,0.04); }
+.grade-temp-box h4{ font-size:12px; letter-spacing:.04em; text-transform:uppercase; color:var(--cyan); margin-bottom:12px; font-weight:700; }
+.grade-temp-grid{ overflow-x:auto; }
+.grade-perf-table{ width:100%; border-collapse:collapse; font-size:13px; min-width:500px; }
+.grade-perf-table th{ text-align:left; padding:8px 12px; background:rgba(34,211,238,0.08); color:var(--cyan); font-weight:700; border-bottom:2px solid rgba(34,211,238,0.25); white-space:nowrap; }
+.grade-perf-table td{ padding:7px 12px; border-bottom:1px solid rgba(255,255,255,0.06); vertical-align:middle; }
+.grade-perf-table tr:hover td{ background:rgba(34,211,238,0.04); }
+.grade-perf-table tr:last-child td{ border-bottom:none; }
+.grade-perf-table td:first-child{ font-weight:700; color:var(--cyan); white-space:nowrap; }
+.gpt-use{ color:var(--ink-soft); }
+.grade-temp-note{ text-align:center; color:var(--ink-soft); font-size:12px; margin-top:10px; }
