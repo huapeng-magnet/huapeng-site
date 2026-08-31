@@ -18,13 +18,13 @@
 
   var currentExchange = DEFAULT_EXCHANGE;
 
-  /* Quantity discount tiers (3 tiers only):
-     1K   → +20% surcharge (small order premium)
-     50K  → -5% discount
+  /* Quantity discount tiers (uniform 5% steps, no small-order surcharge):
+     1K   → -5% discount
+     50K  → -10% discount
      500K → -15% discount */
   var QTY_FACTORS = {
-    1000: 1.20,
-    50000: 0.95,
+    1000: 0.95,
+    50000: 0.90,
     500000: 0.85
   };
 
