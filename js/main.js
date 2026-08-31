@@ -1281,50 +1281,91 @@
     return '<div class="magnetic-view">'+svg+'<p class="magnetic-caption">'+caption+'</p></div>';
   }
 
-  // ── Ring magnet 2D ───────────────────────────────────────────────────────────
+  // ── Ring magnet 3D ──────────────────────────────────────────────────────────
   function ringSvg2d(mag) {
-    var cx = 100, cy = 100, r = 65, hole = 25;
-    var isAxial = /axial/.test(mag) && !/multi/.test(mag);
     var isRadial = /radial/.test(mag);
     var isMulti = /multi/.test(mag);
     var caption = '';
 
     var svg = '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">';
 
+    // 3D ring geometry
+    var cx = 100, cy_top = 55, cy_bot = 145;
+    var R = 60, r = 25; // 外径 / 内径
+    var ry = 12, inner_ry = 5; // 椭圆短轴
+
     if (isRadial) {
-      // Outer ring red (N), inner hole blue (S)
-      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="'+MAG_RED+'" opacity="0.9"/>';
-      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+hole+'" fill="'+MAG_BLUE+'" opacity="0.9"/>';
-      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
-      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+hole+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
-      svg += '<text x="'+cx+'" y="'+(cy-r*0.5)+'" font-size="12" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
-      svg += '<text x="'+cx+'" y="'+cy+'" font-size="12" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
-      caption = 'Radial — N on outer surface, S on inner hole';
+      // 3D ring: outer surface N (red), inner hole S (light gray)
+      // 顶面外环（N 极红色环面）
+      svg += '<ellipse cx="' + cx + '" cy="' + cy_top + '" rx="' + R + '" ry="' + ry + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // 顶面内圈（S 极灰白 - 镂空效果）
+      svg += '<ellipse cx="' + cx + '" cy="' + cy_top + '" rx="' + r + '" ry="' + inner_ry + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // 外侧面（N 极红色矩形）
+      svg += '<rect x="' + (cx-R) + '" y="' + cy_top + '" width="' + (R*2) + '" height="' + (cy_bot-cy_top) + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // 底面外环弧（N 极红色）
+      svg += '<path d="M ' + (cx-R) + ' ' + cy_bot + ' A ' + R + ' ' + ry + ' 0 0 0 ' + (cx+R) + ' ' + cy_bot + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // 内侧面（S 极灰白 - 从顶面内圈前面到底面内圈前面）
+      svg += '<path d="M ' + (cx-r) + ' ' + cy_top + ' L ' + (cx-r) + ' ' + cy_bot + ' A ' + r + ' ' + inner_ry + ' 0 0 1 ' + (cx+r) + ' ' + cy_bot + ' L ' + (cx+r) + ' ' + cy_top + ' A ' + r + ' ' + inner_ry + ' 0 0 1 ' + (cx-r) + ' ' + cy_top + ' Z" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // 底面内环弧
+      svg += '<path d="M ' + (cx-r) + ' ' + cy_bot + ' A ' + r + ' ' + inner_ry + ' 0 0 0 ' + (cx+r) + ' ' + cy_bot + '" fill="none" stroke="' + MAG_STROKE + '" stroke-width="1"/>';
+      // 中间水平虚线（外环 + 内环）
+      svg += '<line x1="' + (cx-R) + '" y1="100" x2="' + (cx+R) + '" y2="100" stroke="' + MAG_STROKE + '" stroke-width="1" stroke-dasharray="4,3"/>';
+      svg += '<line x1="' + (cx-r) + '" y1="100" x2="' + (cx+r) + '" y2="100" stroke="' + MAG_STROKE + '" stroke-width="1" stroke-dasharray="4,3"/>';
+      // N 文字（外环前面）
+      svg += '<text x="' + cx + '" y="120" font-size="18" font-weight="bold" fill="#fff" text-anchor="middle">N</text>';
+      // S 文字（内环前面）
+      svg += '<text x="' + cx + '" y="105" font-size="11" font-weight="bold" fill="#0f172a" text-anchor="middle">S</text>';
+      caption = 'Radial — N pole on outer surface, S pole on inner hole';
     } else if (isMulti) {
-      // Multi-pole: alternating segments
-      var nPoles = 6, arcAngle = 360 / nPoles;
+      // 3D ring multi-axial: 4 alternating N/S segments around outer surface
+      var nPoles = 4, arcAngle = 360 / nPoles;
+      // 顶面外环分成 4 段扇形
       for (var i = 0; i < nPoles; i++) {
         var startDeg = i * arcAngle - 90, endDeg = (i+1) * arcAngle - 90;
         var sRad = startDeg * Math.PI / 180, eRad = endDeg * Math.PI / 180;
-        var x1 = cx + r * Math.cos(sRad), y1 = cy + r * Math.sin(sRad);
-        var x2 = cx + r * Math.cos(eRad), y2 = cy + r * Math.sin(eRad);
-        var hs1 = cx + hole * Math.cos(sRad), hs2 = cy + hole * Math.sin(sRad);
-        var hs3 = cx + hole * Math.cos(eRad), hs4 = cy + hole * Math.sin(eRad);
+        var x1 = cx + R * Math.cos(sRad), y1 = cy_top + ry * Math.sin(sRad);
+        var x2 = cx + R * Math.cos(eRad), y2 = cy_top + ry * Math.sin(eRad);
         var color = i % 2 === 0 ? MAG_RED : MAG_BLUE;
-        svg += '<path d="M '+hs1+' '+hs2+' L '+x1+' '+y1+' A '+r+' '+r+' 0 0 1 '+x2+' '+y2+' L '+hs3+' '+hs4+' A '+hole+' '+hole+' 0 0 0 '+hs1+' '+hs2+' Z" fill="'+color+'" opacity="0.85"/>';
+        svg += '<path d="M ' + cx + ' ' + cy_top + ' L ' + x1 + ' ' + y1 + ' A ' + R + ' ' + ry + ' 0 0 1 ' + x2 + ' ' + y2 + ' Z" fill="' + color + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
       }
-      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
-      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+hole+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
+      // 顶面内圈（黑色镂空效果）
+      svg += '<ellipse cx="' + cx + '" cy="' + cy_top + '" rx="' + r + '" ry="' + inner_ry + '" fill="#0a0e1a" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // 外侧面 - 4 段（每段对应一个颜色），仅画前面的段（startDeg 在 0-180 之间）
+      for (var j = 0; j < nPoles; j++) {
+        var sDeg = j * arcAngle - 90, eDeg = (j+1) * arcAngle - 90;
+        var color2 = j % 2 === 0 ? MAG_RED : MAG_BLUE;
+        // 计算前面可见的角度范围
+        var visStart = Math.max(sDeg, 0);
+        var visEnd = Math.min(eDeg, 180);
+        if (visStart < visEnd) {
+          var sR = visStart * Math.PI / 180;
+          var eR = visEnd * Math.PI / 180;
+          var x1T = cx + R * Math.cos(sR), y1T = cy_top + ry * Math.sin(sR);
+          var x2T = cx + R * Math.cos(eR), y2T = cy_top + ry * Math.sin(eR);
+          var x1B = cx + R * Math.cos(sR), y1B = cy_bot + ry * Math.sin(sR);
+          var x2B = cx + R * Math.cos(eR), y2B = cy_bot + ry * Math.sin(eR);
+          svg += '<path d="M ' + x1T + ' ' + y1T + ' L ' + x1B + ' ' + y1B + ' A ' + R + ' ' + ry + ' 0 0 0 ' + x2B + ' ' + y2B + ' L ' + x2T + ' ' + y2T + ' A ' + R + ' ' + ry + ' 0 0 0 ' + x1T + ' ' + y1T + ' Z" fill="' + color2 + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+        }
+      }
+      // 内侧面（黑色镂空）- 用黑色填充
+      svg += '<path d="M ' + (cx-r) + ' ' + cy_top + ' L ' + (cx-r) + ' ' + cy_bot + ' A ' + r + ' ' + inner_ry + ' 0 0 1 ' + (cx+r) + ' ' + cy_bot + ' L ' + (cx+r) + ' ' + cy_top + ' A ' + r + ' ' + inner_ry + ' 0 0 1 ' + (cx-r) + ' ' + cy_top + ' Z" fill="#0a0e1a" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // 底面外环弧
+      svg += '<path d="M ' + (cx-R) + ' ' + cy_bot + ' A ' + R + ' ' + ry + ' 0 0 0 ' + (cx+R) + ' ' + cy_bot + '" fill="none" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // 底面内环弧
+      svg += '<path d="M ' + (cx-r) + ' ' + cy_bot + ' A ' + r + ' ' + inner_ry + ' 0 0 0 ' + (cx+r) + ' ' + cy_bot + '" fill="none" stroke="' + MAG_STROKE + '" stroke-width="1"/>';
+      // 中间水平虚线
+      svg += '<line x1="' + (cx-R) + '" y1="100" x2="' + (cx+R) + '" y2="100" stroke="' + MAG_STROKE + '" stroke-width="1" stroke-dasharray="4,3"/>';
       caption = 'Multi-Axial — multiple N/S pairs around circumference';
     } else {
-      // Axial: top red (N), bottom blue (S)
-      svg += '<path d="M '+(cx-r)+' '+cy+' A '+r+' '+r+' 0 0 1 '+(cx+r)+' '+cy+' Z" fill="'+MAG_RED+'" opacity="0.9"/>';
-      svg += '<path d="M '+(cx-r)+' '+cy+' A '+r+' '+r+' 0 0 0 '+(cx+r)+' '+cy+' Z" fill="'+MAG_BLUE+'" opacity="0.9"/>';
-      svg += '<ellipse cx="'+cx+'" cy="'+cy+'" rx="'+r+'" ry="'+hole+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5" stroke-dasharray="4,3"/>';
-      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
-      svg += '<text x="'+cx+'" y="'+(cy-r*0.4)+'" font-size="14" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
-      svg += '<text x="'+cx+'" y="'+(cy+r*0.5)+'" font-size="14" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
-      caption = 'Axial — poles on flat faces (top/bottom)';
+      // Axial: top red (N), bottom blue (S) - 3D ring (上下两个独立 3D 圆环)
+      // 上环 N 极
+      svg += '<ellipse cx="' + cx + '" cy="' + cy_top + '" rx="' + R + '" ry="' + ry + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      svg += '<ellipse cx="' + cx + '" cy="' + cy_top + '" rx="' + r + '" ry="' + inner_ry + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      svg += '<rect x="' + (cx-R) + '" y="' + cy_top + '" width="' + (R*2) + '" height="' + (cy_bot-cy_top) + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      svg += '<path d="M ' + (cx-R) + ' ' + cy_bot + ' A ' + R + ' ' + ry + ' 0 0 0 ' + (cx+R) + ' ' + cy_bot + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      svg += '<path d="M ' + (cx-r) + ' ' + cy_top + ' L ' + (cx-r) + ' ' + cy_bot + ' A ' + r + ' ' + inner_ry + ' 0 0 1 ' + (cx+r) + ' ' + cy_bot + ' L ' + (cx+r) + ' ' + cy_top + ' A ' + r + ' ' + inner_ry + ' 0 0 1 ' + (cx-r) + ' ' + cy_top + ' Z" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // 简化为只显示顶面 + 底面 + 中间虚线，不做上下分离
+      caption = 'Axial — N pole top face, S pole bottom face';
     }
     svg += '</svg>';
     return '<div class="magnetic-view">'+svg+'<p class="magnetic-caption">'+caption+'</p></div>';
