@@ -10,7 +10,7 @@
   /* ---------- V3 constants ----------
      Effective N35 cost benchmark tuned to match the V3 report display prices.
      Base material 162.93 CNY/kg + machining/loss allowance ≈ 177.5 CNY/kg. */
-  var COST_CNY_KG = 177.5 * 1.5;    // effective N35 cost benchmark (prices raised +50%)
+  var COST_CNY_KG = 177.5 * 1.5 * 1.3;    // effective N35 cost benchmark (raised +50%, then +30%)
   var DENSITY_G_CM3 = 7.5;    // sintered NdFeB density
   var MARKUP = 1.56;          // shipping + margin + tax combined
   var DEFAULT_EXCHANGE = 7.2; // USD/CNY fallback

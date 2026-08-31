@@ -12,16 +12,16 @@
 
   /* ---------- Base N35 nickel-coated prices (from price list) ---------- */
   var BASE_PRICES = [
-    { spec: "D5 × 1 mm", shape: "disc", d: 5, l: null, w: null, h: 1, hole: null, price10k: 0.021 },
-    { spec: "D8 × 2 mm", shape: "disc", d: 8, l: null, w: null, h: 2, hole: null, price10k: 0.055 },
-    { spec: "D10 × 2 mm", shape: "disc", d: 10, l: null, w: null, h: 2, hole: null, price10k: 0.084 },
-    { spec: "D12 × 3 mm", shape: "disc", d: 12, l: null, w: null, h: 3, hole: null, price10k: 0.173 },
-    { spec: "D15 × 3 mm", shape: "disc", d: 15, l: null, w: null, h: 3, hole: null, price10k: 0.277 },
-    { spec: "D20 × 5 mm", shape: "disc", d: 20, l: null, w: null, h: 5, hole: null, price10k: 0.818 },
-    { spec: "10 × 5 × 2 mm", shape: "block", d: null, l: 10, w: 5, h: 2, hole: null, price10k: 0.055 },
-    { spec: "20 × 10 × 3 mm", shape: "block", d: null, l: 20, w: 10, h: 3, hole: null, price10k: 0.299 },
-    { spec: "20 × 10 × 5 mm", shape: "block", d: null, l: 20, w: 10, h: 5, hole: null, price10k: 0.479 },
-    { spec: "D20 × 5 mm ring D8", shape: "ring", d: 20, l: null, w: null, h: 5, hole: 8, price10k: 0.746 }
+    { spec: "D5 × 1 mm", shape: "disc", d: 5, l: null, w: null, h: 1, hole: null, price10k: 0.027 },
+    { spec: "D8 × 2 mm", shape: "disc", d: 8, l: null, w: null, h: 2, hole: null, price10k: 0.072 },
+    { spec: "D10 × 2 mm", shape: "disc", d: 10, l: null, w: null, h: 2, hole: null, price10k: 0.109 },
+    { spec: "D12 × 3 mm", shape: "disc", d: 12, l: null, w: null, h: 3, hole: null, price10k: 0.225 },
+    { spec: "D15 × 3 mm", shape: "disc", d: 15, l: null, w: null, h: 3, hole: null, price10k: 0.36 },
+    { spec: "D20 × 5 mm", shape: "disc", d: 20, l: null, w: null, h: 5, hole: null, price10k: 1.063 },
+    { spec: "10 × 5 × 2 mm", shape: "block", d: null, l: 10, w: 5, h: 2, hole: null, price10k: 0.072 },
+    { spec: "20 × 10 × 3 mm", shape: "block", d: null, l: 20, w: 10, h: 3, hole: null, price10k: 0.389 },
+    { spec: "20 × 10 × 5 mm", shape: "block", d: null, l: 20, w: 10, h: 5, hole: null, price10k: 0.623 },
+    { spec: "D20 × 5 mm ring D8", shape: "ring", d: 20, l: null, w: null, h: 5, hole: 8, price10k: 0.97 }
   ];
 
   /* Quantity discount tiers (uniform 5% steps, no small-order surcharge):
@@ -53,7 +53,7 @@
   };
 
   /* V3 cost-based constants */
-  var COST_CNY_KG = 177.5 * 1.5;    // effective N35 cost benchmark (prices raised +50%)
+  var COST_CNY_KG = 177.5 * 1.5 * 1.3;    // effective N35 cost benchmark (raised +50%, then +30%)
   var DENSITY_G_CM3 = 7.5;    // sintered NdFeB density
   var MARKUP = 1.56;          // 1.20 shipping × 1.30 margin × 1.09 tax
   var EXCHANGE = 7.2;         // USD/CNY
