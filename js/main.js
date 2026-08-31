@@ -1087,8 +1087,7 @@
     var s = String(shape || "disc").toLowerCase();
     if (s === "disc") return [
       { value: "axial", label: "Axial" },
-      { value: "diametrical", label: "Diametrical" },
-      { value: "multi-axial", label: "Multi-Axial" }
+      { value: "diametrical", label: "Diametrical" }
     ];
     if (s === "ring") return [
       { value: "radial", label: "Radial" },
@@ -1142,20 +1141,31 @@
     var cx = 100, cy_top = 60, cy_bot = 140, rx = 60, ry = 15;
 
     if (isAxial) {
-      // 3D cylinder: top face N (light gray), side surface S (red)
-      // Side surface (red rectangle)
-      svg += '<rect x="' + (cx-rx) + '" y="' + cy_top + '" width="' + (rx*2) + '" height="' + (cy_bot-cy_top) + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
-      // Top face (light gray ellipse = N pole)
-      svg += '<ellipse cx="' + cx + '" cy="' + cy_top + '" rx="' + rx + '" ry="' + ry + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
-      // Bottom face visible arc (S pole)
-      svg += '<path d="M ' + (cx-rx) + ' ' + cy_bot + ' A ' + rx + ' ' + ry + ' 0 0 0 ' + (cx+rx) + ' ' + cy_bot + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
-      // Center horizontal dividing line (dashed)
-      svg += '<line x1="' + (cx-rx) + '" y1="100" x2="' + (cx+rx) + '" y2="100" stroke="' + MAG_STROKE + '" stroke-width="1" stroke-dasharray="4,3"/>';
-      // N label (top face)
-      svg += '<text x="' + cx + '" y="' + (cy_top+5) + '" font-size="13" font-weight="bold" fill="#0f172a" text-anchor="middle">N</text>';
-      // S label (side surface)
-      svg += '<text x="' + cx + '" y="107" font-size="22" font-weight="bold" fill="#fff" text-anchor="middle">S</text>';
-      caption = 'Axial — N on top face, S on bottom face';
+      // 上下两个独立圆盘（N 极上盘 + S 极下盘），中间有明显间隔
+      var cx = 100, rx = 60, ry = 12, diskH = 32, gap = 24;
+      var topY = 45, botY = topY + diskH + gap; // topY=45, botY=101
+      // 上盘（N 极，红色）
+      // 上盘侧面
+      svg += '<rect x="' + (cx-rx) + '" y="' + topY + '" width="' + (rx*2) + '" height="' + diskH + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // 上盘顶面
+      svg += '<ellipse cx="' + cx + '" cy="' + topY + '" rx="' + rx + '" ry="' + ry + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // 上盘底面弧
+      svg += '<path d="M ' + (cx-rx) + ' ' + (topY+diskH) + ' A ' + rx + ' ' + ry + ' 0 0 0 ' + (cx+rx) + ' ' + (topY+diskH) + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // 上盘 N 文字（侧面中央）
+      svg += '<text x="' + cx + '" y="' + (topY+diskH/2+6) + '" font-size="20" font-weight="bold" fill="#fff" text-anchor="middle">N</text>';
+      // 下盘（S 极，灰白色）
+      // 下盘侧面
+      svg += '<rect x="' + (cx-rx) + '" y="' + botY + '" width="' + (rx*2) + '" height="' + diskH + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // 下盘顶面
+      svg += '<ellipse cx="' + cx + '" cy="' + botY + '" rx="' + rx + '" ry="' + ry + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // 下盘底面弧
+      svg += '<path d="M ' + (cx-rx) + ' ' + (botY+diskH) + ' A ' + rx + ' ' + ry + ' 0 0 0 ' + (cx+rx) + ' ' + (botY+diskH) + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // 下盘 S 文字
+      svg += '<text x="' + cx + '" y="' + (botY+diskH/2+6) + '" font-size="20" font-weight="bold" fill="#0f172a" text-anchor="middle">S</text>';
+      // 中间间隔线（虚线）
+      svg += '<line x1="' + (cx-rx) + '" y1="' + (topY+diskH) + '" x2="' + (cx+rx) + '" y2="' + (topY+diskH) + '" stroke="' + MAG_STROKE + '" stroke-width="1" stroke-dasharray="4,3"/>';
+      svg += '<line x1="' + (cx-rx) + '" y1="' + botY + '" x2="' + (cx+rx) + '" y2="' + botY + '" stroke="' + MAG_STROKE + '" stroke-width="1" stroke-dasharray="4,3"/>';
+      caption = 'Axial — N pole top disk, S pole bottom disk';
     } else if (isChord) {
       // Chord: N on left half, S on right half (vertical split, same shape as diametrical but different physics)
       // Side surface left half (red = N)
