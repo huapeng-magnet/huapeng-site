@@ -18,20 +18,14 @@
 
   var currentExchange = DEFAULT_EXCHANGE;
 
-  /* Quantity discount tiers (5% steps between 1k and 1M):
-     1K  → +20% surcharge (small order premium)
-     10K → base price (no adjustment)
-     50K → -5% discount
-     100K → -10% discount
-     500K → -15% discount
-     1M  → -20% discount */
+  /* Quantity discount tiers (3 tiers only):
+     1K   → +20% surcharge (small order premium)
+     50K  → -5% discount
+     500K → -15% discount */
   var QTY_FACTORS = {
     1000: 1.20,
-    10000: 1.00,
     50000: 0.95,
-    100000: 0.90,
-    500000: 0.85,
-    1000000: 0.80
+    500000: 0.85
   };
 
   var COATING_FACTORS = {

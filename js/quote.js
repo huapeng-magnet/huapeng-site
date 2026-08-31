@@ -24,20 +24,14 @@
     { spec: "D20 × 5 mm ring D8", shape: "ring", d: 20, l: null, w: null, h: 5, hole: 8, price10k: 0.746 }
   ];
 
-  /* Quantity discount tiers (5% steps between 1k and 1M):
-     1K  → +20% surcharge (small order premium)
-     10K → base price (no adjustment)
-     50K → -5% discount
-     100K → -10% discount
-     500K → -15% discount
-     1M  → -20% discount */
+  /* Quantity discount tiers (3 tiers only):
+     1K   → +20% surcharge (small order premium)
+     50K  → -5% discount
+     500K → -15% discount */
   var QTY_FACTORS = {
     1000: 1.20,
-    10000: 1.00,
     50000: 0.95,
-    100000: 0.90,
-    500000: 0.85,
-    1000000: 0.80
+    500000: 0.85
   };
 
   var COATING_FACTORS = {
@@ -335,11 +329,8 @@
     tbody.innerHTML = rows.map(function (b) {
       var base = estimatedPrice10k(b.shape, b, "nickel");
       var p1k = base * QTY_FACTORS[1000];
-      var p10k = base;
       var p50k = base * QTY_FACTORS[50000];
-      var p100k = base * QTY_FACTORS[100000];
       var p500k = base * QTY_FACTORS[500000];
-      var p1m = base * QTY_FACTORS[1000000];
       var dims = [];
       if (b.shape === "disc") dims.push("D" + b.d, "T" + b.h);
       if (b.shape === "block") dims.push(b.l + "×" + b.w, "T" + b.h);
@@ -350,11 +341,8 @@
         '<td>' + b.shape.charAt(0).toUpperCase() + b.shape.slice(1) + '</td>' +
         '<td>' + dims.join(" · ") + '</td>' +
         '<td>' + fmt$(p1k) + '</td>' +
-        '<td>' + fmt$(p10k) + '</td>' +
         '<td>' + fmt$(p50k) + '</td>' +
-        '<td>' + fmt$(p100k) + '</td>' +
         '<td>' + fmt$(p500k) + '</td>' +
-        '<td>' + fmt$(p1m) + '</td>' +
         '<td><a class="btn btn--sm btn--ghost" href="index.html?quote=' + encodeURIComponent("Product inquiry: " + b.spec + "\nQuantity: (to be specified)") + '#contact">Quote</a></td>' +
       '</tr>';
     }).join("");
