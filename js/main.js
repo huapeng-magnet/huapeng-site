@@ -1131,67 +1131,87 @@
   // ── Clean 2D magnetic visualization (simple red/blue split) ─────────────────
 
   function discSvg2d(mag) {
-    var cx = 100, cy = 100, r = 65;
     var isAxial = /axial/.test(mag) && !/multi/.test(mag);
     var isDiametrical = /diametrical/.test(mag);
-    var isRadial = /radial/.test(mag);
     var isMulti = /multi/.test(mag);
     var isChord = /chord/.test(mag);
     var svg = '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">';
     var caption = '';
 
+    // 3D cylinder geometry
+    var cx = 100, cy_top = 60, cy_bot = 140, rx = 60, ry = 15;
+
     if (isAxial) {
-      // Top half red (N), bottom half blue (S)
-      svg += '<path d="M '+(cx-r)+' '+cy+' A '+r+' '+r+' 0 0 1 '+(cx+r)+' '+cy+' Z" fill="'+MAG_RED+'" opacity="0.9"/>';
-      svg += '<path d="M '+(cx-r)+' '+cy+' A '+r+' '+r+' 0 0 0 '+(cx+r)+' '+cy+' Z" fill="'+MAG_BLUE+'" opacity="0.9"/>';
-      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
-      svg += '<line x1="'+cx+'" y1="'+(cy-r)+'" x2="'+cx+'" y2="'+(cy+r)+'" stroke="'+MAG_STROKE+'" stroke-width="1" stroke-dasharray="4,3"/>';
-      svg += '<text x="'+cx+'" y="'+(cy-r*0.4)+'" font-size="16" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
-      svg += '<text x="'+cx+'" y="'+(cy+r*0.5)+'" font-size="16" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
-      caption = 'Axial — poles on flat faces (top/bottom)';
+      // 3D cylinder: top face N (light gray), side surface S (red)
+      // Side surface (red rectangle)
+      svg += '<rect x="' + (cx-rx) + '" y="' + cy_top + '" width="' + (rx*2) + '" height="' + (cy_bot-cy_top) + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Top face (light gray ellipse = N pole)
+      svg += '<ellipse cx="' + cx + '" cy="' + cy_top + '" rx="' + rx + '" ry="' + ry + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Bottom face visible arc (S pole)
+      svg += '<path d="M ' + (cx-rx) + ' ' + cy_bot + ' A ' + rx + ' ' + ry + ' 0 0 0 ' + (cx+rx) + ' ' + cy_bot + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Center horizontal dividing line (dashed)
+      svg += '<line x1="' + (cx-rx) + '" y1="100" x2="' + (cx+rx) + '" y2="100" stroke="' + MAG_STROKE + '" stroke-width="1" stroke-dasharray="4,3"/>';
+      // N label (top face)
+      svg += '<text x="' + cx + '" y="' + (cy_top+5) + '" font-size="13" font-weight="bold" fill="#0f172a" text-anchor="middle">N</text>';
+      // S label (side surface)
+      svg += '<text x="' + cx + '" y="107" font-size="22" font-weight="bold" fill="#fff" text-anchor="middle">S</text>';
+      caption = 'Axial — N on top face, S on bottom face';
     } else if (isChord) {
-      // Chord: N/S on opposite flat chord faces (vertical split like diametrical but rotated)
-      svg += '<path d="M '+cx+' '+(cy-r)+' A '+r+' '+r+' 0 0 0 '+cx+' '+(cy+r)+' Z" fill="'+MAG_RED+'" opacity="0.9"/>';
-      svg += '<path d="M '+cx+' '+(cy-r)+' A '+r+' '+r+' 0 0 1 '+cx+' '+(cy+r)+' Z" fill="'+MAG_BLUE+'" opacity="0.9"/>';
-      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
-      svg += '<line x1="'+(cx-r)+'" y1="'+cy+'" x2="'+(cx+r)+'" y2="'+cy+'" stroke="'+MAG_STROKE+'" stroke-width="1" stroke-dasharray="4,3"/>';
-      svg += '<text x="'+(cx-r*0.4)+'" y="'+cy+'" font-size="16" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
-      svg += '<text x="'+(cx+r*0.4)+'" y="'+cy+'" font-size="16" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
+      // Chord: N on left half, S on right half (vertical split, same shape as diametrical but different physics)
+      // Side surface left half (red = N)
+      svg += '<rect x="' + (cx-rx) + '" y="' + cy_top + '" width="' + rx + '" height="' + (cy_bot-cy_top) + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Side surface right half (light gray = S)
+      svg += '<rect x="' + cx + '" y="' + cy_top + '" width="' + rx + '" height="' + (cy_bot-cy_top) + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Top face left half (red = N)
+      svg += '<path d="M ' + cx + ' ' + (cy_top-ry) + ' A ' + rx + ' ' + ry + ' 0 0 0 ' + cx + ' ' + (cy_top+ry) + ' Z" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Top face right half (light gray = S)
+      svg += '<path d="M ' + cx + ' ' + (cy_top-ry) + ' A ' + rx + ' ' + ry + ' 0 0 1 ' + cx + ' ' + (cy_top+ry) + ' Z" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Bottom face left half visible arc
+      svg += '<path d="M ' + cx + ' ' + (cy_bot-ry) + ' A ' + rx + ' ' + ry + ' 0 0 0 ' + cx + ' ' + (cy_bot+ry) + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Bottom face right half visible arc
+      svg += '<path d="M ' + cx + ' ' + (cy_bot-ry) + ' A ' + rx + ' ' + ry + ' 0 0 1 ' + cx + ' ' + (cy_bot+ry) + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Center vertical dividing line (dashed)
+      svg += '<line x1="' + cx + '" y1="' + cy_top + '" x2="' + cx + '" y2="' + cy_bot + '" stroke="' + MAG_STROKE + '" stroke-width="1" stroke-dasharray="4,3"/>';
+      // N label (left)
+      svg += '<text x="70" y="107" font-size="22" font-weight="bold" fill="#fff" text-anchor="middle">N</text>';
+      // S label (right)
+      svg += '<text x="130" y="107" font-size="22" font-weight="bold" fill="#0f172a" text-anchor="middle">S</text>';
       caption = 'Chord — poles on flat chord faces';
     } else if (isDiametrical) {
-      // Left half red (N), right half blue (S)
-      svg += '<path d="M '+cx+' '+(cy-r)+' A '+r+' '+r+' 0 0 0 '+cx+' '+(cy+r)+' Z" fill="'+MAG_RED+'" opacity="0.9"/>';
-      svg += '<path d="M '+cx+' '+(cy-r)+' A '+r+' '+r+' 0 0 1 '+cx+' '+(cy+r)+' Z" fill="'+MAG_BLUE+'" opacity="0.9"/>';
-      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
-      svg += '<line x1="'+(cx-r)+'" y1="'+cy+'" x2="'+(cx+r)+'" y2="'+cy+'" stroke="'+MAG_STROKE+'" stroke-width="1" stroke-dasharray="4,3"/>';
-      svg += '<text x="'+(cx-r*0.4)+'" y="'+cy+'" font-size="16" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
-      svg += '<text x="'+(cx+r*0.4)+'" y="'+cy+'" font-size="16" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
-      caption = 'Diametrical — poles on opposite sides of diameter';
-    } else if (isRadial) {
-      // Outer ring red (N), inner circle blue (S)
-      var innerR = Math.round(r * 0.35);
-      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="'+MAG_RED+'" opacity="0.9"/>';
-      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+innerR+'" fill="'+MAG_BLUE+'" opacity="0.9"/>';
-      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
-      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+innerR+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
-      svg += '<text x="'+cx+'" y="'+(cy-r*0.6)+'" font-size="11" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
-      svg += '<text x="'+cx+'" y="'+cy+'" font-size="11" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
-      caption = 'Radial — N on outer surface, S on inner hole';
+      // 3D cylinder: left half N (red), right half S (light gray)
+      // Side surface left half (red = N)
+      svg += '<rect x="' + (cx-rx) + '" y="' + cy_top + '" width="' + rx + '" height="' + (cy_bot-cy_top) + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Side surface right half (light gray = S)
+      svg += '<rect x="' + cx + '" y="' + cy_top + '" width="' + rx + '" height="' + (cy_bot-cy_top) + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Top face left half (red = N)
+      svg += '<path d="M ' + cx + ' ' + (cy_top-ry) + ' A ' + rx + ' ' + ry + ' 0 0 0 ' + cx + ' ' + (cy_top+ry) + ' Z" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Top face right half (light gray = S)
+      svg += '<path d="M ' + cx + ' ' + (cy_top-ry) + ' A ' + rx + ' ' + ry + ' 0 0 1 ' + cx + ' ' + (cy_top+ry) + ' Z" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Bottom face left half visible arc
+      svg += '<path d="M ' + cx + ' ' + (cy_bot-ry) + ' A ' + rx + ' ' + ry + ' 0 0 0 ' + cx + ' ' + (cy_bot+ry) + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Bottom face right half visible arc
+      svg += '<path d="M ' + cx + ' ' + (cy_bot-ry) + ' A ' + rx + ' ' + ry + ' 0 0 1 ' + cx + ' ' + (cy_bot+ry) + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Center vertical dividing line (dashed)
+      svg += '<line x1="' + cx + '" y1="' + cy_top + '" x2="' + cx + '" y2="' + cy_bot + '" stroke="' + MAG_STROKE + '" stroke-width="1" stroke-dasharray="4,3"/>';
+      // N label (left)
+      svg += '<text x="70" y="107" font-size="22" font-weight="bold" fill="#fff" text-anchor="middle">N</text>';
+      // S label (right)
+      svg += '<text x="130" y="107" font-size="22" font-weight="bold" fill="#0f172a" text-anchor="middle">S</text>';
+      caption = 'Diametrical — N on left, S on right';
     } else if (isMulti) {
-      // 4-pole pattern: alternating N/S segments
+      // 4-pole pattern: alternating N/S segments (top view)
+      var cx2 = 100, cy2 = 100, r2 = 65;
       var nPoles = 4, arcAngle = 360 / nPoles;
       for (var i = 0; i < nPoles; i++) {
         var startDeg = i * arcAngle - 90, endDeg = (i+1) * arcAngle - 90;
         var sRad = startDeg * Math.PI / 180, eRad = endDeg * Math.PI / 180;
-        var x1 = cx + r * Math.cos(sRad), y1 = cy + r * Math.sin(sRad);
-        var x2 = cx + r * Math.cos(eRad), y2 = cy + r * Math.sin(eRad);
+        var x1 = cx2 + r2 * Math.cos(sRad), y1 = cy2 + r2 * Math.sin(sRad);
+        var x2 = cx2 + r2 * Math.cos(eRad), y2 = cy2 + r2 * Math.sin(eRad);
         var largeArc = arcAngle > 180 ? 1 : 0;
         var color = i % 2 === 0 ? MAG_RED : MAG_BLUE;
-        svg += '<path d="M '+cx+' '+cy+' L '+x1+' '+y1+' A '+r+' '+r+' 0 '+largeArc+' 1 '+x2+' '+y2+' Z" fill="'+color+'" opacity="0.85"/>';
+        svg += '<path d="M '+cx2+' '+cy2+' L '+x1+' '+y1+' A '+r2+' '+r2+' 0 '+largeArc+' 1 '+x2+' '+y2+' Z" fill="'+color+'" opacity="0.85"/>';
       }
-      svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
-      svg += '<text x="'+cx+'" y="'+(cy-r-6)+'" font-size="11" font-weight="bold" fill="'+MAG_RED+'" text-anchor="middle">N</text>';
-      svg += '<text x="'+cx+'" y="'+(cy+r+12)+'" font-size="11" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
+      svg += '<circle cx="'+cx2+'" cy="'+cy2+'" r="'+r2+'" fill="none" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
       caption = 'Multi-Axial — multiple N/S pairs around circumference';
     }
     svg += '</svg>';
