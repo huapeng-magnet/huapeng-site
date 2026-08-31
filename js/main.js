@@ -1090,6 +1090,8 @@
       { value: "diametrical", label: "Diametrical" }
     ];
     if (s === "ring") return [
+      { value: "axial", label: "Through thickness" },
+      { value: "diametrical", label: "Through width" },
       { value: "radial", label: "Radial" },
       { value: "multi-axial", label: "Multi-Axial" }
     ];
@@ -1281,60 +1283,112 @@
     return '<div class="magnetic-view">'+svg+'<p class="magnetic-caption">'+caption+'</p></div>';
   }
 
-  // ── Ring magnet 3D ──────────────────────────────────────────────────────────
+  // ── Ring magnet 3D (4 magnetization types, 45 deg oblique view) ──────────────
   function ringSvg2d(mag) {
+    var isAxial = /axial/.test(mag) && !/multi/.test(mag);
+    var isDiametrical = /diametrical/.test(mag);
     var isRadial = /radial/.test(mag);
     var isMulti = /multi/.test(mag);
     var caption = '';
 
+    // 3D ring geometry - 45 deg oblique top view
+    var cx = 100, cy_top = 50, cy_bot = 150;
+    var R = 60, r = 25; // outer / inner radius
+    var ry = 20, inner_ry = 8; // ellipse short axis
+
     var svg = '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="magnetic-svg">';
 
-    // 3D ring geometry
-    var cx = 100, cy_top = 55, cy_bot = 145;
-    var R = 60, r = 25; // 外径 / 内径
-    var ry = 12, inner_ry = 5; // 椭圆短轴
-
-    if (isRadial) {
-      // 3D ring: outer surface N (red), inner hole S (light gray)
-      // 顶面外环（N 极红色环面）
-      svg += '<ellipse cx="' + cx + '" cy="' + cy_top + '" rx="' + R + '" ry="' + ry + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
-      // 顶面内圈（S 极灰白 - 镂空效果）
-      svg += '<ellipse cx="' + cx + '" cy="' + cy_top + '" rx="' + r + '" ry="' + inner_ry + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
-      // 外侧面（N 极红色矩形）
-      svg += '<rect x="' + (cx-R) + '" y="' + cy_top + '" width="' + (R*2) + '" height="' + (cy_bot-cy_top) + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
-      // 底面外环弧（N 极红色）
-      svg += '<path d="M ' + (cx-R) + ' ' + cy_bot + ' A ' + R + ' ' + ry + ' 0 0 0 ' + (cx+R) + ' ' + cy_bot + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
-      // 内侧面（S 极灰白 - 从顶面内圈前面到底面内圈前面）
-      svg += '<path d="M ' + (cx-r) + ' ' + cy_top + ' L ' + (cx-r) + ' ' + cy_bot + ' A ' + r + ' ' + inner_ry + ' 0 0 1 ' + (cx+r) + ' ' + cy_bot + ' L ' + (cx+r) + ' ' + cy_top + ' A ' + r + ' ' + inner_ry + ' 0 0 1 ' + (cx-r) + ' ' + cy_top + ' Z" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
-      // 底面内环弧
+    if (isAxial) {
+      // Through thickness: top ring N (red), bottom ring S (light gray)
+      var diskH = 32, gap = 30;
+      var topY = 25, botY = topY + diskH + gap;
+      // 上环 (N pole, red)
+      svg += '<ellipse cx="' + cx + '" cy="' + topY + '" rx="' + R + '" ry="' + ry + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      svg += '<ellipse cx="' + cx + '" cy="' + topY + '" rx="' + r + '" ry="' + inner_ry + '" fill="#0a0e1a" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      svg += '<rect x="' + (cx-R) + '" y="' + topY + '" width="' + (R*2) + '" height="' + diskH + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      svg += '<path d="M ' + (cx-R) + ' ' + (topY+diskH) + ' A ' + R + ' ' + ry + ' 0 0 0 ' + (cx+R) + ' ' + (topY+diskH) + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      svg += '<path d="M ' + (cx-r) + ' ' + topY + ' L ' + (cx-r) + ' ' + (topY+diskH) + ' A ' + r + ' ' + inner_ry + ' 0 0 1 ' + (cx+r) + ' ' + (topY+diskH) + ' L ' + (cx+r) + ' ' + topY + ' A ' + r + ' ' + inner_ry + ' 0 0 1 ' + (cx-r) + ' ' + topY + ' Z" fill="#0a0e1a" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      svg += '<text x="' + cx + '" y="' + (topY+diskH/2+5) + '" font-size="18" font-weight="bold" fill="#fff" text-anchor="middle">N</text>';
+      // Middle gap dashed lines
+      svg += '<line x1="' + (cx-R) + '" y1="' + (topY+diskH) + '" x2="' + (cx+R) + '" y2="' + (topY+diskH) + '" stroke="' + MAG_STROKE + '" stroke-width="1" stroke-dasharray="4,3"/>';
+      svg += '<line x1="' + (cx-r) + '" y1="' + (topY+diskH) + '" x2="' + (cx+r) + '" y2="' + (topY+diskH) + '" stroke="' + MAG_STROKE + '" stroke-width="1" stroke-dasharray="4,3"/>';
+      svg += '<line x1="' + (cx-R) + '" y1="' + botY + '" x2="' + (cx+R) + '" y2="' + botY + '" stroke="' + MAG_STROKE + '" stroke-width="1" stroke-dasharray="4,3"/>';
+      svg += '<line x1="' + (cx-r) + '" y1="' + botY + '" x2="' + (cx+r) + '" y2="' + botY + '" stroke="' + MAG_STROKE + '" stroke-width="1" stroke-dasharray="4,3"/>';
+      // 下环 (S pole, light gray)
+      svg += '<ellipse cx="' + cx + '" cy="' + botY + '" rx="' + R + '" ry="' + ry + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      svg += '<ellipse cx="' + cx + '" cy="' + botY + '" rx="' + r + '" ry="' + inner_ry + '" fill="#0a0e1a" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      svg += '<rect x="' + (cx-R) + '" y="' + botY + '" width="' + (R*2) + '" height="' + diskH + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      svg += '<path d="M ' + (cx-R) + ' ' + (botY+diskH) + ' A ' + R + ' ' + ry + ' 0 0 0 ' + (cx+R) + ' ' + (botY+diskH) + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      svg += '<path d="M ' + (cx-r) + ' ' + botY + ' L ' + (cx-r) + ' ' + (botY+diskH) + ' A ' + r + ' ' + inner_ry + ' 0 0 1 ' + (cx+r) + ' ' + (botY+diskH) + ' L ' + (cx+r) + ' ' + botY + ' A ' + r + ' ' + inner_ry + ' 0 0 1 ' + (cx-r) + ' ' + botY + ' Z" fill="#0a0e1a" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      svg += '<text x="' + cx + '" y="' + (botY+diskH/2+5) + '" font-size="18" font-weight="bold" fill="#0f172a" text-anchor="middle">S</text>';
+      caption = 'Through thickness — N top ring, S bottom ring';
+    } else if (isDiametrical) {
+      // Through width: left half N (red), right half S (light gray) - 3D ring split
+      // Top outer ring left half
+      svg += '<path d="M ' + cx + ' ' + (cy_top-ry) + ' A ' + R + ' ' + ry + ' 0 0 0 ' + cx + ' ' + (cy_top+ry) + ' L ' + (cx-R) + ' ' + cy_top + ' A ' + R + ' ' + ry + ' 0 0 0 ' + cx + ' ' + (cy_top-ry) + ' Z" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Top outer ring right half
+      svg += '<path d="M ' + cx + ' ' + (cy_top-ry) + ' A ' + R + ' ' + ry + ' 0 0 1 ' + cx + ' ' + (cy_top+ry) + ' L ' + (cx+R) + ' ' + cy_top + ' A ' + R + ' ' + ry + ' 0 0 1 ' + cx + ' ' + (cy_top-ry) + ' Z" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Outer side left half (N red)
+      svg += '<rect x="' + (cx-R) + '" y="' + cy_top + '" width="' + R + '" height="' + (cy_bot-cy_top) + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Outer side right half (S gray)
+      svg += '<rect x="' + cx + '" y="' + cy_top + '" width="' + R + '" height="' + (cy_bot-cy_top) + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Bottom outer arc left half
+      svg += '<path d="M ' + (cx-R) + ' ' + cy_bot + ' A ' + R + ' ' + ry + ' 0 0 0 ' + cx + ' ' + (cy_bot+ry) + ' L ' + cx + ' ' + cy_bot + ' A ' + R + ' ' + ry + ' 0 0 0 ' + (cx-R) + ' ' + cy_bot + ' Z" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Bottom outer arc right half
+      svg += '<path d="M ' + cx + ' ' + cy_bot + ' A ' + R + ' ' + ry + ' 0 0 0 ' + (cx+R) + ' ' + cy_bot + ' L ' + cx + ' ' + (cy_bot+ry) + ' A ' + R + ' ' + ry + ' 0 0 0 ' + cx + ' ' + cy_bot + ' Z" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Top inner hole (black)
+      svg += '<ellipse cx="' + cx + '" cy="' + cy_top + '" rx="' + r + '" ry="' + inner_ry + '" fill="#0a0e1a" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Bottom inner arc
       svg += '<path d="M ' + (cx-r) + ' ' + cy_bot + ' A ' + r + ' ' + inner_ry + ' 0 0 0 ' + (cx+r) + ' ' + cy_bot + '" fill="none" stroke="' + MAG_STROKE + '" stroke-width="1"/>';
-      // 中间水平虚线（外环 + 内环）
+      // Middle vertical dashed line
+      svg += '<line x1="' + cx + '" y1="' + (cy_top+ry) + '" x2="' + cx + '" y2="' + cy_bot + '" stroke="' + MAG_STROKE + '" stroke-width="1" stroke-dasharray="4,3"/>';
+      // Inner side (black hole)
+      svg += '<path d="M ' + (cx-r) + ' ' + cy_top + ' L ' + (cx-r) + ' ' + cy_bot + ' A ' + r + ' ' + inner_ry + ' 0 0 1 ' + (cx+r) + ' ' + cy_bot + ' L ' + (cx+r) + ' ' + cy_top + ' A ' + r + ' ' + inner_ry + ' 0 0 1 ' + (cx-r) + ' ' + cy_top + ' Z" fill="#0a0e1a" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // N text (left)
+      svg += '<text x="' + (cx-R/2) + '" y="' + ((cy_top+cy_bot)/2+5) + '" font-size="22" font-weight="bold" fill="#fff" text-anchor="middle">N</text>';
+      // S text (right)
+      svg += '<text x="' + (cx+R/2) + '" y="' + ((cy_top+cy_bot)/2+5) + '" font-size="22" font-weight="bold" fill="#0f172a" text-anchor="middle">S</text>';
+      caption = 'Through width — N left, S right';
+    } else if (isRadial) {
+      // Radial: outer surface N (red), inner hole S (light gray)
+      // Top outer ring
+      svg += '<ellipse cx="' + cx + '" cy="' + cy_top + '" rx="' + R + '" ry="' + ry + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Top inner ring (S pole, light gray)
+      svg += '<ellipse cx="' + cx + '" cy="' + cy_top + '" rx="' + r + '" ry="' + inner_ry + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Outer side (N red)
+      svg += '<rect x="' + (cx-R) + '" y="' + cy_top + '" width="' + (R*2) + '" height="' + (cy_bot-cy_top) + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Bottom outer arc
+      svg += '<path d="M ' + (cx-R) + ' ' + cy_bot + ' A ' + R + ' ' + ry + ' 0 0 0 ' + (cx+R) + ' ' + cy_bot + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Inner side (S gray)
+      svg += '<path d="M ' + (cx-r) + ' ' + cy_top + ' L ' + (cx-r) + ' ' + cy_bot + ' A ' + r + ' ' + inner_ry + ' 0 0 1 ' + (cx+r) + ' ' + cy_bot + ' L ' + (cx+r) + ' ' + cy_top + ' A ' + r + ' ' + inner_ry + ' 0 0 1 ' + (cx-r) + ' ' + cy_top + ' Z" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
+      // Bottom inner arc
+      svg += '<path d="M ' + (cx-r) + ' ' + cy_bot + ' A ' + r + ' ' + inner_ry + ' 0 0 0 ' + (cx+r) + ' ' + cy_bot + '" fill="none" stroke="' + MAG_STROKE + '" stroke-width="1"/>';
+      // Middle horizontal dashed lines
       svg += '<line x1="' + (cx-R) + '" y1="100" x2="' + (cx+R) + '" y2="100" stroke="' + MAG_STROKE + '" stroke-width="1" stroke-dasharray="4,3"/>';
       svg += '<line x1="' + (cx-r) + '" y1="100" x2="' + (cx+r) + '" y2="100" stroke="' + MAG_STROKE + '" stroke-width="1" stroke-dasharray="4,3"/>';
-      // N 文字（外环前面）
-      svg += '<text x="' + cx + '" y="120" font-size="18" font-weight="bold" fill="#fff" text-anchor="middle">N</text>';
-      // S 文字（内环前面）
-      svg += '<text x="' + cx + '" y="105" font-size="11" font-weight="bold" fill="#0f172a" text-anchor="middle">S</text>';
+      // N text (outer ring)
+      svg += '<text x="' + cx + '" y="125" font-size="20" font-weight="bold" fill="#fff" text-anchor="middle">N</text>';
+      // S text (inner ring)
+      svg += '<text x="' + cx + '" y="108" font-size="12" font-weight="bold" fill="#0f172a" text-anchor="middle">S</text>';
       caption = 'Radial — N pole on outer surface, S pole on inner hole';
     } else if (isMulti) {
-      // 3D ring multi-axial: 4 alternating N/S segments around outer surface
+      // Multi-Axial: 4 alternating N/S segments around outer surface (red + light gray)
       var nPoles = 4, arcAngle = 360 / nPoles;
-      // 顶面外环分成 4 段扇形
+      // Top outer ring 4 segments
       for (var i = 0; i < nPoles; i++) {
         var startDeg = i * arcAngle - 90, endDeg = (i+1) * arcAngle - 90;
         var sRad = startDeg * Math.PI / 180, eRad = endDeg * Math.PI / 180;
         var x1 = cx + R * Math.cos(sRad), y1 = cy_top + ry * Math.sin(sRad);
         var x2 = cx + R * Math.cos(eRad), y2 = cy_top + ry * Math.sin(eRad);
-        var color = i % 2 === 0 ? MAG_RED : MAG_BLUE;
+        var color = i % 2 === 0 ? MAG_RED : '#cbd5e1';
         svg += '<path d="M ' + cx + ' ' + cy_top + ' L ' + x1 + ' ' + y1 + ' A ' + R + ' ' + ry + ' 0 0 1 ' + x2 + ' ' + y2 + ' Z" fill="' + color + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
       }
-      // 顶面内圈（黑色镂空效果）
+      // Top inner hole (black)
       svg += '<ellipse cx="' + cx + '" cy="' + cy_top + '" rx="' + r + '" ry="' + inner_ry + '" fill="#0a0e1a" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
-      // 外侧面 - 4 段（每段对应一个颜色），仅画前面的段（startDeg 在 0-180 之间）
+      // Outer side 4 segments (front only)
       for (var j = 0; j < nPoles; j++) {
         var sDeg = j * arcAngle - 90, eDeg = (j+1) * arcAngle - 90;
-        var color2 = j % 2 === 0 ? MAG_RED : MAG_BLUE;
-        // 计算前面可见的角度范围
+        var color2 = j % 2 === 0 ? MAG_RED : '#cbd5e1';
         var visStart = Math.max(sDeg, 0);
         var visEnd = Math.min(eDeg, 180);
         if (visStart < visEnd) {
@@ -1347,25 +1401,15 @@
           svg += '<path d="M ' + x1T + ' ' + y1T + ' L ' + x1B + ' ' + y1B + ' A ' + R + ' ' + ry + ' 0 0 0 ' + x2B + ' ' + y2B + ' L ' + x2T + ' ' + y2T + ' A ' + R + ' ' + ry + ' 0 0 0 ' + x1T + ' ' + y1T + ' Z" fill="' + color2 + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
         }
       }
-      // 内侧面（黑色镂空）- 用黑色填充
+      // Inner side (black hole)
       svg += '<path d="M ' + (cx-r) + ' ' + cy_top + ' L ' + (cx-r) + ' ' + cy_bot + ' A ' + r + ' ' + inner_ry + ' 0 0 1 ' + (cx+r) + ' ' + cy_bot + ' L ' + (cx+r) + ' ' + cy_top + ' A ' + r + ' ' + inner_ry + ' 0 0 1 ' + (cx-r) + ' ' + cy_top + ' Z" fill="#0a0e1a" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
-      // 底面外环弧
+      // Bottom outer arc
       svg += '<path d="M ' + (cx-R) + ' ' + cy_bot + ' A ' + R + ' ' + ry + ' 0 0 0 ' + (cx+R) + ' ' + cy_bot + '" fill="none" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
-      // 底面内环弧
+      // Bottom inner arc
       svg += '<path d="M ' + (cx-r) + ' ' + cy_bot + ' A ' + r + ' ' + inner_ry + ' 0 0 0 ' + (cx+r) + ' ' + cy_bot + '" fill="none" stroke="' + MAG_STROKE + '" stroke-width="1"/>';
-      // 中间水平虚线
+      // Middle horizontal dashed line
       svg += '<line x1="' + (cx-R) + '" y1="100" x2="' + (cx+R) + '" y2="100" stroke="' + MAG_STROKE + '" stroke-width="1" stroke-dasharray="4,3"/>';
       caption = 'Multi-Axial — multiple N/S pairs around circumference';
-    } else {
-      // Axial: top red (N), bottom blue (S) - 3D ring (上下两个独立 3D 圆环)
-      // 上环 N 极
-      svg += '<ellipse cx="' + cx + '" cy="' + cy_top + '" rx="' + R + '" ry="' + ry + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
-      svg += '<ellipse cx="' + cx + '" cy="' + cy_top + '" rx="' + r + '" ry="' + inner_ry + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
-      svg += '<rect x="' + (cx-R) + '" y="' + cy_top + '" width="' + (R*2) + '" height="' + (cy_bot-cy_top) + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
-      svg += '<path d="M ' + (cx-R) + ' ' + cy_bot + ' A ' + R + ' ' + ry + ' 0 0 0 ' + (cx+R) + ' ' + cy_bot + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
-      svg += '<path d="M ' + (cx-r) + ' ' + cy_top + ' L ' + (cx-r) + ' ' + cy_bot + ' A ' + r + ' ' + inner_ry + ' 0 0 1 ' + (cx+r) + ' ' + cy_bot + ' L ' + (cx+r) + ' ' + cy_top + ' A ' + r + ' ' + inner_ry + ' 0 0 1 ' + (cx-r) + ' ' + cy_top + ' Z" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
-      // 简化为只显示顶面 + 底面 + 中间虚线，不做上下分离
-      caption = 'Axial — N pole top face, S pole bottom face';
     }
     svg += '</svg>';
     return '<div class="magnetic-view">'+svg+'<p class="magnetic-caption">'+caption+'</p></div>';
