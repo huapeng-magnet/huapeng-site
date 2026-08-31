@@ -12,22 +12,31 @@
 
   /* ---------- Base N35 nickel-coated prices (from price list) ---------- */
   var BASE_PRICES = [
-    { spec: "D5 × 1 mm", shape: "disc", d: 5, l: null, w: null, h: 1, hole: null, price10k: 0.014 },
-    { spec: "D8 × 2 mm", shape: "disc", d: 8, l: null, w: null, h: 2, hole: null, price10k: 0.037 },
-    { spec: "D10 × 2 mm", shape: "disc", d: 10, l: null, w: null, h: 2, hole: null, price10k: 0.056 },
-    { spec: "D12 × 3 mm", shape: "disc", d: 12, l: null, w: null, h: 3, hole: null, price10k: 0.115 },
-    { spec: "D15 × 3 mm", shape: "disc", d: 15, l: null, w: null, h: 3, hole: null, price10k: 0.185 },
-    { spec: "D20 × 5 mm", shape: "disc", d: 20, l: null, w: null, h: 5, hole: null, price10k: 0.545 },
-    { spec: "10 × 5 × 2 mm", shape: "block", d: null, l: 10, w: 5, h: 2, hole: null, price10k: 0.037 },
-    { spec: "20 × 10 × 3 mm", shape: "block", d: null, l: 20, w: 10, h: 3, hole: null, price10k: 0.199 },
-    { spec: "20 × 10 × 5 mm", shape: "block", d: null, l: 20, w: 10, h: 5, hole: null, price10k: 0.319 },
-    { spec: "D20 × 5 mm ring D8", shape: "ring", d: 20, l: null, w: null, h: 5, hole: 8, price10k: 0.497 }
+    { spec: "D5 × 1 mm", shape: "disc", d: 5, l: null, w: null, h: 1, hole: null, price10k: 0.021 },
+    { spec: "D8 × 2 mm", shape: "disc", d: 8, l: null, w: null, h: 2, hole: null, price10k: 0.055 },
+    { spec: "D10 × 2 mm", shape: "disc", d: 10, l: null, w: null, h: 2, hole: null, price10k: 0.084 },
+    { spec: "D12 × 3 mm", shape: "disc", d: 12, l: null, w: null, h: 3, hole: null, price10k: 0.173 },
+    { spec: "D15 × 3 mm", shape: "disc", d: 15, l: null, w: null, h: 3, hole: null, price10k: 0.277 },
+    { spec: "D20 × 5 mm", shape: "disc", d: 20, l: null, w: null, h: 5, hole: null, price10k: 0.818 },
+    { spec: "10 × 5 × 2 mm", shape: "block", d: null, l: 10, w: 5, h: 2, hole: null, price10k: 0.055 },
+    { spec: "20 × 10 × 3 mm", shape: "block", d: null, l: 20, w: 10, h: 3, hole: null, price10k: 0.299 },
+    { spec: "20 × 10 × 5 mm", shape: "block", d: null, l: 20, w: 10, h: 5, hole: null, price10k: 0.479 },
+    { spec: "D20 × 5 mm ring D8", shape: "ring", d: 20, l: null, w: null, h: 5, hole: 8, price10k: 0.746 }
   ];
 
+  /* Quantity discount tiers (5% steps between 1k and 1M):
+     1K  → +20% surcharge (small order premium)
+     10K → base price (no adjustment)
+     50K → -5% discount
+     100K → -10% discount
+     500K → -15% discount
+     1M  → -20% discount */
   var QTY_FACTORS = {
     1000: 1.20,
     10000: 1.00,
+    50000: 0.95,
     100000: 0.90,
+    500000: 0.85,
     1000000: 0.80
   };
 
@@ -50,7 +59,7 @@
   };
 
   /* V3 cost-based constants */
-  var COST_CNY_KG = 177.5;    // effective N35 cost benchmark (matches V3 report)
+  var COST_CNY_KG = 177.5 * 1.5;    // effective N35 cost benchmark (prices raised +50%)
   var DENSITY_G_CM3 = 7.5;    // sintered NdFeB density
   var MARKUP = 1.56;          // 1.20 shipping × 1.30 margin × 1.09 tax
   var EXCHANGE = 7.2;         // USD/CNY
@@ -327,7 +336,9 @@
       var base = estimatedPrice10k(b.shape, b, "nickel");
       var p1k = base * QTY_FACTORS[1000];
       var p10k = base;
+      var p50k = base * QTY_FACTORS[50000];
       var p100k = base * QTY_FACTORS[100000];
+      var p500k = base * QTY_FACTORS[500000];
       var p1m = base * QTY_FACTORS[1000000];
       var dims = [];
       if (b.shape === "disc") dims.push("D" + b.d, "T" + b.h);
@@ -340,7 +351,9 @@
         '<td>' + dims.join(" · ") + '</td>' +
         '<td>' + fmt$(p1k) + '</td>' +
         '<td>' + fmt$(p10k) + '</td>' +
+        '<td>' + fmt$(p50k) + '</td>' +
         '<td>' + fmt$(p100k) + '</td>' +
+        '<td>' + fmt$(p500k) + '</td>' +
         '<td>' + fmt$(p1m) + '</td>' +
         '<td><a class="btn btn--sm btn--ghost" href="index.html?quote=' + encodeURIComponent("Product inquiry: " + b.spec + "\nQuantity: (to be specified)") + '#contact">Quote</a></td>' +
       '</tr>';
