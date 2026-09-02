@@ -12,16 +12,16 @@
 
   /* ---------- Base N35 nickel-coated prices (from price list) ---------- */
   var BASE_PRICES = [
-    { spec: "D5 × 1 mm", shape: "disc", d: 5, l: null, w: null, h: 1, hole: null, price10k: 0.027 },
-    { spec: "D8 × 2 mm", shape: "disc", d: 8, l: null, w: null, h: 2, hole: null, price10k: 0.072 },
-    { spec: "D10 × 2 mm", shape: "disc", d: 10, l: null, w: null, h: 2, hole: null, price10k: 0.109 },
-    { spec: "D12 × 3 mm", shape: "disc", d: 12, l: null, w: null, h: 3, hole: null, price10k: 0.225 },
-    { spec: "D15 × 3 mm", shape: "disc", d: 15, l: null, w: null, h: 3, hole: null, price10k: 0.36 },
-    { spec: "D20 × 5 mm", shape: "disc", d: 20, l: null, w: null, h: 5, hole: null, price10k: 1.063 },
-    { spec: "10 × 5 × 2 mm", shape: "block", d: null, l: 10, w: 5, h: 2, hole: null, price10k: 0.072 },
-    { spec: "20 × 10 × 3 mm", shape: "block", d: null, l: 20, w: 10, h: 3, hole: null, price10k: 0.389 },
-    { spec: "20 × 10 × 5 mm", shape: "block", d: null, l: 20, w: 10, h: 5, hole: null, price10k: 0.623 },
-    { spec: "D20 × 5 mm ring D8", shape: "ring", d: 20, l: null, w: null, h: 5, hole: 8, price10k: 0.97 }
+    { spec: "D5 × 1 mm", shape: "disc", img: "assets/disc_1.jpg", d: 5, l: null, w: null, h: 1, hole: null, price10k: 0.027 },
+    { spec: "D8 × 2 mm", shape: "disc", img: "assets/disc_1.jpg", d: 8, l: null, w: null, h: 2, hole: null, price10k: 0.072 },
+    { spec: "D10 × 2 mm", shape: "disc", img: "assets/disc_1.jpg", d: 10, l: null, w: null, h: 2, hole: null, price10k: 0.109 },
+    { spec: "D12 × 3 mm", shape: "disc", img: "assets/disc_1.jpg", d: 12, l: null, w: null, h: 3, hole: null, price10k: 0.225 },
+    { spec: "D15 × 3 mm", shape: "disc", img: "assets/disc_1.jpg", d: 15, l: null, w: null, h: 3, hole: null, price10k: 0.36 },
+    { spec: "D20 × 5 mm", shape: "disc", img: "assets/disc_1.jpg", d: 20, l: null, w: null, h: 5, hole: null, price10k: 1.063 },
+    { spec: "10 × 5 × 2 mm", shape: "block", img: "assets/block_2.jpg", d: null, l: 10, w: 5, h: 2, hole: null, price10k: 0.072 },
+    { spec: "20 × 10 × 3 mm", shape: "block", img: "assets/block_2.jpg", d: null, l: 20, w: 10, h: 3, hole: null, price10k: 0.389 },
+    { spec: "20 × 10 × 5 mm", shape: "block", img: "assets/block_2.jpg", d: null, l: 20, w: 10, h: 5, hole: null, price10k: 0.623 },
+    { spec: "D20 × 5 mm ring D8", shape: "ring", img: "assets/ring_1.png", d: 20, l: null, w: null, h: 5, hole: 8, price10k: 0.97 }
   ];
 
   /* Quantity discount tiers (uniform 5% steps, no small-order surcharge):
@@ -331,19 +331,13 @@
       var p1k = base * QTY_FACTORS[1000];
       var p50k = base * QTY_FACTORS[50000];
       var p500k = base * QTY_FACTORS[500000];
-      var dims = [];
-      if (b.shape === "disc") dims.push("D" + b.d, "T" + b.h);
-      if (b.shape === "block") dims.push(b.l + "×" + b.w, "T" + b.h);
-      if (b.shape === "ring") dims.push("D" + b.d, "T" + b.h, "hole D" + b.hole);
 
       return '<tr data-shape="' + b.shape + '">' +
-        '<td>' + b.spec + '</td>' +
-        '<td>' + b.shape.charAt(0).toUpperCase() + b.shape.slice(1) + '</td>' +
-        '<td>' + dims.join(" · ") + '</td>' +
-        '<td>' + fmt$(p1k) + '</td>' +
-        '<td>' + fmt$(p50k) + '</td>' +
-        '<td>' + fmt$(p500k) + '</td>' +
-        '<td><a class="btn btn--sm btn--ghost" href="index.html?quote=' + encodeURIComponent("Product inquiry: " + b.spec + "\nQuantity: (to be specified)") + '#contact">Quote</a></td>' +
+        '<td class="spec">' + b.spec + '</td>' +
+        '<td class="img-cell"><img src="' + b.img + '" alt="' + b.spec + '"></td>' +
+        '<td class="price">' + fmt$(p1k) + '</td>' +
+        '<td class="price">' + fmt$(p50k) + '</td>' +
+        '<td class="price">' + fmt$(p500k) + '</td>' +
       '</tr>';
     }).join("");
   }
