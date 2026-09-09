@@ -185,6 +185,107 @@
   /* ---------- Calculator ---------- */
   var resultBox = document.getElementById("calcResult");
 
+  /* ---------- History Management ---------- */
+  var HISTORY_KEY = "huapeng_quote_history";
+  var MAX_HISTORY = 10;
+
+  function loadHistory() {
+    try {
+      var stored = localStorage.getItem(HISTORY_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveToHistory(quote) {
+    try {
+      var history = loadHistory();
+      history.unshift({
+        id: Date.now(),
+        timestamp: new Date().toLocaleString(),
+        grade: quote.grade,
+        shape: quote.shape,
+        dims: quote.dims,
+        specText: quote.specText,
+        coating: quote.coating,
+        qty: quote.qty,
+        unitPrice: quote.unitUsd,
+        totalPrice: quote.totalUsd
+      });
+      if (history.length > MAX_HISTORY) {
+        history = history.slice(0, MAX_HISTORY);
+      }
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      renderHistory();
+    } catch (e) {
+      console.error("Failed to save history:", e);
+    }
+  }
+
+  window.restoreHistory = function(id) {
+    var history = loadHistory();
+    var item = history.find(function(h) { return h.id === id; });
+    if (!item) return;
+
+    document.getElementById("qGrade").value = item.grade;
+    document.getElementById("qShape").value = item.shape;
+    document.getElementById("qCoating").value = item.coating;
+    document.getElementById("qQty").value = item.qty;
+
+    if (item.shape === "disc") {
+      document.getElementById("qD").value = item.dims.d;
+      document.getElementById("qH").value = item.dims.h;
+    } else if (item.shape === "block") {
+      document.getElementById("qL").value = item.dims.l;
+      document.getElementById("qW").value = item.dims.w;
+      document.getElementById("qH").value = item.dims.h;
+    } else if (item.shape === "ring") {
+      document.getElementById("qD").value = item.dims.d;
+      document.getElementById("qHole").value = item.dims.hole;
+      document.getElementById("qH").value = item.dims.h;
+    }
+    calculate();
+  };
+
+  window.deleteHistory = function(id) {
+    var history = loadHistory();
+    history = history.filter(function(h) { return h.id !== id; });
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    renderHistory();
+  };
+
+  function renderHistory() {
+    var container = document.getElementById("historyContainer");
+    if (!container) return;
+
+    var history = loadHistory();
+    if (history.length === 0) {
+      container.innerHTML = '<p class="muted">No history yet. Calculate a quote to save it.</p>';
+      return;
+    }
+
+    var html = '<div style="display:flex;flex-direction:column;gap:0.5rem;">';
+    history.forEach(function(item) {
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem;background:#f8f9fa;border-radius:4px;">' +
+        '<div>' +
+          '<div style="font-size:0.85rem;color:#6c757d;">' + item.timestamp + '</div>' +
+          '<div style="font-weight:600;">' + item.grade + ' ' + item.shape + ' ' + item.specText + '</div>' +
+        '</div>' +
+        '<div style="text-align:right;">' +
+          '<div style="font-weight:700;color:#007bff;">' + fmt$(item.unitPrice) + '/pc</div>' +
+          '<div style="font-size:0.85rem;">Total: ' + fmt$(item.totalPrice) + '</div>' +
+        '</div>' +
+        '<div style="margin-left:1rem;">' +
+          '<button type="button" class="btn btn--mini btn--ghost" onclick="restoreHistory(' + item.id + ')" style="margin-right:0.25rem;">Restore</button>' +
+          '<button type="button" class="btn btn--mini btn--ghost" onclick="deleteHistory(' + item.id + ')" style="color:#dc3545;">Delete</button>' +
+        '</div>' +
+      '</div>';
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
   function calculate(e) {
     if (e && e.preventDefault) e.preventDefault();
     if (!resultBox) return;
@@ -211,6 +312,9 @@
     var specText = specString(shape, dims, coating);
     lastQuote = { grade: grade, shape: shape, coating: coating, qty: qty, dims: dims, specText: specText, unitUsd: unitUsd, totalUsd: totalUsd };
 
+    // Save to history
+    saveToHistory(lastQuote);
+
     resultBox.innerHTML =
       '<div class="calc-result__head">' +
         '<span class="calc-result__label">Unit Price</span>' +
@@ -224,6 +328,9 @@
         '<div><span>Grade</span><strong>' + grade + '</strong></div>' +
         '<div><span>Coating</span><strong>' + coatingLabel(coating) + '</strong></div>' +
       '</div>' +
+      '<div class="calc-result__actions">' +
+        '<button type="button" class="btn btn--primary" onclick="exportPDF()">Export PDF</button>' +
+      '</div>' +
       '<p class="calc-result__note">Estimated USD price for reference — prices are quoted directly in USD, no extra currency conversion applied. Final quote depends on tolerance, magnetization direction, packing and shipping.</p>' +
       quoteFormHTML();
   }
@@ -235,7 +342,83 @@
     return "";
   }
 
-  /* ---------- Quote request form ---------- */
+  /* ---------- PDF Export ---------- */
+  window.exportPDF = function() {
+    if (!lastQuote) return;
+
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      // Header
+      doc.setFontSize(20);
+      doc.text("Huapeng Magnetics", 105, 20, { align: "center" });
+      doc.setFontSize(10);
+      doc.text("Industrial-grade Neodymium Magnets", 105, 28, { align: "center" });
+      doc.text("No. 859 Shijia Rd, Zonghan, Cixi, Ningbo, Zhejiang, China", 105, 33, { align: "center" });
+      doc.text("Email: info@huapeng-magnet.com | www.huapeng-magnet.com", 105, 38, { align: "center" });
+
+      // Divider
+      doc.setDrawColor(0, 123, 255);
+      doc.line(20, 42, 190, 42);
+
+      // Title
+      doc.setFontSize(16);
+      doc.text("Quotation", 105, 50, { align: "center" });
+
+      // Quote details
+      doc.setFontSize(11);
+      var y = 65;
+      doc.text("Quote Details:", 20, y);
+      y += 8;
+
+      doc.setFontSize(10);
+      doc.text("Date: " + new Date().toLocaleDateString(), 20, y);
+      y += 6;
+      doc.text("Grade: " + lastQuote.grade, 20, y);
+      y += 6;
+      doc.text("Shape: " + lastQuote.shape.charAt(0).toUpperCase() + lastQuote.shape.slice(1), 20, y);
+      y += 6;
+      doc.text("Specification: " + lastQuote.specText, 20, y);
+      y += 6;
+      doc.text("Coating: " + coatingLabel(lastQuote.coating), 20, y);
+      y += 6;
+      doc.text("Quantity: " + fmtNum(lastQuote.qty) + " pcs", 20, y);
+      y += 10;
+
+      // Price table
+      doc.setFontSize(11);
+      doc.text("Price Breakdown:", 20, y);
+      y += 8;
+
+      doc.setFillColor(240, 240, 240);
+      doc.rect(20, y-5, 170, 8, "F");
+      doc.setFontSize(10);
+      doc.text("Quantity", 25, y);
+      doc.text("Unit Price (USD)", 80, y);
+      doc.text("Total (USD)", 130, y);
+
+      y += 8;
+      doc.text(fmtNum(lastQuote.qty) + " pcs", 25, y);
+      doc.text(fmt$(lastQuote.unitUsd), 80, y);
+      doc.text(fmt$(lastQuote.totalUsd), 130, y);
+
+      y += 12;
+      doc.setFontSize(9);
+      doc.text("Note: Prices are FOB China, tax included. Valid for 30 days.", 20, y);
+      y += 6;
+      doc.text("Final quote subject to tolerance, magnetization direction, packing and shipping.", 20, y);
+
+      // Footer
+      doc.setFontSize(8);
+      doc.text("© 2026 Huapeng Magnetics. All rights reserved.", 105, 280, { align: "center" });
+
+      doc.save("huapeng-quote-" + Date.now() + ".pdf");
+    } catch (e) {
+      alert("PDF export failed: " + e.message);
+      console.error(e);
+    }
+  };
   function buildSpecText() {
     if (!lastQuote) return "";
     var s = "Quote request from calculator:\n";

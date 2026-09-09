@@ -6,6 +6,7 @@
   <title>Quotation — Huapeng Magnetics</title>
   <meta name="description" content="Get instant USD pricing for N35 nickel-coated NdFeB magnets. Real-time exchange rate, grade/shape/coating selector, and bulk price list." />
   <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -133,6 +134,10 @@
             </div>
           </div>
 
+          <div class="field-row" id="qExtraDims">
+            <!-- Additional specifications -->
+          </div>
+
           <button type="submit" class="btn btn--primary btn--wide">Calculate Price</button>
         </form>
 
@@ -142,6 +147,14 @@
             <p>Fill in the form and click <strong>Calculate Price</strong> to see your estimate.</p>
             <p class="muted">Non-N35 grades and custom / arc shapes are quoted manually.</p>
           </div>
+        </div>
+      </div>
+
+      <!-- History Section -->
+      <div class="card" id="historySection" style="margin-top: 2rem;">
+        <h2>Quote History</h2>
+        <div id="historyContainer">
+          <p class="muted">No history yet. Calculate a quote to save it.</p>
         </div>
       </div>
     </div>
