@@ -859,11 +859,11 @@ select option:checked{ background:#d1f4ff linear-gradient(0deg,#d1f4ff,#d1f4ff);
 .grade-temp-note{ text-align:center; color:var(--ink-soft); font-size:12px; margin-top:10px; }
 
 /* Language Switcher Dropdown */
-.topbar__lang{ position:relative; cursor:pointer; padding:2px 8px; border-radius:4px; transition:.2s; }
+.topbar__lang{ position:relative; display:inline-block; cursor:pointer; padding:2px 8px; border-radius:4px; transition:.2s; }
 .topbar__lang:hover{ background:rgba(34,211,238,0.1); }
 .topbar__lang-dropdown{ display:none; position:absolute; top:100%; left:0; margin-top:8px; background:var(--bg-soft); border:1px solid var(--border); border-radius:8px; padding:6px 0; min-width:140px; z-index:1000; box-shadow:0 8px 24px rgba(0,0,0,0.2); }
 .topbar__lang-dropdown.show{ display:block; }
-.lang-option{ display:block; padding:8px 16px; color:var(--ink); text-decoration:none; font-size:14px; transition:.2s; }
+.lang-option{ display:block; padding:8px 16px; color:var(--ink); text-decoration:none; font-size:14px; transition:.2s; white-space:nowrap; }
 .lang-option:hover{ background:rgba(34,211,238,0.1); color:var(--cyan); }
 .lang-option--active{ color:var(--cyan); font-weight:600; }
 .lang-option--active:hover{ background:transparent; }
