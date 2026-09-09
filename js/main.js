@@ -1459,3 +1459,33 @@
   }
 
 })();
+
+// ===== Language Switcher =====
+(function() {
+  var langBtn = document.getElementById('langBtn');
+  var langDropdown = document.getElementById('langDropdown');
+  
+  if (langBtn && langDropdown) {
+    langBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      langDropdown.classList.toggle('show');
+    });
+    
+    document.addEventListener('click', function() {
+      langDropdown.classList.remove('show');
+    });
+    
+    langDropdown.addEventListener('click', function(e) {
+      if (e.target.classList.contains('lang-option')) {
+        var lang = e.target.getAttribute('data-lang');
+        if (lang !== 'en') {
+          var currentPath = window.location.pathname;
+          var newPath = '/' + lang + currentPath;
+          window.location.href = newPath;
+        } else {
+          window.location.href = '/';
+        }
+      }
+    });
+  }
+})();
