@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Huapeng Magnetics — Imanes NdFeB de Precisión</title>
+  <meta name="description" content="Huapeng Magnetics supplies industrial-grade neodymium (NdFeB) magnets — disc, block, ring, arc and custom shapes, N35–N52. Export-ready, global delivery." />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ===== Top Bar ===== -->
+  <div class="topbar">
+    <div class="container topbar__inner">
+      <span>🌐 Español · USD $</span>
+      <span class="topbar__links">
+        <a href="#promotions">Promotions</a>
+        <a href="#about">Nosotros</a>
+        <a href="#contact">Contacto</a>
+      </span>
+    </div>
+  </div>
+
+  <!-- ===== Header / Nav ===== -->
+  <header class="header" id="top">
+    <div class="container header__inner">
+      <a href="#top" class="brand" aria-label="Huapeng Magnetics home">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 40 40" width="34" height="34">
+            <defs>
+              <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#22d3ee"/>
+                <stop offset="1" stop-color="#3b82f6"/>
+              </linearGradient>
+            </defs>
+            <rect x="2" y="2" width="36" height="36" rx="9" fill="#0b1220" stroke="url(#bg)" stroke-width="2"/>
+            <path d="M13 27V13h9a5 5 0 0 1 0 10h-4" fill="none" stroke="url(#bg)" stroke-width="3.2" stroke-linecap="round"/>
+            <line x1="13" y1="23" x2="22" y2="23" stroke="url(#bg)" stroke-width="3.2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="brand__text">HUAPENG<span>MAGNETICS</span></span>
+      </a>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="#top">Inicio</a>
+        <a href="#categories">Categorías</a>
+        <a href="#products">Productos</a>
+        <a href="request-quote.html">Presupuesto</a>
+        <a href="#grades">Grados</a>
+        <a href="#applications">Industrias</a>
+        <a href="#process">Proceso</a>
+        <a href="#faq">FAQ</a>
+        <a href="#about">Nosotros</a>
+        <a href="halbach-simulator.html" target="_blank" rel="noopener">Halbach Array Designer</a>
+        <a href="#promotions">Promotions</a>
+      </nav>
+
+      <div class="header__actions">
+        <form class="search" id="siteSearchForm" role="search" onsubmit="return false">
+          <span class="search__icon" aria-hidden="true">🔍</span>
+          <input type="search" id="siteSearch" class="search__input" placeholder="Buscar imanes, grados, usos…" aria-label="Buscar productos" autocomplete="off" />
+          <button type="button" class="search__clear" id="siteSearchClear" aria-label="Borrar búsqueda" hidden>✕</button>
+        </form>
+        <a class="btn btn--ghost" href="index.html#contact">Solicitar presupuesto</a>
+        <button class="cart" id="cartBtn" aria-label="Carrito">
+          🛒 <span class="cart__count" id="cartCount">0</span>
+        </button>
+        <button class="nav-toggle" id="navToggle" aria-label="Menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Hero Carousel ===== -->
+  <section class="hero" aria-label="Featured">
+    <div class="hero__track" id="heroTrack">
+      <article class="slide is-active" style="--img:url('assets/hero.png')">
+        <div class="slide__overlay"></div>
+        <div class="container slide__content">
+          <span class="eyebrow">Industrial-Grado NdFeB</span>
+          <h1>Imanes Fuertes de Precisión<br/>para un Mundo Conectado</h1>
+          <p>Diseñados para motores eléctricos, sensores, altavoces y conjuntos magnéticos — fuerza de tracción constante, grados certificados.</p>
+          <div class="slide__cta">
+            <a href="#products" class="btn btn--primary">Comprar Ahora</a>
+            <button class="btn btn--ghost" data-quote>Solicitar presupuesto</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="slide" style="--img:url('assets/disc_2.jpg')">
+        <div class="slide__overlay"></div>
+        <div class="container slide__content">
+          <span class="eyebrow">Custom Formas · Any Grado</span>
+          <h1>Disc, Block, Ring, Arc<br/>&amp; Irregular — N35 to N52</h1>
+          <p>Recubrimientos de níquel y zinc. Tolerancias ajustadas, de pequeña serie a producción en masa.</p>
+          <div class="slide__cta">
+            <a href="#categories" class="btn btn--primary">Explore Formas</a>
+            <button class="btn btn--ghost" data-quote>Solicitar presupuesto</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="slide" style="--img:url('assets/block_1.jpg')">
+        <div class="slide__overlay"></div>
+        <div class="container slide__content">
+          <span class="eyebrow">Listo para Exportar · Envío Global</span>
+          <h1>Suministro a Granel &amp; OEM<br/>Envíos a Todo el Mundo</h1>
+          <p>Envío internacional conforme, documentación completa, plazos de entrega confiables para distribuidores y fabricantes.</p>
+          <div class="slide__cta">
+            <a href="#contact" class="btn btn--primary">Contacto Sales</a>
+            <button class="btn btn--ghost" data-quote>Solicitar presupuesto</button>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <button class="hero__arrow hero__arrow--prev" id="heroPrev" aria-label="Anterior"‹</button>
+    <button class="hero__arrow hero__arrow--next" id="heroNext" aria-label="Siguiente"›</button>
+    <div class="hero__dots" id="heroDots" role="tablist"></div>
+  </section>
+
+  <!-- ===== Categorías (by shape) ===== -->
+  <section class="section" id="categories">
+    <div class="container">
+      <header class="section__head reveal">
+        <span class="eyebrow">Comprar por Forma</span>
+        <h2>Magnet Categorías</h2>
+        <p>Elija la geometría que se adapte a su aplicación. Cada forma está disponible en todos los grados estándar.</p>
+      </header>
+
+      <div class="cat-grid">
+        <a class="cat-card reveal" href="#products">
+          <div class="cat-card__img" style="background-image:url('assets/disc_1.jpg')"></div>
+          <div class="cat-card__body">
+            <h3>Disc Magnets</h3>
+            <p>⌀3–50mm · delgados y fuertes</p>
+            <span class="cat-card__more">Ver →</span>
+          </div>
+        </a>
+        <a class="cat-card reveal" href="#products">
+          <div class="cat-card__img" style="background-image:url('assets/block_1.jpg')"></div>
+          <div class="cat-card__body">
+            <h3>Imanes de Bloque</h3>
+            <p>Barras rectangulares y cuadradas</p>
+            <span class="cat-card__more">Ver →</span>
+          </div>
+        </a>
+        <a class="cat-card reveal" href="#products">
+          <div class="cat-card__img" style="background-image:url('assets/ring_1.png')"></div>
+          <div class="cat-card__body">
+            <h3>Imanes de Anillo</h3>
+            <p>Toroides y rebajes</p>
+            <span class="cat-card__more">Ver →</span>
+          </div>
+        </a>
+        <a class="cat-card reveal" href="#products">
+          <div class="cat-card__img" style="background-image:url('assets/arc_1.png')"></div>
+          <div class="cat-card__body">
+            <h3>Segmentos de Arco</h3>
+            <p>Segmentos para motores y rotores</p>
+            <span class="cat-card__more">Ver →</span>
+          </div>
+        </a>
+        <a class="cat-card cat-card--custom reveal" href="#contact">
+          <div class="cat-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" width="48" height="48">
+              <circle cx="24" cy="24" r="14" fill="none" stroke="#22d3ee" stroke-width="3"/>
+              <path d="M24 8v6M24 34v6M8 24h6M34 24h6" stroke="#22d3ee" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="24" cy="24" r="4" fill="#22d3ee"/>
+            </svg>
+          </div>
+          <div class="cat-card__body">
+            <h3>Custom / Irregular</h3>
+            <p>Geometrías fabricadas bajo pedido</p>
+            <span class="cat-card__more">Solicitar →</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Hot Productos ===== -->
+  <section class="section section--alt" id="products">
+    <div class="container">
+      <header class="section__head reveal">
+        <span class="eyebrow">Best Sellers</span>
+        <h2>Popular Magnets</h2>
+        <p>Our most-requested neodymium magnets, ready for quick shipment.</p>
+      </header>
+
+      <div class="filters reveal" id="productFilters">
+        <div class="filter-group">
+          <span class="filter-group__label">Forma</span>
+          <div class="filter-group__btns" id="shapeFilter">
+            <button type="button" class="is-active" data-filter="all">All</button>
+            <button type="button" data-filter="disc">Disc</button>
+            <button type="button" data-filter="block">Block</button>
+            <button type="button" data-filter="ring">Ring</button>
+            <button type="button" data-filter="arc">Arc</button>
+            <button type="button" data-filter="cube">Cube</button>
+            <button type="button" data-filter="assembly">Custom</button>
+          </div>
+        </div>
+        <div class="filter-group">
+          <span class="filter-group__label">Grado</span>
+          <div class="filter-group__btns" id="gradeFilter">
+            <button type="button" class="is-active" data-filter="all">All</button>
+            <button type="button" data-filter="N35">N35</button>
+            <button type="button" data-filter="N38">N38</button>
+            <button type="button" data-filter="N40">N40</button>
+            <button type="button" data-filter="N42">N42</button>
+            <button type="button" data-filter="N45">N45</button>
+            <button type="button" data-filter="N48">N48</button>
+            <button type="button" data-filter="N50">N50</button>
+            <button type="button" data-filter="N52">N52</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-grid" id="productGrid">
+        <article class="product reveal" data-id="disc-n52" data-shape="disc" data-grade="N52" data-coating="nickel" data-base-spec='{"d":10,"h":3}' data-keywords="disc neodymium motor sensor speaker rotor thin strong n52 cylindrical">
+          <div class="product__img" style="background-image:url('assets/disc_1.jpg')"><span class="product__badge">Hot</span></div>
+          <div class="product__body">
+            <h3>Disc Magnet</h3>
+            <p class="product__spec">Customizable grade, size &amp; coating</p>
+            <div class="product__foot">
+              <span class="price" title="Reference price — varies by grade, size, quantity"><span class="price-from">From</span> $0.239<span class="price-unit"> / pc</span></span>
+              <div class="product__foot-btns">
+                <button class="btn btn--mini btn--mini-ghost" data-details>Details</button>
+                <button class="btn btn--mini" data-config>+ Add</button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="product reveal" data-id="block-n50" data-shape="block" data-grade="N50" data-coating="zinc" data-base-spec='{"l":20,"w":10,"h":5}' data-keywords="block neodymium bar rectangular square motor sensor holder strong n50">
+          <div class="product__img" style="background-image:url('assets/block_2.jpg')"></div>
+          <div class="product__body">
+            <h3>Block Magnet</h3>
+            <p class="product__spec">Customizable grade, size &amp; coating</p>
+            <div class="product__foot">
+              <span class="price" title="Reference price — varies by grade, size, quantity"><span class="price-from">From</span> $0.895<span class="price-unit"> / pc</span></span>
+              <div class="product__foot-btns">
+                <button class="btn btn--mini btn--mini-ghost" data-details>Details</button>
+                <button class="btn btn--mini" data-config>+ Add</button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="product reveal" data-id="ring-n45" data-shape="ring" data-grade="N45" data-coating="nickel" data-base-spec='{"d":20,"hole":10,"h":5}' data-keywords="ring neodymium toroid bore counterbore rotor bearing shaft n45 circular hole">
+          <div class="product__img" style="background-image:url('assets/ring_1.png')"></div>
+          <div class="product__body">
+            <h3>Ring Magnet</h3>
+            <p class="product__spec">Customizable grade, size &amp; coating</p>
+            <div class="product__foot">
+              <span class="price" title="Reference price — varies by grade, size, quantity"><span class="price-from">From</span> $0.861<span class="price-unit"> / pc</span></span>
+              <div class="product__foot-btns">
+                <button class="btn btn--mini btn--mini-ghost" data-details>Details</button>
+                <button class="btn btn--mini" data-config>+ Add</button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="product reveal" data-id="arc-n42" data-shape="arc" data-grade="N42" data-coating="nickel" data-base-spec='{"l":30,"w":20,"h":5,"angle":45}' data-keywords="arc segment curved motor rotor stator segment magnet n42 wedge generator fan">
+          <div class="product__img" style="background-image:url('assets/arc_1.png')"><span class="product__badge product__badge--new">New</span></div>
+          <div class="product__body">
+            <h3>Arc Segment</h3>
+            <p class="product__spec">Customizable grade, size &amp; coating</p>
+            <div class="product__foot">
+              <span class="price" title="Reference price — varies by grade, size, quantity"><span class="price-from">From</span> $2.34<span class="price-unit"> / pc</span></span>
+              <div class="product__foot-btns">
+                <button class="btn btn--mini btn--mini-ghost" data-details>Details</button>
+                <button class="btn btn--mini" data-config>+ Add</button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="product product--quote reveal" data-id="custom-assembly" data-shape="assembly" data-grade="N35" data-coating="nickel" data-keywords="custom irregular made-to-order drawing assembly oem special shape magnet">
+          <div class="product__img product__img--custom">
+            <svg viewBox="0 0 48 48" width="54" height="54" aria-hidden="true">
+              <path d="M24 6l4 8 9 1-6.5 6 1.5 9L24 33l-8 4 1.5-9L11 15l9-1z" fill="none" stroke="#22d3ee" stroke-width="2.4" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="product__body">
+            <h3>Custom Assembly</h3>
+            <p class="product__spec">Made-to-order per drawing / spec</p>
+            <div class="product__foot">
+              <span class="price price--quote">Solicitar Presupuesto</span>
+              <div class="product__foot-btns">
+                <button class="btn btn--mini btn--mini-ghost" data-details>Details</button>
+                <button class="btn btn--mini btn--mini-ghost" data-config>→ Inquiry</button>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Promotions ===== -->
+  <section class="section" id="promotions">
+    <div class="container">
+      <header class="section__head reveal">
+        <span class="eyebrow">Limited Time</span>
+        <h2>Promotions &amp; Deals</h2>
+      </header>
+
+      <div class="promo-banner reveal">
+        <div class="promo-banner__text">
+          <span class="promo-banner__tag">SUMMER TECH SALE</span>
+          <h3>Up to 15% off in-stock N-grade magnets</h3>
+          <p>Auto-applied at checkout · while stock lasts</p>
+        </div>
+        <a href="#products" class="btn btn--primary">Ver la Oferta</a>
+      </div>
+
+      <div class="promo-grid">
+        <div class="promo-card reveal">
+          <div class="promo-card__icon">🎁</div>
+          <h3>First-Order 10% Off</h3>
+          <p>First-order discount — enter the code at checkout.</p>
+          <span class="promo-card__code">WELCOME10</span>
+        </div>
+        <div class="promo-card reveal">
+          <div class="promo-card__icon">🚚</div>
+          <h3>Free Shipping $500+</h3>
+          <p>Complimentary international freight on orders above $500.</p>
+          <span class="promo-card__code">AUTO</span>
+        </div>
+        <div class="promo-card reveal">
+          <div class="promo-card__icon">🏭</div>
+          <h3>Bulk &amp; OEM Quote</h3>
+          <p>Volume pricing and custom tooling for large-scale production.</p>
+          <button class="btn btn--mini btn--mini-ghost" data-quote>Solicitar Presupuesto</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Grado-Temperature Table ===== -->
+  <section class="section" id="grades">
+    <div class="container">
+      <header class="section__head reveal">
+        <span class="eyebrow">Technical Reference</span>
+        <h2>Grado &amp; Temperature Selection</h2>
+        <p>Elija el grado NdFeB correcto para su temperatura de operación — los grados de mayor temperatura sacrifican algo de producto energético por estabilidad térmica.</p>
+      </header>
+      <div class="grade-table-wrap reveal">
+        <table class="grade-table">
+          <thead>
+            <tr><th>Grado</th><th>(BH)max MGOe</th><th>Intrinsic Coercivity Hcj kOe</th><th>T<sub>max</sub> °C</th><th>Ideal Para</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>N28 – N52</td><td>33 – 55</td><td>≥ 11</td><td>80</td><td>Motores generales, altavoces, conjuntos magnéticos</td></tr>
+            <tr><td>M Series (N-M)</td><td>33 – 52</td><td>≥ 14</td><td>100</td><td>Automotriz temperatura media, aplicaciones de sensores</td></tr>
+            <tr><td>H Series (N-H)</td><td>33 – 52</td><td>≥ 16</td><td>120</td><td>Motores EV alta temperatura, actuadores industriales</td></tr>
+            <tr><td>SH Series</td><td>33 – 50</td><td>≥ 19</td><td>150</td><td>Aeroespacial, herramientas de pozo petróleo y gas</td></tr>
+            <tr><td>UH Series</td><td>30 – 45</td><td>≥ 22</td><td>180</td><td>Motores especializados extrema alta temperatura</td></tr>
+            <tr><td>EH Series</td><td>28 – 40</td><td>≥ 25</td><td>200</td><td>Aplicaciones nicho ultra alta temperatura</td></tr>
+            <tr><td>AH Series</td><td>28 – 38</td><td>≥ 28</td><td>230</td><td>Máxima estabilidad térmica, precio premium</td></tr>
+          </tbody>
+        </table>
+        <p class="grade-note">T<sub>max</sub> = temperatura máxima de operación continua. Grados más altos (N48–N52) ofrecen mayor fuerza de tracción pero menor tolerancia térmica. Consulte a nuestro equipo para selección de grado personalizado.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Applications ===== -->
+  <section class="section section--alt" id="applications">
+    <div class="container">
+      <header class="section__head reveal">
+        <span class="eyebrow">Dónde Usan Nuestros Imanes</span>
+        <h2>Industrias que Atendemos</h2>
+        <p>Imanes de neodimio de precisión que alimentan sistemas críticos en seis sectores principales en todo el mundo.</p>
+      </header>
+      <div class="app-grid reveal">
+        <div class="app-card"><div class="app-card__ico">🚗</div><h3>Automoción &amp; VE</h3><p>Motores de tracción eléctricos, sensores ABS, elevadores de ventanas, altavoces — serie N-H / SH para temperaturas bajo capó.</p></div>
+        <div class="app-card"><div class="app-card__ico">🔌</div><h3>Electrónica de Consumo</h3><p>Smartphones, auriculares TWS, drones, discos duros — imanes miniaturizados de disco y bloque con tolerancias ajustadas.</p></div>
+        <div class="app-card"><div class="app-card__ico">🌬️</div><h3>Energía Eólica</h3><p>Generadores de accionamiento directo, alternativas a cajas de cambios — imanes de anillo grande y arco personalizado para energía sostenible.</p></div>
+        <div class="app-card"><div class="app-card__ico">🏥</div><h3>Dispositivos Médicos</h3><p>Componentes de MRI, herramientas quirúrgicas, bombas implantables — recubrimientos compatibles con sala blanca disponibles.</p></div>
+        <div class="app-card"><div class="app-card__ico">🛰️</div><h3>Aeroespacial</h3><p>Actuadores de satélites, aviónica, amortiguadores de vibración — serie UH / AH para entornos extremos.</p></div>
+        <div class="app-card"><div class="app-card__ico">⚙️</div><h3>Automatización Industrial</h3><p>Motores servo, placas magnéticas, actuadores lineales, sistemas de clasificación — volúmenes grandes, calidad consistente.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section class="section section--alt" id="faq">
+    <div class="container">
+      <header class="section__head reveal">
+        <span class="eyebrow">Centro de Ayuda</span>
+        <h2>Preguntas Frecuentes</h2>
+        <p>Respuestas rápidas sobre grados, recubrimientos, plazos de entrega y pedidos. ¿Todavía dudoso? Contacte a nuestro equipo de ventas.</p>
+      </header>
+
+      <div class="faq-list reveal" id="faqList">
+        <div class="faq-item">
+          <button class="faq-q" type="button" aria-expanded="false">¿Qué grado NdFeB debo elegir?<span class="faq-ico" aria-hidden="true"></span></button>
+          <div class="faq-a"><p>Los grados más altos (N45–N52) ofrecen mayor fuerza de tracción en el mismo tamaño — ideal para motores compactos y sensores. Los grados más bajos (N35–N42) son más rentables para piezas más grandes y menos exigentes. Dinos tu aplicación y recomendaremos el grado óptimo y una variante de alta temperatura si es necesario.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button" aria-expanded="false">¿Qué recubrimientos ofrecen?<span class="faq-ico" aria-hidden="true"></span></button>
+          <div class="faq-a"><p>Las opciones estándar son Níquel (Ni-Cu-Ni) para resistencia general a la corrosión y Zinc para uso interior sensible al costo. También proporcionamos Epoxi y Níquel Negro para entornos especiales. La elección de recubrimiento depende de sus condiciones de operación — nuestro equipo asesorará.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button" aria-expanded="false">¿Cuál es su tiempo de entrega y MOQ?<span class="faq-ico" aria-hidden="true"></span></button>
+          <div class="faq-a"><p>Los prototipos pueden estar listos en tan solo 3 días a partir de 100 piezas. La producción en masa generalmente toma 2–3 semanas dependiendo del grado y la cantidad. Apoyamos tanto el muestreo por lotes pequeños como el suministro OEM a gran escala.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button" aria-expanded="false">¿Pueden hacer formas y tamaños personalizados?<span class="faq-ico" aria-hidden="true"></span></button>
+          <div class="faq-a"><p>Sí. Más allá de discos, bloques, anillos y arcos, fabricamos geometrías irregulares y personalizadas según su dibujo o especificación. Suba su dibujo en el formulario de contacto o configurador y cotizarremos con precisión.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button" aria-expanded="false">¿Proporcionan certificados de material y documentos de cumplimiento?<span class="faq-ico" aria-hidden="true"></span></button>
+          <div class="faq-a"><p>Cada envío viene acompañado de un certificado de material por lote. Nuestra producción cumple con RoHS &amp; REACH. Documentación de exportación adicional disponible bajo solicitud.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button" aria-expanded="false">¿Cómo se envían los imanes y qué hay sobre el cumplimiento de exportación?<span class="faq-ico" aria-hidden="true"></span></button>
+          <div class="faq-a"><p>Enviamos a todo el mundo por mensajería express, aire y mar con documentación completa. Nuestros imanes son solo para aplicaciones industriales, electrónicas y de consumo — no para armas o aplicaciones militares. Los compradores son responsables de cumplir con las regulaciones locales de importación y controles de doble uso aplicables.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Nosotros ===== -->
+  <section class="section section--alt" id="about">
+    <div class="container">
+      <header class="section__head reveal">
+        <span class="eyebrow">Quiénes Somos</span>
+        <h2>Nosotros Huapeng Magnetics</h2>
+        <p>Un fabricante de imanes de neodimio (NdFeB) que sirve a distribuidores, OEMs y creadores en más de 40 países.</p>
+      </header>
+
+      <div class="about">
+        <div class="about__intro reveal">
+          <p><strong>Huapeng Magnetics (Ningbo Huapeng Magnetics Co., Ltd.)</strong> se ha especializado en imanes permanentes de NdFeB sinterizado desde <strong>2015</strong>. Fabricamos todo el rango de grados <strong>N35–N52</strong> y un portafolio completo de formas — disco, bloque, anillo, arco y geometrías irregulares — en todas las dimensiones para motores, sensores, altavoces, conjuntos magnéticos y electrónica de consumo.</p>
+          <p>Con una <strong>capacidad mensual de 60 toneladas</strong>, convertimos sus dibujos en muestras en tan solo <strong>3 días a partir de 100 piezas</strong>, y entregamos worldwide por mensajería express. Cada envío viene acompañado de certificados de material y, cuando se requiere, documentación de exportación.</p>
+        </div>
+
+        <div class="about__grid">
+          <div class="about__item reveal"><span class="about__ico">🧲</span><h4>Grados N35–N52</h4><p>Full standard &amp; high-energy neodymium grades, including high-temperature options.</p></div>
+          <div class="about__item reveal"><span class="about__ico">📐</span><h4>Todas las Formas &amp; Personalizado</h4><p>Geometrías de disco, bloque, anillo, arco e irregulares — construidas con precisión según sus dibujos.</p></div>
+          <div class="about__item reveal"><span class="about__ico">⚡</span><h4>Muestreo Rápido</h4><p>Prototipos en tan solo 3 días; MOQ de muestreo desde 100 piezas.</p></div>
+          <div class="about__item reveal"><span class="about__ico">📦</span><h4>60 Toneladas / Mes</h4><p>Capacidad estable de producción en masa para distribuidores y OEMs por igual.</p></div>
+          <div class="about__item reveal"><span class="about__ico">🌍</span><h4>Envío Express Global</h4><p>Mensajería express, transporte aéreo y marítimo con documentación de exportación completa.</p></div>
+          <div class="about__item reveal"><span class="about__ico">✅</span><h4>Sistema de Calidad</h4><p>Producción certificada; materiales conformes con RoHS &amp; REACH.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Manufacturing Process ===== -->
+  <section class="section" id="process">
+    <div class="container">
+      <header class="section__head reveal">
+        <span class="eyebrow">De Materia Prima a Imán Terminado</span>
+        <h2>Nuestro Proceso de Manufactura</h2>
+        <p>Siete pasos controlados aseguran que cada imán cumpla con especificaciones dimensionales y magnéticas ajustadas — sin atajos, trazabilidad completa.</p>
+      </header>
+      <div class="process-timeline reveal">
+        <div class="process-step">
+          <div class="process-step__num">01</div>
+          <h3>Preparación de Materia Prima</h3>
+          <p>Carga precisa de aleación de Nd, Fe, B y adiciones de tierras raras — pesadas a ±0.1% para química consistente.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step__num">02</div>
+          <h3>Fusión y Colado</h3>
+          <p>Fusión por inducción en atmósfera de argón, seguida de solidificación rápida en forma de cinta o lingote.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step__num">03</div>
+          <h3>Molienda por Chorros</h3>
+          <p>Producción de micro-polvo controlada por atmósfera — tamaño de partícula D50 ~3–4 μm para prensado de alta densidad.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step__num">04</div>
+          <h3>Prensado y Orientación</h3>
+          <p>Compactación alineada con campo magnético en prensa uniaxial o isostática para establecer el eje cristalino preferido.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step__num">05</div>
+          <h3>Sinterizado</h3>
+          <p>Sinterizado en horno de vacío o argón a 1000–1100 °C para lograr >95% de densidad teórica.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step__num">06</div>
+          <h3>Moldeo y Corte</h3>
+          <p>Herramientas de diamante cortan y muelen a dimensiones finales; perforación de agujeros, chaflanan y acabado de bordes según sea necesario.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step__num">07</div>
+          <h3>Recubrimiento e Inspección</h3>
+          <p>Electrochapado Ni-Cu-Ni, Zn o níquel negro, seguido de pruebas con gaussímetro, QA dimensional y empaque.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Contacto ===== -->
+  <section class="section" id="contact">
+    <div class="container contact">
+      <div class="contact__info reveal">
+        <span class="eyebrow">Contáctenos</span>
+        <h2>Solicitar Presupuesto / Contáctenos</h2>
+        <p>Tell us your magnet spec — grade, shape, size, coating, quantity — and our sales team will respond within 1 business day.</p>
+        <ul class="contact__list">
+          <li>📧 <a href="mailto:info@huapeng-magnet.com">info@huapeng-magnet.com</a></li>
+          <li>💬 WhatsApp / Tel: +86 — (to be added)</li>
+          <li>🏢 Ningbo Huapeng Magnetics Co., Ltd.</li>
+          <li>📍 No. 859 Shijia Road, Zonghan Subdistrict, Cixi, Ningbo, Zhejiang, China</li>
+        </ul>
+      </div>
+
+      <form class="contact__form reveal" id="contactForm" novalidate>
+        <div class="field">
+          <label for="cName">Name *</label>
+          <input id="cName" name="name" type="text" required />
+        </div>
+        <div class="field">
+          <label for="cEmail">Email *</label>
+          <input id="cEmail" name="email" type="email" required />
+        </div>
+        <div class="field">
+          <label for="cCompany">Company</label>
+          <input id="cCompany" name="company" type="text" />
+        </div>
+        <div class="field">
+          <label for="cCountry">Country</label>
+          <input id="cCountry" name="country" type="text" />
+        </div>
+        <div class="field field--full">
+          <label for="cSpec">Magnet Specification / Message *</label>
+          <textarea id="cSpec" name="spec" rows="4" placeholder="e.g. N52 disc ⌀10×3mm, Ni coating, 5000 pcs" required></textarea>
+        </div>
+        <div class="field drawing-field" id="cartDrawingsField" hidden>
+          <label>Drawings for each product (JPG only)</label>
+          <div class="cart-drawings" id="cartDrawingsList"></div>
+          <small class="drawing-hint">Upload one drawing per product (1-to-1 with items above). Max 4 MB each. Click × to replace.</small>
+        </div>
+        <button type="submit" class="btn btn--primary">Enviar Consulta</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===== Compliance Note ===== -->
+  <section class="compliance" id="compliance">
+    <div class="container compliance__inner reveal">
+      <span class="compliance__icon">⚠️</span>
+      <p><strong>Cumplimiento de Exportación:</strong> Huapeng magnets are intended for industrial, electronic and consumer applications. Not for weapon or military use. Buyers are responsible for complying with local import regulations and applicable dual-use controls.</p>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer" id="footer-info">
+    <div class="container footer__grid">
+      <div class="footer__brand">
+        <span class="brand__text">HUAPENG<span>MAGNETICS</span></span>
+        <p>Precision neodymium magnets for manufacturers, distributors and makers worldwide.</p>
+      </div>
+      <div class="footer__col">
+        <h4>Productos</h4>
+        <a href="#categories">Disc Magnets</a>
+        <a href="#categories">Block Magnets</a>
+        <a href="#categories">Ring Magnets</a>
+        <a href="#categories">Arc Magnets</a>
+      </div>
+      <div class="footer__col">
+        <h4>Company</h4>
+        <a href="#about">Nosotros Us</a>
+        <a href="#promotions">Promotions</a>
+        <a href="#contact">Contacto</a>
+      </div>
+      <div class="footer__col">
+        <h4>Contacto</h4>
+        <a href="mailto:info@huapeng-magnet.com">info@huapeng-magnet.com</a>
+        <a href="#contact">WhatsApp: +86 000 0000</a>
+        <a href="#contact">Solicitar Presupuesto →</a>
+      </div>
+    </div>
+    <div class="footer__bottom container">
+      <span>© 2026 Huapeng Magnetics. All rights reserved.</span>
+      <span>Privacidad · Términos · Política de Exportación</span>
+    </div>
+  </footer>
+
+  <!-- ===== Cart Drawer ===== -->
+  <div class="overlay" id="overlay" hidden></div>
+  <aside class="cart-drawer" id="cartDrawer" aria-hidden="true" aria-label="Shopping cart">
+    <div class="cart-drawer__head">
+      <h3>Su Carrito</h3>
+      <button class="cart-drawer__close" id="cartClose" aria-label="Close">✕</button>
+    </div>
+    <div class="cart-drawer__body" id="cartBody"></div>
+    <div class="cart-drawer__foot">
+      <div class="cart-drawer__subtotal">Subtotal: <span id="cartSubtotal">$0.00</span></div>
+      <button type="button" class="btn btn--primary" id="checkoutLink">Proceder al Pago</button>
+      <button class="btn btn--ghost" id="cartContinue">Continue Shopping</button>
+    </div>
+  </aside>
+
+  <!-- ===== Product Config Modal ===== -->
+  <div class="modal" id="configModal" hidden aria-hidden="true" role="dialog" aria-label="Configure magnet">
+    <div class="modal__overlay" id="configModalOverlay"></div>
+    <div class="modal__panel">
+      <button type="button" class="modal__close" id="configModalClose" aria-label="Close">✕</button>
+      <div class="modal__body" id="configModalBody"></div>
+    </div>
+  </div>
+
+  <!-- ===== Product Detail Modal ===== -->
+  <div class="modal" id="detailModal" hidden aria-hidden="true" role="dialog" aria-label="Product details">
+    <div class="modal__overlay" id="detailModalOverlay"></div>
+    <div class="modal__panel">
+      <button type="button" class="modal__maximize" id="detailModalMaximize" aria-label="Maximize" title="Maximize / Restore">⛶</button>
+      <button type="button" class="modal__close" id="detailModalClose" aria-label="Close">✕</button>
+      <div class="modal__body" id="detailModalBody"></div>
+    </div>
+  </div>
+
+  <!-- ===== Toast ===== -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/pricing.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

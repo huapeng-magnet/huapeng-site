@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Preisliste — Huapeng Magnetics</title>
+  <meta name="description" content="Get instant USD pricing for N35 nickel-coated NdFeB magnets. Aktueller Wechselkurs, grade/shape/coating selector, and bulk price list." />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- ===== Top Bar ===== -->
+  <div class="topbar">
+    <div class="container topbar__inner">
+      <span>🌐 Deutsch · USD $</span>
+      <span class="topbar__links">
+        <a href="index.html#promotions">Aktionen</a>
+        <a href="index.html#about">Über uns</a>
+        <a href="index.html#contact">Kontakt</a>
+      </span>
+    </div>
+  </div>
+
+  <!-- ===== Header / Nav ===== -->
+  <header class="header" id="top">
+    <div class="container header__inner">
+      <a href="index.html" class="brand" aria-label="Huapeng Magnetics home">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 40 40" width="34" height="34">
+            <defs>
+              <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#22d3ee"/>
+                <stop offset="1" stop-color="#3b82f6"/>
+              </linearGradient>
+            </defs>
+            <rect x="2" y="2" width="36" height="36" rx="9" fill="#0b1220" stroke="url(#bg)" stroke-width="2"/>
+            <path d="M13 27V13h9a5 5 0 0 1 0 10h-4" fill="none" stroke="url(#bg)" stroke-width="3.2" stroke-linecap="round"/>
+            <line x1="13" y1="23" x2="22" y2="23" stroke="url(#bg)" stroke-width="3.2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="brand__text">HUAPENG<span>MAGNETICS</span></span>
+      </a>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="index.html">Startseite</a>
+        <a href="index.html#categories">Kategorien</a>
+        <a href="index.html#products">Produkte</a>
+        <a href="request-quote.html" class="is-active">Preisliste</a>
+        <a href="index.html#about">Über uns</a>
+        <a href="index.html#promotions">Aktionen</a>
+      </nav>
+
+      <div class="header__actions">
+        <a class="btn btn--ghost" href="index.html#contact">Angebot anfordern</a>
+        <button class="cart" id="cartBtn" aria-label="Cart">
+          🛒 <span class="cart__count" id="cartCount">0</span>
+        </button>
+        <button class="nav-toggle" id="navToggle" aria-label="Menü">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Hero ===== -->
+  <section class="quote-hero">
+    <div class="container">
+      <span class="eyebrow">Sofortpreis</span>
+      <h1>Online Preisliste</h1>
+      <p>Aktuelle USD-Preise für <strong>N35 nickelparierte NdFeB-Magnete</strong>. Wählen Sie Sorte, Form, Beschichtung, Abmessungen und Menge für eine sofortige Schätzung. Höhere Sorten und Sonderformen auf Anfrage verfügbar.</p>
+    </div>
+  </section>
+
+  <!-- ===== Rate Bar ===== -->
+  <div class="rate-bar" id="rateBar">
+    <div class="container rate-bar__inner">
+      <span class="rate-bar__label">Aktueller Wechselkurs <small>(nur zur Orientierung)</small></span>
+      <strong class="rate-bar__value">1 USD = <span id="rateValue">--</span> CNY</strong>
+      <span class="rate-bar__source" id="rateSource">Laden…</span>
+    </div>
+  </div>
+
+  <!-- ===== Calculator ===== -->
+  <section class="quote-calc section">
+    <div class="container">
+      <div class="calc-grid">
+        <form class="calc-form card" id="quoteForm">
+          <h2>Schnellangebot</h2>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="qSorte">Sorte</label>
+              <select id="qSorte">
+                <option value="N35" selected>N35 — Sofortpreis</option>
+                <option value="N38">N38 — Angebot anfordern</option>
+                <option value="N40">N40 — Angebot anfordern</option>
+                <option value="N42">N42 — Angebot anfordern</option>
+                <option value="N45">N45 — Angebot anfordern</option>
+                <option value="N48">N48 — Angebot anfordern</option>
+                <option value="N50">N50 — Angebot anfordern</option>
+                <option value="N52">N52 — Angebot anfordern</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="qForm">Form</label>
+              <select id="qForm">
+                <option value="disc" selected>Scheibe</option>
+                <option value="block">Block</option>
+                <option value="ring">Ring</option>
+                <option value="arc">Bogen / Segment</option>
+                <option value="custom">Individuell / Unregelmäßig</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row" id="qDims">
+            <!-- dynamic inputs -->
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="qBeschichtung">Beschichtung</label>
+              <select id="qBeschichtung">
+                <option value="nickel" selected>Nickel</option>
+                <option value="zinc">Zink</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="qQty">Menge</label>
+              <select id="qQty">
+                <option value="1000">1,000 pcs</option>
+                <option value="50000" selected>50,000 pcs</option>
+                <option value="500000">500,000 pcs</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row" id="qExtraDims">
+            <!-- Zusätzliche Spezifikationen -->
+          </div>
+
+          <button type="submit" class="btn btn--primary btn--wide">Preis berechnen</button>
+        </form>
+
+        <div class="calc-result card" id="calcResult">
+          <h2>Schätzung</h2>
+          <div class="calc-result__empty">
+            <p>Füllen Sie das Formular aus und klicken Sie auf <strong>Preis berechnen</strong> um Ihre Schätzung zu sehen.</p>
+            <p class="muted">Nicht-N35-Sorten und Sonder-/Bogenformen werden manuell angeboten.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- History Section -->
+      <div class="card" id="historySection" style="margin-top: 2rem;">
+        <h2>Angebotshistorie</h2>
+        <div id="historyContainer">
+          <p class="muted">Noch keine Historie. Berechnen Sie ein Angebot, um es zu speichern.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Standard Price List ===== -->
+  <section class="quote-table section" id="priceList">
+    <div class="container">
+      <header class="section__head">
+        <span class="eyebrow">Standardliste</span>
+        <h2>N35 Nickel-beschichtete Preisliste</h2>
+        <p>FOB China Basis. Steuer inbegriffen. Preise direkt in USD pro Stück, keine Währungsumrechnung erforderlich. Andere Sorten und Beschichtungen — <a href="index.html#contact">Angebot anfordern</a>.</p>
+      </header>
+
+      <div class="table-filter" id="tableFilter">
+        <button class="is-active" data-filter="all">Alle</button>
+        <button data-filter="disc">Scheibe</button>
+        <button data-filter="block">Block</button>
+        <button data-filter="ring">Ring</button>
+      </div>
+
+      <div class="table-wrap">
+        <table class="price-table price-table--img">
+          <thead>
+            <tr>
+              <th>Spezifikation</th>
+              <th>Bilder</th>
+              <th>Preis @ 1Tsd</th>
+              <th>Preis @ 50Tsd</th>
+              <th>Preis @ 500Tsd</th>
+            </tr>
+          </thead>
+          <colgroup>
+            <col style="width:22%">
+            <col style="width:18%">
+            <col style="width:20%">
+            <col style="width:20%">
+            <col style="width:20%">
+          </colgroup>
+          <tbody id="priceTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Sorte Spezifikations ===== -->
+  <section class="grade-specs section">
+    <div class="container">
+      <header class="section__head">
+        <span class="eyebrow">Technische Referenz</span>
+        <h2>Sorte &amp; Leistungsreferenz</h2>
+        <p>Wählen Sie das richtige Energiprodukt und die Betriebstemperatur für Ihre Anwendung.</p>
+      </header>
+
+      <div class="table-wrap">
+        <table class="spec-table">
+          <thead>
+            <tr>
+              <th>Sorte</th>
+              <th>Br (kGs)</th>
+              <th>Hcj (kOe)</th>
+              <th>BHmax (MGOe)</th>
+              <th>Max Betriebstemperatur</th>
+              <th>Typische Anwendung</th>
+            </tr>
+          </thead>
+          <tbody id="gradeTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="section section--cta">
+    <div class="container cta-box">
+      <div>
+        <h2>Brauchen Sie ein offizielles Angebot oder eine Sonderform?</h2>
+        <p>Teilen Sie uns Ihre Sorte, Beschichtung, Toleranz und Menge mit. Wir antworten innerhalb von 24 Stunden.</p>
+      </div>
+      <a href="index.html#contact" class="btn btn--primary">Vertrieb kontaktieren</a>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="container footer__grid">
+      <div>
+        <a href="index.html" class="brand">
+          <span class="brand__text">HUAPENG<span>MAGNETICS</span></span>
+        </a>
+        <p class="footer__desc">Industrielle Neodym-Magnete für Motoren, Sensoren, Lautsprecher und magnetische Baugruppen. Globale Lieferung, exportfertige Dokumentation.</p>
+      </div>
+      <div>
+        <h4>Schnelllinks</h4>
+        <ul>
+          <li><a href="index.html">Startseite</a></li>
+          <li><a href="index.html#categories">Kategorien</a></li>
+          <li><a href="request-quote.html">Preisliste</a></li>
+          <li><a href="index.html#about">Über uns</a></li>
+          <li><a href="index.html#contact">Kontakt</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Kontakt</h4>
+        <ul>
+          <li>E-Mail: <a href="mailto:info@huapeng-magnet.com">info@huapeng-magnet.com</a></li>
+          <li>Tel / WhatsApp: +86 — (folgt)</li>
+          <li>Adresse: Nr. 859 Shijia Rd, Zonghan, Cixi, Ningbo, Zhejiang, China</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Rechtliche Hinweise</h4>
+        <p class="muted small">NdFeB-Magnete können exportkontroll- und dual-use-Bestimmungen in Ihrem Land unterliegen. Wir liefern nur für industrielle, elektronische und Verbraucheranwendungen.</p>
+      </div>
+    </div>
+    <div class="container footer__bottom">
+      <p>© 2026 Huapeng Magnetics. Alle Rechte vorbehalten.</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/quote.js"></script>
+</body>
+</html>
