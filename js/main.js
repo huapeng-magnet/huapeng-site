@@ -8,6 +8,97 @@
   var CART_KEY = "hp_cart";
   var FORMS_ENDPOINT = "https://huapeng-magnet.com";
 
+  /* ---------- i18n ---------- */
+  var HTML_LANG = (document.documentElement.getAttribute("lang") || "en").toLowerCase();
+  var PAGE_LANG = HTML_LANG.indexOf("de") === 0 ? "de"
+                : HTML_LANG.indexOf("es") === 0 ? "es"
+                : "en";
+  var I18N = {
+    en: {
+      "slide": "Slide",
+      "noResults": "No products match your search or filters.",
+      "disc": "Disc Magnet",
+      "block": "Block Magnet",
+      "ring": "Ring Magnet",
+      "arc": "Arc Segment",
+      "assembly": "Custom Assembly",
+      "configureSubtitle": "Configure grade, dimensions and quantity",
+      "grade": "Grade",
+      "coating": "Coating",
+      "qtyPcs": "Quantity (pcs)",
+      "chooseJpg": "Choose JPG file",
+      "maxMb": "(max 4 MB)",
+      "priceCalc": "Est. unit price: calculating…",
+      "priceReq": "Price on request",
+      "addToCart": "Add to Cart",
+      "removeImage": "Remove image",
+      "decrease": "Decrease",
+      "increase": "Increase",
+      "quantity": "Quantity",
+      "remove": "Remove",
+      "subtotal": "Subtotal",
+      "addedPrefix": "Added: ",
+      "pcsUnit": "pcs",
+      "typicalUse": "Typical Use"
+    },
+    de: {
+      "slide": "Folie",
+      "noResults": "Keine Produkte entsprechen Ihrer Suche oder Ihren Filtern.",
+      "disc": "Scheibenmagnet",
+      "block": "Blockmagnet",
+      "ring": "Ringmagnet",
+      "arc": "Bogensegment",
+      "assembly": "Sonderanfertigung",
+      "configureSubtitle": "Grad, Abmessungen und Menge konfigurieren",
+      "grade": "Grad",
+      "coating": "Beschichtung",
+      "qtyPcs": "Menge (Stk.)",
+      "chooseJpg": "JPG-Datei wählen",
+      "maxMb": "(max. 4 MB)",
+      "priceCalc": "Geschätzter Stückpreis: wird berechnet…",
+      "priceReq": "Preis auf Anfrage",
+      "addToCart": "In den Warenkorb",
+      "removeImage": "Bild entfernen",
+      "decrease": "Verringern",
+      "increase": "Erhöhen",
+      "quantity": "Menge",
+      "remove": "Entfernen",
+      "subtotal": "Zwischensumme",
+      "addedPrefix": "Hinzugefügt: ",
+      "pcsUnit": "Stk.",
+      "typicalUse": "Typische Anwendung"
+    },
+    es: {
+      "slide": "Diapositiva",
+      "noResults": "Ningún producto coincide con su búsqueda o filtros.",
+      "disc": "Imán de Disco",
+      "block": "Imán de Bloque",
+      "ring": "Imán de Anillo",
+      "arc": "Segmento de Arco",
+      "assembly": "Ensamblaje Personalizado",
+      "configureSubtitle": "Configure grado, dimensiones y cantidad",
+      "grade": "Grado",
+      "coating": "Recubrimiento",
+      "qtyPcs": "Cantidad (unidades)",
+      "chooseJpg": "Elegir archivo JPG",
+      "maxMb": "(máx. 4 MB)",
+      "priceCalc": "Precio unitario est.: calculando…",
+      "priceReq": "Precio a consultar",
+      "addToCart": "Añadir al Carrito",
+      "removeImage": "Eliminar imagen",
+      "decrease": "Disminuir",
+      "increase": "Aumentar",
+      "quantity": "Cantidad",
+      "remove": "Eliminar",
+      "subtotal": "Subtotal",
+      "addedPrefix": "Añadido: ",
+      "pcsUnit": "unidades",
+      "typicalUse": "Uso Típico"
+    }
+  };
+  var dict = I18N[PAGE_LANG] || I18N.en;
+  function t(key) { return dict[key] || key; }
+
   /* ---------- Pricing helpers (from pricing.js) ---------- */
   var Pricing = window.HPPricing || {};
   var fmt$ = Pricing.fmt$ || function (n) { return "$" + n.toFixed(2); };
@@ -44,7 +135,7 @@
     slides.forEach(function (_, i) {
       var b = document.createElement("button");
       b.setAttribute("role", "tab");
-      b.setAttribute("aria-label", "Slide " + (i + 1));
+      b.setAttribute("aria-label", dict["slide"] + " " + (i + 1));
       if (i === 0) b.classList.add("is-active");
       b.addEventListener("click", function () { go(i); restart(); });
       dotsWrap.appendChild(b);
@@ -84,12 +175,14 @@
    * in the configurator. CATALOG.name is the shape label (used by configurator
    * header, cart item labels, Feishu message). */
   var CATALOG = [
-    { id: "disc-n52", name: "Disc Magnet", shape: "disc", grade: "N52", coating: "nickel", img: "assets/disc_1.jpg", defaultDims: { d: 10, h: 3 } },
-    { id: "block-n50", name: "Block Magnet", shape: "block", grade: "N50", coating: "zinc", img: "assets/block_2.jpg", defaultDims: { l: 20, w: 10, h: 5 } },
-    { id: "ring-n45", name: "Ring Magnet", shape: "ring", grade: "N45", coating: "nickel", img: "assets/ring_1.png", defaultDims: { d: 20, hole: 10, h: 5 } },
-    { id: "arc-n42", name: "Arc Segment", shape: "arc", grade: "N42", coating: "nickel", img: "assets/arc_1.png", defaultDims: { l: 30, w: 20, h: 5, angle: 45 } },
-    { id: "custom-assembly", name: "Custom Assembly", shape: "assembly", grade: "N35", coating: "nickel", img: null, isCustom: true }
+    { id: "disc-n52", name: "disc", shape: "disc", grade: "N52", coating: "nickel", img: "assets/disc_1.jpg", defaultDims: { d: 10, h: 3 } },
+    { id: "block-n50", name: "block", shape: "block", grade: "N50", coating: "zinc", img: "assets/block_2.jpg", defaultDims: { l: 20, w: 10, h: 5 } },
+    { id: "ring-n45", name: "ring", shape: "ring", grade: "N45", coating: "nickel", img: "assets/ring_1.png", defaultDims: { d: 20, hole: 10, h: 5 } },
+    { id: "arc-n42", name: "arc", shape: "arc", grade: "N42", coating: "nickel", img: "assets/arc_1.png", defaultDims: { l: 30, w: 20, h: 5, angle: 45 } },
+    { id: "custom-assembly", name: "assembly", shape: "assembly", grade: "N35", coating: "nickel", img: null, isCustom: true }
   ];
+
+  function productLabel(name) { return dict[name] || name; }
 
   function findProduct(id) {
     return CATALOG.find(function (p) { return p.id === id; });
@@ -106,7 +199,7 @@
     noResultsEl = document.createElement("p");
     noResultsEl.id = "productSearchEmpty";
     noResultsEl.className = "cart-empty";
-    noResultsEl.textContent = "No products match your search or filters.";
+    noResultsEl.textContent = dict["noResults"];
     noResultsEl.style.textAlign = "center";
     noResultsEl.style.padding = "30px 0";
     noResultsEl.hidden = true;
@@ -274,12 +367,12 @@
       '<div class="config-modal">' +
         '<div class="config-modal__media">' + imgHtml + '</div>' +
         '<div class="config-modal__content">' +
-          '<h3 class="config-modal__title">' + product.name + '</h3>' +
-          '<p class="config-modal__subtitle">Configure grade, dimensions and quantity</p>' +
+          '<h3 class="config-modal__title">' + escHtml(productLabel(product.name)) + '</h3>' +
+          '<p class="config-modal__subtitle">' + escHtml(dict["configureSubtitle"]) + '</p>' +
           '<form id="configForm" class="config-modal__form">' +
             '<div class="config-modal__row config-modal__row--grade">' +
               '<div class="field config-modal__field">' +
-                '<label for="cfgGrade">Grade</label>' +
+                '<label for="cfgGrade">' + escHtml(dict["grade"]) + '</label>' +
                 '<select id="cfgGrade" required>' + buildGradeOptions(product.grade) + '</select>' +
               '</div>' +
             '</div>' +
@@ -288,11 +381,11 @@
             '</div>' +
             '<div class="config-modal__row config-modal__row--bottom">' +
               '<div class="field config-modal__field">' +
-                '<label for="cfgCoating">Coating</label>' +
+                '<label for="cfgCoating">' + escHtml(dict["coating"]) + '</label>' +
                 '<select id="cfgCoating" required>' + buildCoatingOptions(product.coating || "nickel") + '</select>' +
               '</div>' +
               '<div class="field config-modal__field">' +
-                '<label for="cfgQty">Quantity (pcs)</label>' +
+                '<label for="cfgQty">' + escHtml(dict["qtyPcs"]) + '</label>' +
                 '<input type="number" id="cfgQty" min="1" step="1" value="1000" required>' +
               '</div>' +
             '</div>' +
@@ -300,17 +393,17 @@
               '<div class="field config-modal__field config-modal__field--full">' +
                 '<label for="cfgDrawing" class="drawing-file-trigger">' +
                   '<span class="drawing-file-trigger__icon">📎</span>' +
-                  '<span class="drawing-file-trigger__text">Choose JPG file</span>' +
+                  '<span class="drawing-file-trigger__text">' + escHtml(dict["chooseJpg"]) + '</span>' +
                   '<span class="drawing-file-trigger__filename" id="cfgDrawingFilename"></span>' +
-                  '<span class="drawing-file-trigger__hint">(max 4 MB)</span>' +
+                  '<span class="drawing-file-trigger__hint">' + escHtml(dict["maxMb"]) + '</span>' +
                   '<input type="file" id="cfgDrawing" name="drawing" accept="image/jpeg,.jpg" class="drawing-input">' +
                 '</label>' +
                 '<div class="drawing-preview" id="cfgDrawingPreview"></div>' +
               '</div>' +
             '</div>' +
-            '<div class="config-modal__price" id="cfgPrice">Est. unit price: calculating…</div>' +
+            '<div class="config-modal__price" id="cfgPrice">' + escHtml(dict["priceCalc"]) + '</div>' +
             '<div class="config-modal__actions">' +
-              '<button type="submit" class="btn btn--primary">Add to Cart</button>' +
+              '<button type="submit" class="btn btn--primary">' + escHtml(dict["addToCart"]) + '</button>' +
             '</div>' +
           '</form>' +
         '</div>' +
@@ -343,7 +436,7 @@
     var priceEl = document.getElementById("cfgPrice");
     if (!priceEl) return;
     if (product.shape === "assembly") {
-      priceEl.textContent = "Price on request";
+      priceEl.textContent = dict["priceReq"];
       return;
     }
     var grade = document.getElementById("cfgGrade").value;
@@ -356,7 +449,7 @@
     } else if (qty <= 0) {
       priceEl.textContent = "Please enter a valid quantity";
     } else {
-      priceEl.textContent = "Price on request";
+      priceEl.textContent = dict["priceReq"];
     }
   }
 
@@ -424,7 +517,7 @@
           previewEl.innerHTML =
             '<div class="drawing-preview__item">' +
               '<img src="' + dataUrl + '" alt="Preview">' +
-              '<button type="button" class="drawing-preview__remove" aria-label="Remove image" title="Remove image">&times;</button>' +
+              '<button type="button" class="drawing-preview__remove" aria-label="' + dict["removeImage"] + '" title="' + dict["removeImage"] + '">&times;</button>' +
             '</div>';
           var btn = previewEl.querySelector(".drawing-preview__remove");
           if (btn) btn.addEventListener("click", clearPreview);
@@ -447,7 +540,7 @@
     // Build cart item directly (skip drawing upload for now)
     var cartItem = {
       id: product.id,
-      name: product.name,
+      name: productLabel(product.name),
       shape: product.shape,
       grade: grade,
       coating: coating,
@@ -462,7 +555,7 @@
     renderCart();
     closeConfigModal();
     openCart();
-    showToast("Added: " + product.name + " (" + grade + ", " + fmtNum(qty) + " pcs)");
+    showToast(dict["addedPrefix"] + productLabel(product.name) + " (" + grade + ", " + fmtNum(qty) + " " + dict["pcsUnit"] + ")");
   }
 
   /* Bind configurator + detail to product cards */
@@ -555,11 +648,11 @@
             '<div class="cart-item__price">' + fmt(price) + ' / pc</div>' +
           '</div>' +
           '<div class="cart-item__qty">' +
-            '<button data-dec="' + idx + '" aria-label="Decrease">−</button>' +
-            '<input class="cart-item__qty-input" type="number" min="1" step="100" value="' + item.qty + '" data-qty="' + idx + '" aria-label="Quantity">' +
-            '<button data-inc="' + idx + '" aria-label="Increase">+</button>' +
+            '<button data-dec="' + idx + '" aria-label="' + dict["decrease"] + '">−</button>' +
+            '<input class="cart-item__qty-input" type="number" min="1" step="100" value="' + item.qty + '" data-qty="' + idx + '" aria-label="' + dict["quantity"] + '">' +
+            '<button data-inc="' + idx + '" aria-label="' + dict["increase"] + '">+</button>' +
           '</div>' +
-          '<button class="cart-item__remove" data-rm="' + idx + '" aria-label="Remove">🗑</button>' +
+          '<button class="cart-item__remove" data-rm="' + idx + '" aria-label="' + dict["remove"] + '">🗑</button>' +
         '</div>';
     }).join("");
     cartSubtotal.textContent = fmt(total);
@@ -593,7 +686,7 @@
         '</div>' +
         '<label for="cartDrawing_' + idx + '" class="drawing-file-trigger">' +
           '<span class="drawing-file-trigger__icon">📎</span>' +
-          '<span class="drawing-file-trigger__text">Choose JPG</span>' +
+          '<span class="drawing-file-trigger__text">' + escHtml(dict["chooseJpg"]) + '</span>' +
           '<span class="drawing-file-trigger__filename" id="cartDrawingFilename_' + idx + '"></span>' +
           '<span class="drawing-file-trigger__hint">' + (hasExisting ? "(already uploaded)" : "(optional, max 4 MB)") + '</span>' +
           '<input type="file" id="cartDrawing_' + idx + '" accept="image/jpeg,.jpg" class="drawing-input">' +
@@ -612,7 +705,7 @@
         preview.innerHTML =
           '<div class="drawing-preview__item">' +
             '<img src="' + item.drawing + '" alt="Existing drawing">' +
-            '<button type="button" class="drawing-preview__remove" aria-label="Remove" title="Remove">&times;</button>' +
+            '<button type="button" class="drawing-preview__remove" aria-label="' + dict["remove"] + '" title="Remove">&times;</button>' +
           '</div>';
         var btn = preview.querySelector(".drawing-preview__remove");
         if (btn) {
@@ -725,7 +818,7 @@
       var note = item.drawing ? " [JPG attached]" : "";
       lines.push("- " + cartItemName(item) + " × " + fmtNum(item.qty) + " pcs, unit price " + fmt(price) + " = " + fmt(line) + note);
     });
-    lines.push("Subtotal: " + fmt(total));
+    lines.push(dict["subtotal"] + ": " + fmt(total));
     window.location.href = "order.html";
   });
 
@@ -961,7 +1054,7 @@
     detailBody.innerHTML =
       '<div class="detail">' + imgHtml +
         '<div class="detail__content">' +
-          '<h3 class="detail__title">' + escHtml(product.name) + '</h3>' +
+          '<h3 class="detail__title">' + escHtml(productLabel(product.name)) + '</h3>' +
           '<p class="detail__tagline">' + escHtml(d.tagline || (product.shape === "assembly" ? "Made-to-order" : "Standard & custom")) + '</p>' +
           '<p class="detail__desc">' + escHtml(d.description || "High-performance sintered NdFeB magnet, fully customizable to your specification.") + '</p>' +
           '<div class="detail__grid">' +
@@ -1027,7 +1120,7 @@
     if (gtpl) {
       var grades = d.grades || ["N35","N38","N40","N42","N45","N48","N50","N52"];
       var html = '<table class="grade-perf-table"><thead><tr>' +
-        '<th>Grade</th><th>(BH)max MGOe</th><th>Hcj kOe</th><th>T<sub>max</sub> °C</th><th>Typical Use</th>' +
+        '<th>' + dict['grade'] + '</th><th>(BH)max MGOe</th><th>Hcj kOe</th><th>T<sub>max</sub> °C</th><th>' + dict['typicalUse'] + '</th>' +
         '</tr></thead><tbody>';
       var uses = {
         'N35':'General purpose', 'N38':'Speakers, fixtures', 'N40':'Motors', 'N42':'Motors, sensors',
@@ -1464,28 +1557,28 @@
 (function() {
   var langBtn = document.getElementById('langBtn');
   var langDropdown = document.getElementById('langDropdown');
-  
+
   if (langBtn && langDropdown) {
     langBtn.addEventListener('click', function(e) {
       e.stopPropagation();
       langDropdown.classList.toggle('show');
     });
-    
+
     document.addEventListener('click', function() {
       langDropdown.classList.remove('show');
     });
-    
-    langDropdown.addEventListener('click', function(e) {
-      if (e.target.classList.contains('lang-option')) {
-        var lang = e.target.getAttribute('data-lang');
-        if (lang !== 'en') {
-          var currentPath = window.location.pathname;
-          var newPath = '/' + lang + currentPath;
-          window.location.href = newPath;
-        } else {
-          window.location.href = '/';
-        }
-      }
-    });
+
+    // 拦截"English"选项（href=#），按当前页深度计算根路径
+    var enLink = langDropdown.querySelector('.lang-option[data-lang="en"]');
+    if (enLink && (!enLink.getAttribute('href') || enLink.getAttribute('href') === '#')) {
+      enLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        var depth = (window.location.pathname.match(/\//g) || []).length - 1;
+        if (window.location.pathname === '/' || window.location.pathname === '/index.html') depth = 0;
+        var prefix = '';
+        for (var i = 0; i < depth; i++) prefix += '../';
+        window.location.href = prefix || '/';
+      });
+    }
   }
 })();
