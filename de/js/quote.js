@@ -4,23 +4,6 @@
 (function () {
   "use strict";
 
-  /* ---------- i18n DOM ID aliases ----------
-   * EN request-quote uses qGrade/qShape/qCoating; DE uses qSorte/qForm/qBeschichtung;
-   * ES uses qGrado/qForma/qRecubrimiento. All three pages use the same logic,
-   * so look up the actual element id by language. */
-  var HTML_LANG = (document.documentElement.getAttribute("lang") || "en").toLowerCase();
-  var IDS = HTML_LANG.indexOf("de") === 0 ? {
-    grade: "qSorte", shape: "qForm", coating: "qBeschichtung", qty: "qQty",
-    d: "qD", h: "qH", l: "qL", w: "qW", hole: "qBohrung", angle: "qWinkel"
-  } : HTML_LANG.indexOf("es") === 0 ? {
-    grade: "qGrado", shape: "qForma", coating: "qRecubrimiento", qty: "qQty",
-    d: "qD", h: "qH", l: "qL", w: "qW", hole: "qAgujero", angle: "qAngulo"
-  } : {
-    grade: "qGrade", shape: "qShape", coating: "qCoating", qty: "qQty",
-    d: "qD", h: "qH", l: "qL", w: "qW", hole: "qHole", angle: "qAngle"
-  };
-  function $id(key) { return document.getElementById(IDS[key]); }
-
   var DEFAULT_RATE = 7.2;
   var rate = DEFAULT_RATE;
   var RATE_API = "https://api.exchangerate-api.com/v4/latest/USD";
@@ -157,7 +140,7 @@
 
   /* ---------- Dynamic dimensions ---------- */
   var dimWrap = document.getElementById("qDims");
-  var shapeSel = $id("shape");
+  var shapeSel = document.getElementById("qShape");
 
   function renderDims() {
     if (!dimWrap) return;
@@ -245,22 +228,22 @@
     var item = history.find(function(h) { return h.id === id; });
     if (!item) return;
 
-    $id("grade").value = item.grade;
-    $id("shape").value = item.shape;
-    $id("coating").value = item.coating;
-    $id("qty").value = item.qty;
+    document.getElementById("qGrade").value = item.grade;
+    document.getElementById("qShape").value = item.shape;
+    document.getElementById("qCoating").value = item.coating;
+    document.getElementById("qQty").value = item.qty;
 
     if (item.shape === "disc") {
-      $id("d").value = item.dims.d;
-      $id("h").value = item.dims.h;
+      document.getElementById("qD").value = item.dims.d;
+      document.getElementById("qH").value = item.dims.h;
     } else if (item.shape === "block") {
-      $id("l").value = item.dims.l;
-      $id("w").value = item.dims.w;
-      $id("h").value = item.dims.h;
+      document.getElementById("qL").value = item.dims.l;
+      document.getElementById("qW").value = item.dims.w;
+      document.getElementById("qH").value = item.dims.h;
     } else if (item.shape === "ring") {
-      $id("d").value = item.dims.d;
-      $id("hole").value = item.dims.hole;
-      $id("h").value = item.dims.h;
+      document.getElementById("qD").value = item.dims.d;
+      document.getElementById("qHole").value = item.dims.hole;
+      document.getElementById("qH").value = item.dims.h;
     }
     calculate();
   };
@@ -307,10 +290,10 @@
     if (e && e.preventDefault) e.preventDefault();
     if (!resultBox) return;
 
-    var grade = $id("grade").value;
+    var grade = document.getElementById("qGrade").value;
     var shape = shapeSel.value;
-    var coating = $id("coating").value;
-    var qty = parseInt($id("qty").value, 10);
+    var coating = document.getElementById("qCoating").value;
+    var qty = parseInt(document.getElementById("qQty").value, 10);
 
     if (shape === "arc" || shape === "custom") {
       resultBox.innerHTML = requestQuoteHTML(shape + " shape", "Arc, segment and irregular shapes require drawings and magnetization direction. Request a manual quote.");
@@ -505,10 +488,10 @@
   }
 
   function requestQuoteHTML(title, msg) {
-    var grade = $id("grade").value;
+    var grade = document.getElementById("qGrade").value;
     var shape = shapeSel.value;
-    var coating = $id("coating").value;
-    var qty = parseInt($id("qty").value, 10);
+    var coating = document.getElementById("qCoating").value;
+    var qty = parseInt(document.getElementById("qQty").value, 10);
     var dims = getDims();
     lastQuote = { grade: grade, shape: shape, coating: coating, qty: qty, dims: dims, specText: specString(shape, dims), unitUsd: null, totalUsd: null };
     return '<div class="calc-result__request">' +
