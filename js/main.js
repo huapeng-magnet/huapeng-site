@@ -37,6 +37,8 @@
       "quantity": "Quantity",
       "remove": "Remove",
       "subtotal": "Subtotal",
+      "cartEmpty": "Your cart is empty.",
+      "cartEmptyHint": "Add some magnets to get started.",
       "addedPrefix": "Added: ",
       "pcsUnit": "pcs",
       "typicalUse": "Typical Use"
@@ -64,6 +66,8 @@
       "quantity": "Menge",
       "remove": "Entfernen",
       "subtotal": "Zwischensumme",
+      "cartEmpty": "Ihr Warenkorb ist leer.",
+      "cartEmptyHint": "Fügen Sie Magnete hinzu, um zu beginnen.",
       "addedPrefix": "Hinzugefügt: ",
       "pcsUnit": "Stk.",
       "typicalUse": "Typische Anwendung"
@@ -91,6 +95,8 @@
       "quantity": "Cantidad",
       "remove": "Eliminar",
       "subtotal": "Subtotal",
+      "cartEmpty": "Su carrito está vacío.",
+      "cartEmptyHint": "Añada imanes para comenzar.",
       "addedPrefix": "Añadido: ",
       "pcsUnit": "unidades",
       "typicalUse": "Uso Típico"
@@ -638,7 +644,7 @@
     var count = cart.reduce(function (s, i) { return s + i.qty; }, 0);
     cartCountEl.textContent = count;
     if (!cart.length) {
-      cartBody.innerHTML = '<p class="cart-empty">Your cart is empty.<br/>Add some magnets to get started.</p>';
+      cartBody.innerHTML = '<p class="cart-empty">' + dict["cartEmpty"] + '<br/>' + dict["cartEmptyHint"] + '</p>';
       cartSubtotal.textContent = fmt(0);
       return;
     }
@@ -814,7 +820,7 @@
   /* ---------- Cart checkout -> contact form ---------- */
   var checkoutLink = document.getElementById("checkoutLink");
   if (checkoutLink) checkoutLink.addEventListener("click", function () {
-    if (!cart.length) { showToast("Your cart is empty."); return; }
+    if (!cart.length) { showToast(dict["cartEmpty"]); return; }
     var lines = ["Shopping cart inquiry items:"];
     var total = 0;
     cart.forEach(function (item) {

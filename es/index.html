@@ -31,7 +31,7 @@
   <!-- ===== Header / Nav ===== -->
   <header class="header" id="top">
     <div class="container header__inner">
-      <a href="#top" class="brand" aria-label="Huapeng Magnetics home">
+      <a href="#top" class="brand" aria-label="Huapeng Magnetics inicio">
         <span class="brand__mark" aria-hidden="true">
           <svg viewBox="0 0 40 40" width="34" height="34">
             <defs>
@@ -48,7 +48,7 @@
         <span class="brand__text">HUAPENG<span>MAGNETICS</span></span>
       </a>
 
-      <nav class="nav" aria-label="Primary">
+      <nav class="nav" aria-label="Navegación principal">
         <a href="#top">Inicio</a>
         <a href="#categories">Categorías</a>
         <a href="#products">Productos</a>
@@ -72,13 +72,13 @@
         <button class="cart" id="cartBtn" aria-label="Carrito">
           🛒 <span class="cart__count" id="cartCount">0</span>
         </button>
-        <button class="nav-toggle" id="navToggle" aria-label="Menu">☰</button>
+        <button class="nav-toggle" id="navToggle" aria-label="Menú">☰</button>
       </div>
     </div>
   </header>
 
   <!-- ===== Hero Carousel ===== -->
-  <section class="hero" aria-label="Featured">
+  <section class="hero" aria-label="Destacado">
     <div class="hero__track" id="heroTrack">
       <article class="slide is-active" style="--img:url('../assets/hero.png')">
         <div class="slide__overlay"></div>
@@ -190,27 +190,27 @@
     <div class="container">
       <header class="section__head reveal">
         <span class="eyebrow">Más Vendidos</span>
-        <h2>Popular Magnets</h2>
-        <p>Our most-requested neodymium magnets, ready for quick shipment.</p>
+        <h2>Imanes Populares</h2>
+        <p>Nuestros imanes de neodimio más solicitados, listos para envío rápido.</p>
       </header>
 
       <div class="filters reveal" id="productFilters">
         <div class="filter-group">
           <span class="filter-group__label">Forma</span>
           <div class="filter-group__btns" id="shapeFilter">
-            <button type="button" class="is-active" data-filter="all">All</button>
-            <button type="button" data-filter="disc">Disc</button>
-            <button type="button" data-filter="block">Block</button>
-            <button type="button" data-filter="ring">Ring</button>
-            <button type="button" data-filter="arc">Arc</button>
-            <button type="button" data-filter="cube">Cube</button>
-            <button type="button" data-filter="assembly">Custom</button>
+            <button type="button" class="is-active" data-filter="all">Todos</button>
+            <button type="button" data-filter="disc">Disco</button>
+            <button type="button" data-filter="block">Bloque</button>
+            <button type="button" data-filter="ring">Anillo</button>
+            <button type="button" data-filter="arc">Arco</button>
+            <button type="button" data-filter="cube">Cubo</button>
+            <button type="button" data-filter="assembly">Personalizado</button>
           </div>
         </div>
         <div class="filter-group">
           <span class="filter-group__label">Grado</span>
           <div class="filter-group__btns" id="gradeFilter">
-            <button type="button" class="is-active" data-filter="all">All</button>
+            <button type="button" class="is-active" data-filter="all">Todos</button>
             <button type="button" data-filter="N35">N35</button>
             <button type="button" data-filter="N38">N38</button>
             <button type="button" data-filter="N40">N40</button>
@@ -595,10 +595,10 @@
 
   <!-- ===== Cart Drawer ===== -->
   <div class="overlay" id="overlay" hidden></div>
-  <aside class="cart-drawer" id="cartDrawer" aria-hidden="true" aria-label="Shopping cart">
+  <aside class="cart-drawer" id="cartDrawer" aria-hidden="true" aria-label="Carrito de compras">
     <div class="cart-drawer__head">
       <h3>Su Carrito</h3>
-      <button class="cart-drawer__close" id="cartClose" aria-label="Close">✕</button>
+      <button class="cart-drawer__close" id="cartClose" aria-label="Cerrar">✕</button>
     </div>
     <div class="cart-drawer__body" id="cartBody"></div>
     <div class="cart-drawer__foot">
@@ -609,20 +609,20 @@
   </aside>
 
   <!-- ===== Product Config Modal ===== -->
-  <div class="modal" id="configModal" hidden aria-hidden="true" role="dialog" aria-label="Configure magnet">
+  <div class="modal" id="configModal" hidden aria-hidden="true" role="dialog" aria-label="Configurar imán">
     <div class="modal__overlay" id="configModalOverlay"></div>
     <div class="modal__panel">
-      <button type="button" class="modal__close" id="configModalClose" aria-label="Close">✕</button>
+      <button type="button" class="modal__close" id="configModalClose" aria-label="Cerrar">✕</button>
       <div class="modal__body" id="configModalBody"></div>
     </div>
   </div>
 
   <!-- ===== Product Detail Modal ===== -->
-  <div class="modal" id="detailModal" hidden aria-hidden="true" role="dialog" aria-label="Product details">
+  <div class="modal" id="detailModal" hidden aria-hidden="true" role="dialog" aria-label="Detalles del producto">
     <div class="modal__overlay" id="detailModalOverlay"></div>
     <div class="modal__panel">
       <button type="button" class="modal__maximize" id="detailModalMaximize" aria-label="Maximize" title="Maximize / Restore">⛶</button>
-      <button type="button" class="modal__close" id="detailModalClose" aria-label="Close">✕</button>
+      <button type="button" class="modal__close" id="detailModalClose" aria-label="Cerrar">✕</button>
       <div class="modal__body" id="detailModalBody"></div>
     </div>
   </div>

@@ -334,21 +334,21 @@
 
     resultBox.innerHTML =
       '<div class="calc-result__head">' +
-        '<span class="calc-result__label">Unit Price</span>' +
+        '<span class="calc-result__label">' + L.unitPrice + '</span>' +
         '<strong class="calc-result__price">' + fmt$(unitUsd) + '</strong>' +
-        '<span class="calc-result__sub">Tax included</span>' +
+        '<span class="calc-result__sub">' + L.taxIncl + '</span>' +
       '</div>' +
       '<div class="calc-result__body">' +
-        '<div><span>Quantity</span><strong>' + fmtNum(qty) + ' pcs</strong></div>' +
-        '<div><span>Total Estimate</span><strong>' + fmt$(totalUsd) + '</strong></div>' +
-        '<div><span>Spec</span><strong>' + specText + '</strong></div>' +
-        '<div><span>Grade</span><strong>' + grade + '</strong></div>' +
-        '<div><span>Coating</span><strong>' + coatingLabel(coating) + '</strong></div>' +
+        '<div><span>' + L.quantity + '</span><strong>' + fmtNum(qty) + ' pcs</strong></div>' +
+        '<div><span>' + L.totalEst + '</span><strong>' + fmt$(totalUsd) + '</strong></div>' +
+        '<div><span>' + L.spec + '</span><strong>' + specText + '</strong></div>' +
+        '<div><span>' + L.grade + '</span><strong>' + grade + '</strong></div>' +
+        '<div><span>' + L.coating + '</span><strong>' + coatingLabel(coating) + '</strong></div>' +
       '</div>' +
       '<div class="calc-result__actions">' +
-        '<button type="button" class="btn btn--primary" onclick="exportPDF()">Export PDF</button>' +
+        '<button type="button" class="btn btn--primary" onclick="exportPDF()">' + L.exportPdf + '</button>' +
       '</div>' +
-      '<p class="calc-result__note">Estimated USD price for reference — prices are quoted directly in USD, no extra currency conversion applied. Final quote depends on tolerance, magnetization direction, packing and shipping.</p>' +
+      '<p class="calc-result__note">' + L.estUsd + '.</p>' +
       quoteFormHTML();
   }
 
@@ -451,21 +451,68 @@
     return s;
   }
 
+  /* ---------- i18n strings ---------- */
+  var L10N = {
+    en: {
+      quoteTitle: "Request this quote",
+      quoteDesc: "Leave your contact details and we will confirm price, coating, tolerance and lead time by email.",
+      name: "Name", email: "Email", company: "Company", country: "Country",
+      notes: "Notes / special requests",
+      notesPh: "Tolerance, magnetization direction, packing, shipping terms...",
+      sendQuote: "Send Quote Request", sending: "Sending…",
+      unitPrice: "UNIT PRICE", taxIncl: "Tax included", quantity: "Quantity",
+      totalEst: "Total Estimate", spec: "Spec", grade: "Grade", coating: "Coating",
+      exportPdf: "Export PDF", estUsd: "Estimated USD price",
+      standardList: "STANDARD LIST", n35List: "N35 nickel-coated price list",
+      typicalUse: "Typical Use", contactSales: "Contact Sales",
+      needed: "* required", allShapes: "All"
+    },
+    de: {
+      quoteTitle: "Dieses Angebot anfordern",
+      quoteDesc: "Hinterlassen Sie Ihre Kontaktdaten — wir bestätigen Preis, Beschichtung, Toleranz und Lieferzeit per E-Mail.",
+      name: "Name", email: "E-Mail", company: "Unternehmen", country: "Land",
+      notes: "Hinweise / Sonderwünsche",
+      notesPh: "Toleranz, Magnetisierungsrichtung, Verpackung, Lieferbedingungen...",
+      sendQuote: "Angebot anfordern", sending: "Wird gesendet…",
+      unitPrice: "STÜCKPREIS", taxIncl: "Inkl. Steuern", quantity: "Menge",
+      totalEst: "Gesamtschätzung", spec: "Spezifikation", grade: "Sorte", coating: "Beschichtung",
+      exportPdf: "PDF exportieren", estUsd: "Geschätzter USD-Preis",
+      standardList: "STANDARDLISTE", n35List: "N35 nickel-beschichtete Preisliste",
+      typicalUse: "Typische Anwendung", contactSales: "Vertrieb kontaktieren",
+      needed: "* erforderlich", allShapes: "Alle"
+    },
+    es: {
+      quoteTitle: "Solicitar este presupuesto",
+      quoteDesc: "Deje sus datos de contacto y confirmaremos precio, recubrimiento, tolerancia y plazo de entrega por correo.",
+      name: "Nombre", email: "Email", company: "Empresa", country: "País",
+      notes: "Notas / solicitudes especiales",
+      notesPh: "Tolerancia, dirección de magnetización, embalaje, condiciones de envío...",
+      sendQuote: "Enviar Solicitud", sending: "Enviando…",
+      unitPrice: "PRECIO UNITARIO", taxIncl: "Impuestos incluidos", quantity: "Cantidad",
+      totalEst: "Estimación Total", spec: "Especificación", grade: "Grado", coating: "Recubrimiento",
+      exportPdf: "Exportar PDF", estUsd: "Precio estimado en USD",
+      standardList: "LISTA ESTÁNDAR", n35List: "Lista de precios N35 con recubrimiento de níquel",
+      typicalUse: "Uso Típico", contactSales: "Contactar Ventas",
+      needed: "* obligatorio", allShapes: "Todos"
+    }
+  };
+  var L = L10N[HTML_LANG.indexOf("de") === 0 ? "de" : HTML_LANG.indexOf("es") === 0 ? "es" : "en"];
+
   function quoteFormHTML() {
     return '<div class="quote-request">' +
-      '<h3>Request this quote</h3>' +
-      '<p>Leave your contact details and we will confirm price, coating, tolerance and lead time by email.</p>' +
+      '<h3>' + L.quoteTitle + '</h3>' +
+      '<p>' + L.quoteDesc + '</p>' +
       '<form id="quoteRequestForm" class="quote-request__form">' +
         '<div class="field-row">' +
-          '<div class="field"><label for="qrName">Name *</label><input type="text" id="qrName" name="name" required></div>' +
-          '<div class="field"><label for="qrEmail">Email *</label><input type="email" id="qrEmail" name="email" required></div>' +
+          '<div class="field"><label for="qrName">' + L.name + ' *</label><input type="text" id="qrName" name="name" required></div>' +
+          '<div class="field"><label for="qrEmail">' + L.email + ' *</label><input type="email" id="qrEmail" name="email" required></div>' +
         '</div>' +
         '<div class="field-row">' +
-          '<div class="field"><label for="qrCompany">Company</label><input type="text" id="qrCompany" name="company"></div>' +
-          '<div class="field"><label for="qrCountry">Country</label><input type="text" id="qrCountry" name="country"></div>' +
+          '<div class="field"><label for="qrCompany">' + L.company + '</label><input type="text" id="qrCompany" name="company"></div>' +
+          '<div class="field"><label for="qrCountry">' + L.country + '</label><input type="text" id="qrCountry" name="country"></div>' +
         '</div>' +
-        '<div class="field field--full"><label for="qrNotes">Notes / special requests</label><textarea id="qrNotes" name="notes" rows="2" placeholder="Tolerance, magnetization direction, packing, shipping terms..."></textarea></div>' +
-        '<button type="submit" class="btn btn--primary btn--wide">Send Quote Request</button>' +
+        '<div class="field field--full"><label for="qrNotes">' + L.notes + '</label><textarea id="qrNotes" name="notes" rows="2" placeholder="' + L.notesPh + '"></textarea></div>' +
+        '<button type="submit" class="btn btn--primary btn--wide">' + L.sendQuote + '</button>' +
       '</form>' +
     '</div>';
   }
@@ -479,7 +526,7 @@
       spec: buildSpecText() + (form.elements.notes.value.trim() ? "\n\nNotes: " + form.elements.notes.value.trim() : "")
     };
     var btn = form.querySelector("button[type=submit]");
-    if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
+    if (btn) { btn.disabled = true; btn.textContent = L.sending; }
     fetch(FORMS_ENDPOINT + "/quote", {
       method: "POST",
       headers: { "Content-Type": "application/json; charset=utf-8" },
@@ -491,12 +538,12 @@
           form.innerHTML = '<p class="quote-request__success">✅ Quote request sent! We will reply to ' + payload.email + ' within 1 business day.</p>';
         } else {
           alert("Submit failed. Please try again or email info@huapeng-magnet.com");
-          if (btn) { btn.disabled = false; btn.textContent = "Send Quote Request"; }
+          if (btn) { btn.disabled = false; btn.textContent = L.sendQuote; }
         }
       })
       .catch(function () {
         alert("Network error. Please try again or email info@huapeng-magnet.com");
-        if (btn) { btn.disabled = false; btn.textContent = "Send Quote Request"; }
+        if (btn) { btn.disabled = false; btn.textContent = L.sendQuote; }
       });
   }
 
@@ -554,9 +601,43 @@
   }
 
   /* ---------- Grade table ---------- */
+  var GRADE_USE = {
+    en: {
+      N35: "General-purpose holding, sensors, consumer electronics",
+      N38: "Higher holding force, magnetic closures, DC motors",
+      N40: "Motors, generators, high-performance assemblies",
+      N42: "Industrial motors, magnetic separators, sensors",
+      N45: "Premium motors, audio drivers, medical devices",
+      N48: "High-end motors, aerospace, precision instruments",
+      N50: "Maximum energy product for compact designs",
+      N52: "Extreme performance, research, specialty motors"
+    },
+    de: {
+      N35: "Allgemeine Halteanwendungen, Sensoren, Unterhaltungselektronik",
+      N38: "Höhere Haltekraft, Magnetverschlüsse, DC-Motoren",
+      N40: "Motoren, Generatoren, Hochleistungsbaugruppen",
+      N42: "Industriemotoren, Magnetabscheider, Sensoren",
+      N45: "Premium-Motoren, Audiotreiber, Medizingeräte",
+      N48: "High-End-Motoren, Luft- und Raumfahrt, Präzisionsinstrumente",
+      N50: "Maximales Energieprodukt für kompakte Designs",
+      N52: "Extreme Leistung, Forschung, Spezialmotoren"
+    },
+    es: {
+      N35: "Sujeción general, sensores, electrónica de consumo",
+      N38: "Mayor fuerza de sujeción, cierres magnéticos, motores DC",
+      N40: "Motores, generadores, conjuntos de alto rendimiento",
+      N42: "Motores industriales, separadores magnéticos, sensores",
+      N45: "Motores premium, controladores de audio, dispositivos médicos",
+      N48: "Motores de gama alta, aeroespacial, instrumentos de precisión",
+      N50: "Máximo producto energético para diseños compactos",
+      N52: "Rendimiento extremo, investigación, motores especiales"
+    }
+  };
+
   function renderGradeTable() {
     var tbody = document.getElementById("gradeTableBody");
     if (!tbody) return;
+    var useMap = GRADE_USE[HTML_LANG.indexOf("de") === 0 ? "de" : HTML_LANG.indexOf("es") === 0 ? "es" : "en"];
     tbody.innerHTML = GRADES.map(function (g) {
       return '<tr>' +
         '<td><strong>' + g.grade + '</strong></td>' +
@@ -564,7 +645,7 @@
         '<td>' + g.hcj + '</td>' +
         '<td>' + g.bhmax + '</td>' +
         '<td>' + g.temp + '</td>' +
-        '<td>' + g.use + '</td>' +
+        '<td>' + (useMap[g.grade] || g.use) + '</td>' +
       '</tr>';
     }).join("");
   }
