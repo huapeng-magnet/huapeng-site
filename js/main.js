@@ -170,6 +170,12 @@
     });
   }
 
+  /* ---------- Page guard ----------
+   * The catalog/cart/configurator logic only applies to the index page
+   * (which has #productGrid). request-quote.html shares main.js but
+   * has no catalog — skip that block to avoid null-reference errors. */
+  if (!document.getElementById("productGrid")) return;
+
   /* ---------- Product catalog (mirrors DOM cards) ----------
    * Cards are presented by shape only; grade/dimensions/coating are user-selected
    * in the configurator. CATALOG.name is the shape label (used by configurator
