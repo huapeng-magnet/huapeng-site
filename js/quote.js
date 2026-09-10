@@ -291,11 +291,11 @@
         '</div>' +
         '<div style="text-align:right;">' +
           '<div style="font-weight:700;color:#007bff;">' + fmt$(item.unitPrice) + '/pc</div>' +
-          '<div style="font-size:0.85rem;">Total: ' + fmt$(item.totalPrice) + '</div>' +
+          '<div style="font-size:0.85rem;">' + (L.total) + ': ' + fmt$(item.totalPrice) + '</div>' +
         '</div>' +
         '<div style="margin-left:1rem;">' +
-          '<button type="button" class="btn btn--mini btn--ghost" onclick="restoreHistory(' + item.id + ')" style="margin-right:0.25rem;">Restore</button>' +
-          '<button type="button" class="btn btn--mini btn--ghost" onclick="deleteHistory(' + item.id + ')" style="color:#dc3545;">Delete</button>' +
+          '<button type="button" class="btn btn--mini btn--ghost" onclick="restoreHistory(' + item.id + ')" style="margin-right:0.25rem;">' + (L.restore) + '</button>' +
+          '<button type="button" class="btn btn--mini btn--ghost" onclick="deleteHistory(' + item.id + ')" style="color:#dc3545;">' + (L.del) + '</button>' +
         '</div>' +
       '</div>';
     });
@@ -465,7 +465,10 @@
       exportPdf: "Export PDF", estUsd: "Estimated USD price",
       standardList: "STANDARD LIST", n35List: "N35 nickel-coated price list",
       typicalUse: "Typical Use", contactSales: "Contact Sales",
-      needed: "* required", allShapes: "All"
+      needed: "* required",
+      restore: "Restore",
+      del: "Delete",
+      total: "Total", allShapes: "All"
     },
     de: {
       quoteTitle: "Dieses Angebot anfordern",
@@ -479,7 +482,10 @@
       exportPdf: "PDF exportieren", estUsd: "Geschätzter USD-Preis",
       standardList: "STANDARDLISTE", n35List: "N35 nickel-beschichtete Preisliste",
       typicalUse: "Typische Anwendung", contactSales: "Vertrieb kontaktieren",
-      needed: "* erforderlich", allShapes: "Alle"
+      needed: "* erforderlich",
+      restore: "Wiederherstellen",
+      del: "Löschen",
+      total: "Gesamt", allShapes: "Alle"
     },
     es: {
       quoteTitle: "Solicitar este presupuesto",
@@ -493,7 +499,10 @@
       exportPdf: "Exportar PDF", estUsd: "Precio estimado en USD",
       standardList: "LISTA ESTÁNDAR", n35List: "Lista de precios N35 con recubrimiento de níquel",
       typicalUse: "Uso Típico", contactSales: "Contactar Ventas",
-      needed: "* obligatorio", allShapes: "Todos"
+      needed: "* obligatorio",
+      restore: "Restaurar",
+      del: "Eliminar",
+      total: "Total", allShapes: "Todos"
     }
   };
   var L = L10N[HTML_LANG.indexOf("de") === 0 ? "de" : HTML_LANG.indexOf("es") === 0 ? "es" : "en"];
