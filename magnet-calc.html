@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magnet Physical Parameter Calculator | Huapeng Magnetics</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1E5BFF 0%, #0D3BBF 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 {
+            color: white; text-align: center; margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .card {
+            background: white; border-radius: 16px; padding: 30px;
+            margin-bottom: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; color: #333; }
+        input, select {
+            width: 100%; padding: 12px; border: 2px solid #e0e0e0;
+            border-radius: 8px; font-size: 16px; transition: border-color 0.3s;
+        }
+        input:focus, select:focus { outline: none; border-color: #1E5BFF; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        button {
+            width: 100%; padding: 15px; background: linear-gradient(135deg, #1E5BFF 0%, #0D3BBF 100%);
+            color: white; border: none; border-radius: 8px; font-size: 18px;
+            font-weight: 600; cursor: pointer; transition: transform 0.2s;
+        }
+        button:hover { transform: translateY(-2px); }
+        .result {
+            margin-top: 20px; padding: 20px; background: #f8f9fa;
+            border-radius: 8px; border-left: 4px solid #1E5BFF;
+        }
+        .result h3 { color: #1E5BFF; margin-bottom: 15px; }
+        .result-item {
+            display: flex; justify-content: space-between;
+            padding: 10px 0; border-bottom: 1px solid #e0e0e0;
+        }
+        .result-item:last-child { border-bottom: none; }
+        .result-value { font-weight: 700; color: #333; }
+        .unit { color: #666; margin-left: 5px; }
+        .note {
+            margin-top: 15px; padding: 15px; background: #fff3cd;
+            border-radius: 8px; font-size: 14px; color: #856404;
+        }
+        .info-block {
+            margin-top: 15px; padding: 15px; background: #e7f3ff;
+            border-radius: 8px; font-size: 13px; color: #004085;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Magnet Physical Parameter Calculator</h1>
+
+        <div class="card">
+            <h2 style="margin-bottom:20px;">Input Parameters</h2>
+
+            <div class="form-group">
+                <label>Magnet Shape</label>
+                <select id="shape" onchange="updateInputs()">
+                    <option value="disc">Disc (Circular)</option>
+                    <option value="block">Block (Square)</option>
+                    <option value="ring">Ring (Holed Disc)</option>
+                </select>
+            </div>
+
+            <div class="row" id="dimInputs">
+                <div class="form-group">
+                    <label>Diameter / Side Length (mm)</label>
+                    <input type="number" id="diameter" placeholder="e.g., 10" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Thickness (mm)</label>
+                    <input type="number" id="thickness" placeholder="e.g., 5" step="0.1">
+                </div>
+            </div>
+
+            <div class="form-group" id="holeGroup" style="display:none;">
+                <label>Inner Hole Diameter (mm)</label>
+                <input type="number" id="hole_diameter" placeholder="e.g., 5" step="0.1">
+            </div>
+
+            <div class="form-group">
+                <label>Grade</label>
+                <select id="grade">
+                    <option value="N35">N35 (Br ≈ 1.22 T)</option>
+                    <option value="N38">N38 (Br ≈ 1.25 T)</option>
+                    <option value="N40">N40 (Br ≈ 1.27 T)</option>
+                    <option value="N42">N42 (Br ≈ 1.30 T)</option>
+                    <option value="N45">N45 (Br ≈ 1.33 T)</option>
+                    <option value="N48">N48 (Br ≈ 1.36 T)</option>
+                    <option value="N50">N50 (Br ≈ 1.38 T)</option>
+                    <option value="N52" selected>N52 (Br ≈ 1.41 T)</option>
+                    <option value="N55">N55 (Br ≈ 1.43 T)</option>
+                </select>
+            </div>
+
+            <button onclick="calculate()">Calculate</button>
+
+            <div id="result" class="result" style="display:none;">
+                <h3>Results</h3>
+                <div class="result-item">
+                    <span> magnetic Flux (theoretical)</span>
+                    <span><span class="result-value" id="flux_value">-</span><span class="unit">mWb</span></span>
+                </div>
+                <div class="result-item">
+                    <span>Surface Gauss (center estimate)</span>
+                    <span><span class="result-value" id="surface_gauss">-</span><span class="unit">Gs</span></span>
+                </div>
+                <div class="result-item">
+                    <span>Estimated Weight</span>
+                    <span><span class="result-value" id="weight_value">-</span><span class="unit">g</span></span>
+                </div>
+                <div class="result-item">
+                    <span>Cross-sectional Area</span>
+                    <span><span class="result-value" id="area_value">-</span><span class="unit">mm²</span></span>
+                </div>
+                <div class="note">
+                    Note: These are theoretical estimates. Actual values may vary due to plating thickness, measurement distance, and material batch differences.<br>
+                    When measuring with a gaussmeter, compensate for probe casing (~0.2 mm) and plating (~0.02 mm per side).
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 style="margin-bottom:15px;">About Surface Gauss & Magnetic Flux</h2>
+            <p style="line-height:1.8;color:#555;">
+                <strong>Magnetic Flux (Φ)</strong>: The total magnetic flux through the pole face, measured in Webers (Wb) or milliWebers (mWb). Formula: Φ = B × A, where B is magnetic flux density and A is cross-sectional area.<br><br>
+                <strong>Surface Gauss (Gs)</strong>: Magnetic flux density at the magnet surface. 1 Tesla = 10,000 Gauss. Surface Gauss is a key parameter affecting holding force and field distribution.<br><br>
+                <strong>Calculation Method:</strong><br>
+                • Center Surface Gauss = Br × (Pc+1)/(μrec+Pc), where Pc is the operating point and μrec is the recoil permeability<br>
+                • This tool uses a simplified model; actual values require demagnetization curve analysis<br>
+                • For N35–N38: μrec ≈ 1.09; N40–N50: μrec ≈ 1.07; N52–N55: μrec ≈ 1.06<br>
+                • Neodymium iron boron density ≈ 7.5 g/cm³
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const GRADES = {
+            'N35': 1.22, 'N38': 1.25, 'N40': 1.27, 'N42': 1.30,
+            'N45': 1.33, 'N48': 1.36, 'N50': 1.38, 'N52': 1.41, 'N55': 1.43
+        };
+
+        function getMuRec(grade) {
+            if (grade === 'N35' || grade === 'N38') return 1.09;
+            if (grade.startsWith('N4') || grade === 'N50') return 1.07;
+            if (grade === 'N52' || grade === 'N55') return 1.06;
+            return 1.05;
+        }
+
+        function updateInputs() {
+            const shape = document.getElementById('shape').value;
+            const diamLabel = document.querySelector('#dimInputs label:first-child');
+            const holeGroup = document.getElementById('holeGroup');
+
+            if (shape === 'disc') {
+                diamLabel.textContent = 'Diameter (mm)';
+                holeGroup.style.display = 'none';
+            } else if (shape === 'block') {
+                diamLabel.textContent = 'Side Length (mm)';
+                holeGroup.style.display = 'none';
+            } else if (shape === 'ring') {
+                diamLabel.textContent = 'Outer Diameter (mm)';
+                holeGroup.style.display = 'block';
+            }
+        }
+
+        function calculate() {
+            const shape = document.getElementById('shape').value;
+            const d = parseFloat(document.getElementById('diameter').value);
+            const t = parseFloat(document.getElementById('thickness').value);
+            const grade = document.getElementById('grade').value;
+            const holeD = shape === 'ring' ? parseFloat(document.getElementById('hole_diameter').value) : 0;
+
+            if (!d || !t || d <= 0 || t <= 0) {
+                alert('Please enter valid dimensions');
+                return;
+            }
+
+            let area = 0;
+            if (shape === 'disc') {
+                area = Math.PI * Math.pow(d/2, 2);
+            } else if (shape === 'block') {
+                area = d * d;
+            } else if (shape === 'ring') {
+                if (!holeD || holeD >= d) {
+                    alert('Inner hole diameter must be smaller than outer diameter');
+                    return;
+                }
+                area = Math.PI * (Math.pow(d/2, 2) - Math.pow(holeD/2, 2));
+            }
+
+            const Br = GRADES[grade];
+            const muRec = getMuRec(grade);
+
+            const flux = Br * area * 1e-6;
+            const flux_mWb = flux * 1000;
+
+            const Pc = 1.0;
+            const Bs = Br * (Pc + 1) / (muRec + Pc);
+            const surface_gauss = Bs * 10000;
+
+            const weight = area * t * 7.5 / 100;
+
+            document.getElementById('flux_value').textContent = flux_mWb.toFixed(3);
+            document.getElementById('surface_gauss').textContent = surface_gauss.toFixed(0);
+            document.getElementById('weight_value').textContent = weight.toFixed(1);
+            document.getElementById('area_value').textContent = area.toFixed(1);
+            document.getElementById('result').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
