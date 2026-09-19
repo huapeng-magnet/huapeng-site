@@ -464,8 +464,8 @@
       var fob = fobUnitPrice(product.shape, dims, grade, coating, qty) || price;
       priceEl.innerHTML =
         '<strong>' + fmt$(price) + '</strong> / pc EXW China · Total ' + fmt$(price * qty) +
-        '<br><span style="font-size:0.85em;color:#2563eb;">~' + fmt$(fob) + ' / pc FOB Ningbo · Total ~' + fmt$(fob * qty) + '</span>' +
-        '<br><span style="font-size:0.75em;color:#9ca3af;">Indicative — final price fixed at the USD/CNY rate on deposit date.</span>';
+        '<br><span style="font-size:0.85em;color:#60a5fa;">~' + fmt$(fob) + ' / pc FOB Ningbo · Total ~' + fmt$(fob * qty) + '</span>' +
+        '<br><span style="font-size:0.75em;color:#8ba0bd;">Indicative — final price fixed at the USD/CNY rate on deposit date.</span>';
     } else if (qty <= 0) {
       priceEl.textContent = "Please enter a valid quantity";
     } else {

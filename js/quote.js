@@ -306,18 +306,18 @@
 
     var html = '<div style="display:flex;flex-direction:column;gap:0.5rem;">';
     history.forEach(function(item) {
-      html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem;background:#f8f9fa;border-radius:4px;">' +
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem;background:rgba(255,255,255,0.06);border-radius:4px;">' +
         '<div>' +
-          '<div style="font-size:0.85rem;color:#6c757d;">' + item.timestamp + '</div>' +
+          '<div style="font-size:0.85rem;color:#9fb3d1;">' + item.timestamp + '</div>' +
           '<div style="font-weight:600;">' + item.grade + ' ' + item.shape + ' ' + item.specText + '</div>' +
         '</div>' +
         '<div style="text-align:right;">' +
-          '<div style="font-weight:700;color:#007bff;">' + fmt$(item.unitPrice) + '/pc</div>' +
+          '<div style="font-weight:700;color:#22d3ee;">' + fmt$(item.unitPrice) + '/pc</div>' +
           '<div style="font-size:0.85rem;">' + (L.total) + ': ' + fmt$(item.totalPrice) + '</div>' +
         '</div>' +
         '<div style="margin-left:1rem;">' +
           '<button type="button" class="btn btn--mini btn--ghost" onclick="restoreHistory(' + item.id + ')" style="margin-right:0.25rem;">' + (L.restore) + '</button>' +
-          '<button type="button" class="btn btn--mini btn--ghost" onclick="deleteHistory(' + item.id + ')" style="color:#dc3545;">' + (L.del) + '</button>' +
+          '<button type="button" class="btn btn--mini btn--ghost" onclick="deleteHistory(' + item.id + ')" style="color:#f87171;">' + (L.del) + '</button>' +
         '</div>' +
       '</div>';
     });
@@ -367,19 +367,19 @@
       '<div class="calc-result__body">' +
         '<div><span>' + L.quantity + '</span><strong>' + fmtNum(qty) + ' pcs</strong></div>' +
         '<div><span>' + L.totalExw + '</span><strong>' + fmt$(exwTotal) + '</strong></div>' +
-        '<div><span>' + L.totalFob + '</span><strong>' + fmt$(fobTotal) + '</strong> <span style="font-size:11px;color:#9ca3af;">' + L.approx + '</span></div>' +
+        '<div><span>' + L.totalFob + '</span><strong>' + fmt$(fobTotal) + '</strong> <span style="font-size:11px;color:#8ba0bd;">' + L.approx + '</span></div>' +
         '<div><span>' + L.spec + '</span><strong>' + specText + '</strong></div>' +
         '<div><span>' + L.grade + '</span><strong>' + grade + '</strong></div>' +
         '<div><span>' + L.coating + '</span><strong>' + coatingLabel(coating) + '</strong></div>' +
-        '<hr style="margin:15px 0;border:none;border-top:1px solid #e0e0e0;">' +
-        '<div style="background:#f8f9fa;padding:12px;border-radius:6px;">' +
-          '<div style="font-weight:600;margin-bottom:8px;color:#0c4a6e;">' + L.dualPricing + '</div>' +
+        '<hr style="margin:15px 0;border:none;border-top:1px solid rgba(255,255,255,0.12);">' +
+        '<div style="background:rgba(255,255,255,0.06);padding:12px;border-radius:6px;">' +
+          '<div style="font-weight:600;margin-bottom:8px;color:#22d3ee;">' + L.dualPricing + '</div>' +
           '<div style="display:flex;gap:20px;flex-wrap:wrap;">' +
-            '<div><span style="color:#666;font-size:13px;">' + L.exwPrice + '</span><br><strong style="font-size:18px;color:#059669;">' + fmt$(exwUsd) + '</strong> <span style="font-size:12px;color:#666;">' + L.perPc + '</span></div>' +
-            '<div><span style="color:#666;font-size:13px;">' + L.fobPrice + '</span><br><strong style="font-size:18px;color:#2563eb;">~' + fmt$(fobUsd) + '</strong> <span style="font-size:12px;color:#666;">' + L.perPc + '</span></div>' +
+            '<div><span style="color:#9fb3d1;font-size:13px;">' + L.exwPrice + '</span><br><strong style="font-size:18px;color:#34d399;">' + fmt$(exwUsd) + '</strong> <span style="font-size:12px;color:#9fb3d1;">' + L.perPc + '</span></div>' +
+            '<div><span style="color:#9fb3d1;font-size:13px;">' + L.fobPrice + '</span><br><strong style="font-size:18px;color:#60a5fa;">~' + fmt$(fobUsd) + '</strong> <span style="font-size:12px;color:#9fb3d1;">' + L.perPc + '</span></div>' +
           '</div>' +
-          '<p style="margin-top:10px;font-size:12px;color:#666;">' + L.pricingNote + '</p>' +
-          '<p style="margin-top:6px;font-size:12px;color:#b45309;background:#fffbeb;padding:8px;border-radius:4px;">⚠️ ' + L.fxNote + '</p>' +
+          '<p style="margin-top:10px;font-size:12px;color:#9fb3d1;">' + L.pricingNote + '</p>' +
+          '<p style="margin-top:6px;font-size:12px;color:#fbbf24;background:rgba(245,158,11,0.12);padding:8px;border-radius:4px;">⚠️ ' + L.fxNote + '</p>' +
         '</div>' +
       '</div>' +
       '<div class="calc-result__actions">' +
@@ -672,9 +672,9 @@
         var lad = priceLadder(b.shape, b, "N35", "nickel", qty);
         if (!lad) return '<td class="price">—</td>';
         return '<td class="price">' +
-          '<span class="p-exw" style="display:block;font-weight:700;color:#111827;">' + fmt$(lad.exw) + '</span>' +
-          '<span class="p-fob" style="display:block;font-size:0.85em;color:#2563eb;">~' + fmt$(lad.fob) + '</span>' +
-          '<span style="display:block;font-size:0.62em;letter-spacing:0.04em;color:#9ca3af;text-transform:uppercase;">EXW / FOB</span>' +
+          '<span class="p-exw" style="display:block;font-weight:700;color:#e8f1ff;">' + fmt$(lad.exw) + '</span>' +
+          '<span class="p-fob" style="display:block;font-size:0.85em;color:#60a5fa;">~' + fmt$(lad.fob) + '</span>' +
+          '<span style="display:block;font-size:0.62em;letter-spacing:0.04em;color:#8ba0bd;text-transform:uppercase;">EXW / FOB</span>' +
         '</td>';
       }
 
