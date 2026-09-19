@@ -90,6 +90,8 @@
       <strong>How our prices are quoted.</strong>
       <b>EXW China</b> = ex-works at our factory in Cixi, Ningbo.
       <b>FOB Ningbo</b> = EXW plus the shipment's export charges (customs declaration, Ningbo port charges and trucking to the port) — <b>RMB 1,500 per shipment</b>, shared across your whole order and shown as an approximate figure (<b>~</b>). FOB is quoted from <b>50,000 pcs</b> up: below that the fixed shipment fee costs more than the magnets themselves, so we quote <b>EXW only</b>.
+      <b>Volume discounts</b>: 50,000 pcs <b>-2%</b>, 100,000 pcs <b>-4%</b>, 500,000 pcs <b>-5%</b> — already applied to the prices shown.
+      <b>Shipping</b>: 1,000 pcs orders go by <b>UPS/DHL express on your own courier account (freight collect)</b>. From 50,000 pcs up we quote <b>FOB Ningbo</b> and can arrange sea freight.
       All USD prices are <b>indicative and float with the USD/CNY market rate</b>: the final price is fixed at the market rate on the date your deposit is received.
     </div>
   </div>
@@ -152,8 +154,9 @@
               <label for="qQty">Quantity</label>
               <select id="qQty">
                 <option value="1000">1,000 pcs</option>
-                <option value="50000" selected>50,000 pcs</option>
-                <option value="500000">500,000 pcs</option>
+          <option value="50000" selected>50,000 pcs</option>
+          <option value="100000">100,000 pcs</option>
+          <option value="500000">500,000 pcs</option>
               </select>
             </div>
           </div>
@@ -208,15 +211,17 @@
               <th>Pictures</th>
               <th>Price @ 1K<br><small style="font-weight:400;color:#8ba0bd;">EXW / FOB</small></th>
               <th>Price @ 50K<br><small style="font-weight:400;color:#8ba0bd;">EXW / FOB</small></th>
+              <th>Price @ 100K<br><small style="font-weight:400;color:#8ba0bd;">EXW / FOB</small></th>
               <th>Price @ 500K<br><small style="font-weight:400;color:#8ba0bd;">EXW / FOB</small></th>
             </tr>
           </thead>
           <colgroup>
             <col style="width:22%">
-            <col style="width:18%">
-            <col style="width:20%">
-            <col style="width:20%">
-            <col style="width:20%">
+            <col style="width:14%">
+            <col style="width:16%">
+            <col style="width:16%">
+            <col style="width:16%">
+            <col style="width:16%">
           </colgroup>
           <tbody id="priceTableBody"></tbody>
         </table>

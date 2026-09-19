@@ -50,14 +50,16 @@
     { spec: "D20 × 5 mm ring D8", shape: "ring", img: "/assets/ring_1.png", d: 20, l: null, w: null, h: 5, hole: 8, price10k: 0.742 }
   ];
 
-  /* Quantity discount tiers (uniform 5% steps, no small-order surcharge):
-     1K   → -5% discount
-     50K  → -10% discount
-     500K → -15% discount */
+  /* Quantity discount tiers (revised 19 Sep 2026 — keep in sync with
+     js/pricing.js). The old uniform 5% ladder is withdrawn; discounts now
+     stay well inside the 10% trading margin.
+       1K   → no discount (UPS/DHL express, freight collect)
+       50K  → -2%    100K → -4%    500K → -5% */
   var QTY_FACTORS = {
-    1000: 0.95,
-    50000: 0.90,
-    500000: 0.85
+    1000: 1.00,
+    50000: 0.98,
+    100000: 0.96,
+    500000: 0.95
   };
 
   var COATING_FACTORS = {
@@ -418,6 +420,8 @@
               ? '<div><span style="color:#9fb3d1;font-size:13px;">' + L.fobPrice + '</span><br><strong style="font-size:18px;color:#60a5fa;">~' + fmt$(fobUsd) + '</strong> <span style="font-size:12px;color:#9fb3d1;">' + L.perPc + '</span></div>'
               : '<div style="max-width:300px;"><span style="color:#9fb3d1;font-size:13px;">' + L.fobPrice + '</span><br><strong style="font-size:12px;color:#8ba0bd;font-weight:500;line-height:1.5;">' + L.fobMinNote + '</strong></div>') +
           '</div>' +
+          '<p style="margin-top:10px;font-size:12px;color:#9fb3d1;">' + L.qtyTierNote + '</p>' +
+          (fobQuoted ? '' : '<p style="margin-top:6px;font-size:12px;color:#22d3ee;">' + L.courierNote + '</p>') +
           '<p style="margin-top:10px;font-size:12px;color:#9fb3d1;">' + L.pricingNote + '</p>' +
           '<p style="margin-top:6px;font-size:12px;color:#fbbf24;background:rgba(245,158,11,0.12);padding:8px;border-radius:4px;">⚠️ ' + L.fxNote + '</p>' +
         '</div>' +
@@ -517,7 +521,11 @@
       doc.setFontSize(9);
       doc.text("EXW = ex-works at our factory in China.", 20, y);
       y += 5;
-      doc.text("FOB Ningbo = EXW plus export charges (customs, port charges, trucking to port).", 20, y);
+      doc.text("FOB Ningbo = EXW plus a fixed RMB 1,500 per-shipment export fee (customs, port charges, trucking to port),", 20, y);
+      y += 5;
+      doc.text("shared across the whole order regardless of weight.", 20, y);
+      y += 5;
+      doc.text("Volume discounts applied: 50K -2%, 100K -4%, 500K -5%.", 20, y);
       y += 5;
       doc.text("Prices are indicative and float with the USD/CNY market rate.", 20, y);
       y += 5;
@@ -579,6 +587,8 @@
       approx: "approx.",
       fobNotQuoted: "EXW only",
       fobMinNote: "FOB Ningbo is quoted from 50,000 pcs up. Below that, the RMB 1,500 shipment fee costs more than the magnets themselves — so we quote EXW only.",
+      qtyTierNote: "Volume discounts: 50,000 pcs -2%, 100,000 pcs -4%, 500,000 pcs -5%. Prices shown already include the discount.",
+      courierNote: "1,000 pcs ships by UPS/DHL express on your own courier account (freight collect) — at that size air express is both cheaper and faster than sea freight.",
       pricingNote: "EXW = ex-works at our factory in China. FOB Ningbo = EXW plus the shipment's export charges (customs declaration, Ningbo port charges and trucking to the port) — RMB 1,500 per shipment, shared across the whole order.",
       fxNote: "Prices are indicative and converted at the current market rate. The final price is fixed at the USD/CNY rate on the date your deposit is received."
     },
@@ -609,6 +619,8 @@
       approx: "ca.",
       fobNotQuoted: "nur EXW",
       fobMinNote: "FOB Ningbo wird ab 50.000 Stück angeboten. Darunter übersteigt die Versandpauschale von RMB 1.500 den Wert der Magnete selbst — daher nur EXW.",
+      qtyTierNote: "Mengenrabatte: 50.000 Stk. -2 %, 100.000 Stk. -4 %, 500.000 Stk. -5 %. Die angezeigten Preise enthalten den Rabatt bereits.",
+      courierNote: "1.000 Stk. werden per UPS/DHL-Express auf Ihr eigenes Frachtkonto versandt (Fracht zahlt Empfänger) — bei dieser Menge ist Luftexpress günstiger und schneller als Seefracht.",
       pricingNote: "EXW = ab Werk in China. FOB Ningbo = EXW zzgl. der Exportkosten der Sendung (Zollanmeldung, Hafengebühren Ningbo und Transport zum Hafen) — RMB 1.500 pro Sendung, auf die gesamte Bestellung verteilt.",
       fxNote: "Preise sind Richtwerte und zum aktuellen Marktkurs umgerechnet. Der endgültige Preis wird zum USD/CNY-Kurs am Tag des Zahlungseingangs der Anzahlung festgelegt."
     },
@@ -639,6 +651,8 @@
       approx: "aprox.",
       fobNotQuoted: "solo EXW",
       fobMinNote: "FOB Ningbo se cotiza a partir de 50.000 unidades. Por debajo, la tarifa de envío de RMB 1.500 supera el valor de los propios imanes, por lo que solo cotizamos EXW.",
+      qtyTierNote: "Descuentos por volumen: 50.000 uds. -2 %, 100.000 uds. -4 %, 500.000 uds. -5 %. Los precios mostrados ya incluyen el descuento.",
+      courierNote: "Las 1.000 uds. se envían por mensajería express UPS/DHL a su propia cuenta de transporte (franqueo a cargo del destinatario) — en ese volumen, el express aéreo es más económico y rápido que el flete marítimo.",
       pricingNote: "EXW = en fábrica en China. FOB Ningbo = EXW más los gastos de exportación del envío (declaración aduanera, tasas portuarias de Ningbo y transporte al puerto) — RMB 1.500 por envío, repartidos entre todo el pedido.",
       fxNote: "Los precios son indicativos y se convierten al tipo de cambio de mercado actual. El precio final se fija al tipo USD/CNY de la fecha en que se recibe el anticipo."
     },
@@ -668,6 +682,8 @@
       approx: "약",
       fobNotQuoted: "EXW 전용",
       fobMinNote: "FOB 닝보는 50,000개 이상부터 견적합니다. 그 이하 수량에서는 선적 고정비 RMB 1,500이 자석 가격보다 커지므로 EXW만 견적합니다.",
+      qtyTierNote: "수량 할인: 50,000개 -2%, 100,000개 -4%, 500,000개 -5%. 표시 가격에는 할인이 이미 적용되어 있습니다.",
+      courierNote: "1,000개는 UPS/DHL 특송으로 귀사의 운송 계정으로 발송됩니다(운임 착불). 이 수량에서는 항공 특송이 해상 운송보다 저렴하고 빠릅니다.",
       pricingNote: "EXW = 중국 자사 공장 인도 조건입니다. FOB 닝보 = EXW에 해당 선적의 수출 비용(통관 신고, 닝보 항만 부대비용, 공장에서 항구까지의 운송비)을 포함한 조건이며, 선적 1건당 RMB 1,500을 전체 주문에 배분합니다.",
       fxNote: "가격은 참고용이며 현재 시장 환율로 환산한 금액입니다. 최종 가격은 계약금 입금일의 USD/CNY 환율로 확정됩니다."
     },
@@ -697,6 +713,8 @@
       approx: "概算",
       fobNotQuoted: "EXW のみ",
       fobMinNote: "FOB 寧波は 50,000 個以上からのご案内です。それ未満では出荷固定費 RMB 1,500 が磁石本体の価格を上回るため、EXW のみのご案内となります。",
+      qtyTierNote: "数量割引：50,000 個 -2%、100,000 個 -4%、500,000 個 -5%。表示価格は割引適用後の金額です。",
+      courierNote: "1,000 個は UPS/DHL のエクスプレス便でお客様の運送アカウント宛に発送いたします（運賃着払い）。この数量では航空便の方が海上輸送より安価で速いためです。",
       pricingNote: "EXW = 中国自社工場渡し条件です。FOB 寧波 = EXW に当該出荷の輸出費用（通関申告、寧波港の港湾諸費用、工場から港までの輸送費）を加えた条件で、1 出荷あたり RMB 1,500 を全注文に按分します。",
       fxNote: "価格は参考値であり、現在の市場レートで換算しています。最終価格は手付金ご入金日の USD/CNY レートで確定します。"
     }
@@ -806,6 +824,7 @@
         '<td class="img-cell"><img src="' + b.img + '" alt="' + b.spec + '"></td>' +
         cell(1000) +
         cell(50000) +
+        cell(100000) +
         cell(500000) +
       '</tr>';
     }).join("");

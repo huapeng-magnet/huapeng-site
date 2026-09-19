@@ -90,6 +90,8 @@
       <strong>Así se calculan nuestros precios.</strong>
       <b>EXW China</b> = en fábrica en Cixi, Ningbo.
       <b>FOB Ningbo</b> = EXW más los gastos de exportación del envío (declaración aduanera, tasas portuarias de Ningbo y transporte al puerto) — <b>RMB 1.500 por envío</b>, repartidos entre todo su pedido y mostrados como valor aproximado (<b>~</b>). FOB se cotiza desde <b>50.000 unidades</b>: por debajo, la tarifa fija de envío supera el valor de los propios imanes, por lo que solo se cotiza <b>EXW</b>.
+      <b>Descuentos por volumen</b>: 50.000 uds. <b>-2 %</b>, 100.000 uds. <b>-4 %</b>, 500.000 uds. <b>-5 %</b> — ya aplicados a los precios mostrados.
+      <b>Envío</b>: los pedidos de 1.000 uds. se envían por <b>mensajería express UPS/DHL a su propia cuenta de transporte (franqueo a cargo del destinatario)</b>. A partir de 50.000 uds. cotizamos <b>FOB Ningbo</b> y podemos organizar flete marítimo.
       Todos los precios en USD son <b>indicativos y fluctúan con el tipo de cambio USD/CNY</b>: el precio final se fija al tipo de cambio de la fecha en que se recibe su anticipo.
     </div>
   </div>
@@ -152,8 +154,9 @@
               <label for="qQty">Cantidad</label>
               <select id="qQty">
                 <option value="1000">1,000 pcs</option>
-                <option value="50000" selected>50,000 pcs</option>
-                <option value="500000">500,000 pcs</option>
+          <option value="50000" selected>50,000 pcs</option>
+          <option value="100000">100,000 pcs</option>
+          <option value="500000">500,000 pcs</option>
               </select>
             </div>
           </div>
@@ -207,16 +210,18 @@
               <th>Especificación</th>
               <th>Imágenes</th>
               <th>Precio @ 1K<br><small style="font-weight:400;color:#8ba0bd;">EXW / FOB</small></th>
-              <th>Precio @ 50K<br><small style="font-weight:400;color:#8ba0bd;">EXW / FOB</small></th>
-              <th>Precio @ 500K<br><small style="font-weight:400;color:#8ba0bd;">EXW / FOB</small></th>
+            <th>Precio @ 50K<br><small style="font-weight:400;color:#8ba0bd;">EXW / FOB</small></th>
+            <th>Precio @ 100K<br><small style="font-weight:400;color:#8ba0bd;">EXW / FOB</small></th>
+            <th>Precio @ 500K<br><small style="font-weight:400;color:#8ba0bd;">EXW / FOB</small></th>
             </tr>
           </thead>
           <colgroup>
             <col style="width:22%">
-            <col style="width:18%">
-            <col style="width:20%">
-            <col style="width:20%">
-            <col style="width:20%">
+            <col style="width:14%">
+            <col style="width:16%">
+            <col style="width:16%">
+            <col style="width:16%">
+            <col style="width:16%">
           </colgroup>
           <tbody id="priceTableBody"></tbody>
         </table>

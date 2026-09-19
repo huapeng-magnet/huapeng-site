@@ -56,14 +56,21 @@
 
   var currentExchange = DEFAULT_EXCHANGE;
 
-  /* Quantity discount tiers (uniform 5% steps, no small-order surcharge):
-     1K   → -5% discount
-     50K  → -10% discount
-     500K → -15% discount */
+  /* Quantity discount tiers (revised 19 Sep 2026).
+     The old uniform 5% ladder (-5/-10/-15%) is withdrawn: the trading
+     company margin is now capped at 10%, so deep volume rebates can no
+     longer be given away on the spot. Discounts are deliberately shallow
+     and must stay inside the 10% envelope.
+
+       1K   → no discount  (ships by UPS/DHL express, freight collect)
+       50K  → -2%
+       100K → -4%
+       500K → -5% */
   var QTY_FACTORS = {
-    1000: 0.95,
-    50000: 0.90,
-    500000: 0.85
+    1000: 1.00,
+    50000: 0.98,
+    100000: 0.96,
+    500000: 0.95
   };
 
   var COATING_FACTORS = {
