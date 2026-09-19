@@ -33,16 +33,16 @@
      every price rendered on the page is recomputed live from this anchor
      ladder:  FACTORY NET → EXW (×1.10) → FOB (+ export charges). */
   var BASE_PRICES = [
-    { spec: "D5 × 1 mm", shape: "disc", img: "assets/disc_1.jpg", d: 5, l: null, w: null, h: 1, hole: null, price10k: 0.011 },
-    { spec: "D8 × 2 mm", shape: "disc", img: "assets/disc_1.jpg", d: 8, l: null, w: null, h: 2, hole: null, price10k: 0.057 },
-    { spec: "D10 × 2 mm", shape: "disc", img: "assets/disc_1.jpg", d: 10, l: null, w: null, h: 2, hole: null, price10k: 0.088 },
-    { spec: "D12 × 3 mm", shape: "disc", img: "assets/disc_1.jpg", d: 12, l: null, w: null, h: 3, hole: null, price10k: 0.191 },
-    { spec: "D15 × 3 mm", shape: "disc", img: "assets/disc_1.jpg", d: 15, l: null, w: null, h: 3, hole: null, price10k: 0.298 },
-    { spec: "D20 × 5 mm", shape: "disc", img: "assets/disc_1.jpg", d: 20, l: null, w: null, h: 5, hole: null, price10k: 0.884 },
-    { spec: "10 × 5 × 2 mm", shape: "block", img: "assets/block_2.jpg", d: null, l: 10, w: 5, h: 2, hole: null, price10k: 0.056 },
-    { spec: "20 × 10 × 3 mm", shape: "block", img: "assets/block_2.jpg", d: null, l: 20, w: 10, h: 3, hole: null, price10k: 0.337 },
-    { spec: "20 × 10 × 5 mm", shape: "block", img: "assets/block_2.jpg", d: null, l: 20, w: 10, h: 5, hole: null, price10k: 0.562 },
-    { spec: "D20 × 5 mm ring D8", shape: "ring", img: "assets/ring_1.png", d: 20, l: null, w: null, h: 5, hole: 8, price10k: 0.742 }
+    { spec: "D5 × 1 mm", shape: "disc", img: "/assets/disc_1.jpg", d: 5, l: null, w: null, h: 1, hole: null, price10k: 0.011 },
+    { spec: "D8 × 2 mm", shape: "disc", img: "/assets/disc_1.jpg", d: 8, l: null, w: null, h: 2, hole: null, price10k: 0.057 },
+    { spec: "D10 × 2 mm", shape: "disc", img: "/assets/disc_1.jpg", d: 10, l: null, w: null, h: 2, hole: null, price10k: 0.088 },
+    { spec: "D12 × 3 mm", shape: "disc", img: "/assets/disc_1.jpg", d: 12, l: null, w: null, h: 3, hole: null, price10k: 0.191 },
+    { spec: "D15 × 3 mm", shape: "disc", img: "/assets/disc_1.jpg", d: 15, l: null, w: null, h: 3, hole: null, price10k: 0.298 },
+    { spec: "D20 × 5 mm", shape: "disc", img: "/assets/disc_1.jpg", d: 20, l: null, w: null, h: 5, hole: null, price10k: 0.884 },
+    { spec: "10 × 5 × 2 mm", shape: "block", img: "/assets/block_2.jpg", d: null, l: 10, w: 5, h: 2, hole: null, price10k: 0.056 },
+    { spec: "20 × 10 × 3 mm", shape: "block", img: "/assets/block_2.jpg", d: null, l: 20, w: 10, h: 3, hole: null, price10k: 0.337 },
+    { spec: "20 × 10 × 5 mm", shape: "block", img: "/assets/block_2.jpg", d: null, l: 20, w: 10, h: 5, hole: null, price10k: 0.562 },
+    { spec: "D20 × 5 mm ring D8", shape: "ring", img: "/assets/ring_1.png", d: 20, l: null, w: null, h: 5, hole: 8, price10k: 0.742 }
   ];
 
   /* Quantity discount tiers (uniform 5% steps, no small-order surcharge):

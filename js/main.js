@@ -191,10 +191,10 @@
    * in the configurator. CATALOG.name is the shape label (used by configurator
    * header, cart item labels, Feishu message). */
   var CATALOG = [
-    { id: "disc-n52", name: "disc", shape: "disc", grade: "N52", coating: "nickel", img: "assets/disc_1.jpg", defaultDims: { d: 10, h: 3 } },
-    { id: "block-n50", name: "block", shape: "block", grade: "N50", coating: "zinc", img: "assets/block_2.jpg", defaultDims: { l: 20, w: 10, h: 5 } },
-    { id: "ring-n45", name: "ring", shape: "ring", grade: "N45", coating: "nickel", img: "assets/ring_1.png", defaultDims: { d: 20, hole: 10, h: 5 } },
-    { id: "arc-n42", name: "arc", shape: "arc", grade: "N42", coating: "nickel", img: "assets/arc_1.png", defaultDims: { l: 30, w: 20, h: 5, angle: 45 } },
+    { id: "disc-n52", name: "disc", shape: "disc", grade: "N52", coating: "nickel", img: "/assets/disc_1.jpg", defaultDims: { d: 10, h: 3 } },
+    { id: "block-n50", name: "block", shape: "block", grade: "N50", coating: "zinc", img: "/assets/block_2.jpg", defaultDims: { l: 20, w: 10, h: 5 } },
+    { id: "ring-n45", name: "ring", shape: "ring", grade: "N45", coating: "nickel", img: "/assets/ring_1.png", defaultDims: { d: 20, hole: 10, h: 5 } },
+    { id: "arc-n42", name: "arc", shape: "arc", grade: "N42", coating: "nickel", img: "/assets/arc_1.png", defaultDims: { l: 30, w: 20, h: 5, angle: 45 } },
     { id: "custom-assembly", name: "assembly", shape: "assembly", grade: "N35", coating: "nickel", img: null, isCustom: true }
   ];
 
