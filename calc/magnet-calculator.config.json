@@ -1,0 +1,38 @@
+{
+  "version": "1.1.0",
+  "updated": "2026-09-18",
+  "note": "Data source for the magnet calculator. Edit values here — no code change needed.",
+  "materials": {
+    "ndfeb": { "name": "Sintered NdFeB", "density": 7.5 },
+    "smco": { "name": "Sintered SmCo", "density": 8.4 }
+  },
+  "grades": {
+    "ndfeb": {
+      "N35": { "Br": 1.17, "BHmax": 35 },
+      "N38": { "Br": 1.22, "BHmax": 38 },
+      "N40": { "Br": 1.26, "BHmax": 40 },
+      "N42": { "Br": 1.29, "BHmax": 42 },
+      "N45": { "Br": 1.33, "BHmax": 45 },
+      "N48": { "Br": 1.37, "BHmax": 48 },
+      "N50": { "Br": 1.42, "BHmax": 50 },
+      "N52": { "Br": 1.45, "BHmax": 52 }
+    },
+    "smco": {
+      "SmCo24": { "Br": 1.05, "BHmax": 24 },
+      "SmCo26": { "Br": 1.07, "BHmax": 26 },
+      "SmCo28": { "Br": 1.10, "BHmax": 28 }
+    }
+  },
+  "correction": {
+    "surfaceField": 1.0,
+    "note": "Calibrated against measured data. Pull force is theoretical and runs 30-50% above real contact values."
+  },
+  "units": {
+    "newtonPerKgf": 9.80665,
+    "newtonPerLbf": 4.44822,
+    "gaussPerTesla": 10000,
+    "ampereMeterSquaredPerGaussCm3": 0.001
+  },
+  "shapes": ["block", "disc", "ring"],
+  "calculators": ["surfaceField", "moment", "pullForce"]
+}

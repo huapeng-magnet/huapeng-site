@@ -1,0 +1,117 @@
+/* HP Magnet Calculator — component styles
+   Dark by default (matches site tool pages). Add .hpmc--light for light surfaces. */
+
+.hpmc {
+  --hpmc-surface: #0f172a;
+  --hpmc-surface-2: #1e293b;
+  --hpmc-border: #1e293b;
+  --hpmc-text: #ffffff;
+  --hpmc-muted: #94a3b8;
+  --hpmc-accent: #22d3ee;
+  --hpmc-value: #67e8f9;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--hpmc-text);
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.hpmc--light {
+  --hpmc-surface: #ffffff;
+  --hpmc-surface-2: #f1f5f9;
+  --hpmc-border: #e2e8f0;
+  --hpmc-text: #0f172a;
+  --hpmc-muted: #64748b;
+  --hpmc-accent: #1e5bff;
+  --hpmc-value: #1e5bff;
+}
+
+.hpmc__row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+
+.hpmc__tab {
+  flex: 1 1 0;
+  min-width: 96px;
+  padding: 10px 12px;
+  border: 1px solid var(--hpmc-border);
+  border-radius: 8px;
+  background: var(--hpmc-surface);
+  color: var(--hpmc-muted);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.hpmc__tab:hover { border-color: var(--hpmc-accent); color: var(--hpmc-text); }
+.hpmc__tab.is-active {
+  background: var(--hpmc-accent);
+  border-color: var(--hpmc-accent);
+  color: #04121a;
+  font-weight: 600;
+}
+
+.hpmc__form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  padding: 16px;
+  background: var(--hpmc-surface);
+  border: 1px solid var(--hpmc-border);
+  border-radius: 12px;
+}
+
+.hpmc__field { display: flex; flex-direction: column; gap: 6px; }
+.hpmc__label { font-size: 13px; color: var(--hpmc-muted); }
+
+.hpmc__input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--hpmc-border);
+  border-radius: 8px;
+  background: var(--hpmc-surface-2);
+  color: var(--hpmc-text);
+  font-size: 15px;
+}
+.hpmc__input:focus { outline: none; border-color: var(--hpmc-accent); }
+
+.hpmc__btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #22d3ee, #3b82f6);
+  color: #04121a;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.hpmc__btn:hover { opacity: .9; }
+
+.hpmc__out {
+  margin-top: 16px;
+  padding: 20px;
+  background: var(--hpmc-surface);
+  border: 1px solid var(--hpmc-border);
+  border-radius: 12px;
+  text-align: center;
+}
+.hpmc__outlabel { font-size: 13px; color: var(--hpmc-muted); margin-bottom: 6px; }
+.hpmc__big { font-size: 40px; font-weight: 700; color: var(--hpmc-value); line-height: 1.15; }
+.hpmc__sub { margin-top: 8px; font-size: 14px; color: var(--hpmc-muted); }
+.hpmc__err { color: #fca5a5; font-size: 14px; }
+
+.hpmc__extras {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--hpmc-border);
+  text-align: left;
+}
+.hpmc__extras span { font-size: 12px; color: var(--hpmc-muted); display: block; }
+.hpmc__extras b { color: var(--hpmc-text); font-size: 15px; display: block; margin-top: 2px; }
+
+.hpmc__note {
+  margin-top: 12px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--hpmc-muted);
+}
