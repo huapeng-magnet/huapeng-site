@@ -1,23 +1,40 @@
 /* ===========================================================
-   Huapeng Magnetics — shared pricing engine (V4 dual-price)
-   Formula: effective cost (CNY/kg) × mass (kg) × 1.56 ÷ live exchange rate
+   Huapeng Magnetics — shared pricing engine (V5 three-tier)
+   -----------------------------------------------------------
+   PRICE LADDER (agreed with sales, Sep 2026):
+
+     [1] FACTORY NET  = V4.5 quotation system output (internal COST)
+                      = COST_CNY_KG × mass(kg) × 1.56 ÷ FX
+                         × grade × coating × qty
+                      >> NOT shown to customers <<
+
+     [2] EXW (China)  = FACTORY NET × 1.10     ← shown to customers
+                      (trading-company cost base)
+
+     [3] FOB (Ningbo) ≈ EXW + export charges   ← shown to customers
+                      export charges = customs declaration + port
+                      charges + factory-to-port trucking, allocated
+                      per kg via EXPORT_FEE_CNY_KG
+
    1.56 = 1.20 (shipping) × 1.30 (margin) × 1.09 (tax)
-   Exchange rate loaded live from exchangerate-api.com
-   Dual pricing: Factory Net (FOB ex-works) + EXW (×1.1 trading cost)
+   Exchange rate loaded live from exchangerate-api.com.
+   QUOTED PRICES FLOAT: final price is fixed at the USD/CNY market
+   rate on the date the deposit is received.
    =========================================================== */
 (function () {
   "use strict";
 
-  /* ---------- V4 constants ----------
+  /* ---------- V5 constants ----------
      Effective N35 cost benchmark tuned to match the V3 report display prices.
      Base material 162.93 CNY/kg + machining/loss allowance ≈ 177.5 CNY/kg.
-     EXW margin: 10% trading company markup on factory net price. */
+     EXW margin: 10% trading-company markup on factory net price. */
   var COST_CNY_KG = 177.5 * 1.5 * 1.3;    // effective N35 cost benchmark (raised +50%, then +30%)
   var DENSITY_G_CM3 = 7.5;    // sintered NdFeB density
   var MARKUP = 1.56;          // shipping + margin + tax combined
   var DEFAULT_EXCHANGE = 6.71; // USD/CNY fallback (updated Sep 2026)
   var RATE_API = "https://api.exchangerate-api.com/v4/latest/USD";
-  var EXW_MARGIN = 1.10;      // trading company markup (10%)
+  var EXW_MARGIN = 1.10;      // trading-company markup on factory net (10%)
+  var EXPORT_FEE_CNY_KG = 2.00; // FOB uplift: customs + port charges + trucking to Ningbo (per kg)
 
   var currentExchange = DEFAULT_EXCHANGE;
 
@@ -102,6 +119,47 @@
     return estimatedUnitPrice(shape, dims, "N35", coating || "nickel", 10000);
   }
 
+  /* ---------- V5 price ladder helpers ----------
+     factoryNet → internal only. EXW / FOB → customer-facing. */
+
+  /* FOB uplift in USD/pc for a given mass (export charges are CNY/kg). */
+  function exportFeeUsd(shape, dims) {
+    var m = massKg({ shape: shape, d: dims.d, l: dims.l, w: dims.w, h: dims.h, hole: dims.hole });
+    if (!m || m <= 0) return 0;
+    return EXPORT_FEE_CNY_KG * m / currentExchange;
+  }
+
+  /* EXW China: factory net × 1.10 */
+  function exwUnitPrice(shape, dims, grade, coating, qty) {
+    var net = estimatedUnitPrice(shape, dims, grade, coating, qty);
+    if (net === null) return null;
+    return net * EXW_MARGIN;
+  }
+
+  /* FOB Ningbo: EXW + export charges */
+  function fobUnitPrice(shape, dims, grade, coating, qty) {
+    var exw = exwUnitPrice(shape, dims, grade, coating, qty);
+    if (exw === null) return null;
+    return exw + exportFeeUsd(shape, dims);
+  }
+
+  /* Full ladder for one spec — handy for cards and tables. */
+  function priceLadder(shape, dims, grade, coating, qty) {
+    var net = estimatedUnitPrice(shape, dims, grade, coating, qty);
+    if (net === null) return null;
+    var exw = net * EXW_MARGIN;
+    return { factoryNet: net, exw: exw, fob: exw + exportFeeUsd(shape, dims) };
+  }
+
+  function rateInfo() {
+    return {
+      rate: currentExchange,
+      isLive: currentExchange !== DEFAULT_EXCHANGE,
+      fallback: DEFAULT_EXCHANGE,
+      updatedAt: window._rateLastUpdated || null
+    };
+  }
+
   function loadExchangeRate() {
     return fetch(RATE_API)
       .then(function (r) { return r.json(); })
@@ -136,7 +194,10 @@
     DENSITY_G_CM3: DENSITY_G_CM3,
     MARKUP: MARKUP,
     DEFAULT_EXCHANGE: DEFAULT_EXCHANGE,
+    EXW_MARGIN: EXW_MARGIN,
+    EXPORT_FEE_CNY_KG: EXPORT_FEE_CNY_KG,
     currentExchange: function () { return currentExchange; },
+    rateInfo: rateInfo,
     loadExchangeRate: loadExchangeRate,
     QTY_FACTORS: QTY_FACTORS,
     COATING_FACTORS: COATING_FACTORS,
@@ -148,6 +209,10 @@
     massKg: massKg,
     estimatedUnitPrice: estimatedUnitPrice,
     estimatedPrice10k: estimatedPrice10k,
+    exportFeeUsd: exportFeeUsd,
+    exwUnitPrice: exwUnitPrice,
+    fobUnitPrice: fobUnitPrice,
+    priceLadder: priceLadder,
     specString: specString,
     coatingLabel: coatingLabel
   };

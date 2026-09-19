@@ -21,24 +21,28 @@
   };
   function $id(key) { return document.getElementById(IDS[key]); }
 
-  var DEFAULT_RATE = 7.2;
+  var DEFAULT_RATE = 6.71;    // USD/CNY fallback (updated Sep 2026)
   var rate = DEFAULT_RATE;
   var RATE_API = "https://api.exchangerate-api.com/v4/latest/USD";
   var FORMS_ENDPOINT = "https://huapeng-magnet.com";
   var lastQuote = null;
 
-  /* ---------- Base N35 nickel-coated prices (from price list) ---------- */
+  /* ---------- Base N35 nickel-coated prices ----------
+     price10k = FACTORY NET baseline (internal cost, N35 / Ni / qty 10K),
+     anchored at the 7.20 reference rate. Kept only as a reference anchor —
+     every price rendered on the page is recomputed live from this anchor
+     ladder:  FACTORY NET → EXW (×1.10) → FOB (+ export charges). */
   var BASE_PRICES = [
-    { spec: "D5 × 1 mm", shape: "disc", img: "assets/disc_1.jpg", d: 5, l: null, w: null, h: 1, hole: null, price10k: 0.027 },
-    { spec: "D8 × 2 mm", shape: "disc", img: "assets/disc_1.jpg", d: 8, l: null, w: null, h: 2, hole: null, price10k: 0.072 },
-    { spec: "D10 × 2 mm", shape: "disc", img: "assets/disc_1.jpg", d: 10, l: null, w: null, h: 2, hole: null, price10k: 0.109 },
-    { spec: "D12 × 3 mm", shape: "disc", img: "assets/disc_1.jpg", d: 12, l: null, w: null, h: 3, hole: null, price10k: 0.225 },
-    { spec: "D15 × 3 mm", shape: "disc", img: "assets/disc_1.jpg", d: 15, l: null, w: null, h: 3, hole: null, price10k: 0.36 },
-    { spec: "D20 × 5 mm", shape: "disc", img: "assets/disc_1.jpg", d: 20, l: null, w: null, h: 5, hole: null, price10k: 1.063 },
-    { spec: "10 × 5 × 2 mm", shape: "block", img: "assets/block_2.jpg", d: null, l: 10, w: 5, h: 2, hole: null, price10k: 0.072 },
-    { spec: "20 × 10 × 3 mm", shape: "block", img: "assets/block_2.jpg", d: null, l: 20, w: 10, h: 3, hole: null, price10k: 0.389 },
-    { spec: "20 × 10 × 5 mm", shape: "block", img: "assets/block_2.jpg", d: null, l: 20, w: 10, h: 5, hole: null, price10k: 0.623 },
-    { spec: "D20 × 5 mm ring D8", shape: "ring", img: "assets/ring_1.png", d: 20, l: null, w: null, h: 5, hole: 8, price10k: 0.97 }
+    { spec: "D5 × 1 mm", shape: "disc", img: "assets/disc_1.jpg", d: 5, l: null, w: null, h: 1, hole: null, price10k: 0.011 },
+    { spec: "D8 × 2 mm", shape: "disc", img: "assets/disc_1.jpg", d: 8, l: null, w: null, h: 2, hole: null, price10k: 0.057 },
+    { spec: "D10 × 2 mm", shape: "disc", img: "assets/disc_1.jpg", d: 10, l: null, w: null, h: 2, hole: null, price10k: 0.088 },
+    { spec: "D12 × 3 mm", shape: "disc", img: "assets/disc_1.jpg", d: 12, l: null, w: null, h: 3, hole: null, price10k: 0.191 },
+    { spec: "D15 × 3 mm", shape: "disc", img: "assets/disc_1.jpg", d: 15, l: null, w: null, h: 3, hole: null, price10k: 0.298 },
+    { spec: "D20 × 5 mm", shape: "disc", img: "assets/disc_1.jpg", d: 20, l: null, w: null, h: 5, hole: null, price10k: 0.884 },
+    { spec: "10 × 5 × 2 mm", shape: "block", img: "assets/block_2.jpg", d: null, l: 10, w: 5, h: 2, hole: null, price10k: 0.056 },
+    { spec: "20 × 10 × 3 mm", shape: "block", img: "assets/block_2.jpg", d: null, l: 20, w: 10, h: 3, hole: null, price10k: 0.337 },
+    { spec: "20 × 10 × 5 mm", shape: "block", img: "assets/block_2.jpg", d: null, l: 20, w: 10, h: 5, hole: null, price10k: 0.562 },
+    { spec: "D20 × 5 mm ring D8", shape: "ring", img: "assets/ring_1.png", d: 20, l: null, w: null, h: 5, hole: 8, price10k: 0.742 }
   ];
 
   /* Quantity discount tiers (uniform 5% steps, no small-order surcharge):
@@ -69,11 +73,13 @@
     "N52": 1.80
   };
 
-  /* V3 cost-based constants */
+  /* V5 three-tier cost ladder
+     FACTORY NET (internal) → EXW China (×1.10) → FOB Ningbo (+ export charges) */
   var COST_CNY_KG = 177.5 * 1.5 * 1.3;    // effective N35 cost benchmark (raised +50%, then +30%)
   var DENSITY_G_CM3 = 7.5;    // sintered NdFeB density
   var MARKUP = 1.56;          // 1.20 shipping × 1.30 margin × 1.09 tax
-  var EXCHANGE = 7.2;         // USD/CNY
+  var EXW_MARGIN = 1.10;      // trading-company markup on factory net
+  var EXPORT_FEE_CNY_KG = 2.00; // FOB uplift: customs + port charges + trucking to Ningbo (per kg)
 
   var GRADES = [
     { grade: "N35", br: "11.7–12.1", hcj: "≥12.0", bhmax: "33–36", temp: "80°C", use: "General-purpose holding, sensors, consumer electronics" },
@@ -129,6 +135,22 @@
     return estimatedUnitPrice(shape, dims, "N35", coating || "nickel", 10000);
   }
 
+  /* ---------- V5 price ladder ----------
+     Every customer-facing price is derived from the factory net cost.
+     Returns null when the geometry cannot be auto-priced. */
+  function exportFeeUsd(shape, dims) {
+    var m = massKg({ shape: shape, d: dims.d, l: dims.l, w: dims.w, h: dims.h, hole: dims.hole });
+    if (!m || m <= 0) return 0;
+    return EXPORT_FEE_CNY_KG * m / rate;
+  }
+
+  function priceLadder(shape, dims, grade, coating, qty) {
+    var net = estimatedUnitPrice(shape, dims, grade, coating, qty);
+    if (net === null) return null;
+    var exw = net * EXW_MARGIN;
+    return { factoryNet: net, exw: exw, fob: exw + exportFeeUsd(shape, dims) };
+  }
+
   /* ---------- Exchange rate ---------- */
   function loadRate() {
     var elValue = document.getElementById("rateValue");
@@ -140,7 +162,7 @@
         if (data && data.rates && data.rates.CNY) {
           rate = parseFloat(data.rates.CNY);
           if (elValue) elValue.textContent = rate.toFixed(4);
-          if (elSource) elSource.textContent = "Live market rate · updated " + new Date(data.time_last_updated * 1000).toLocaleString("en-US", { hour: "2-digit", minute: "2-digit" });
+          if (elSource) elSource.textContent = "Live market rate · prices float with the market";
           var activeFilterBtn = document.querySelector("#tableFilter button.is-active");
           renderPriceTable(activeFilterBtn ? activeFilterBtn.getAttribute("data-filter") : "all");
           calculate();
@@ -151,7 +173,7 @@
       .catch(function () {
         rate = DEFAULT_RATE;
         if (elValue) elValue.textContent = rate.toFixed(2);
-        if (elSource) elSource.textContent = "Fallback rate (API unavailable)";
+        if (elSource) elSource.textContent = "Reference rate (live feed unavailable) — prices shown are indicative";
       });
   }
 
@@ -318,31 +340,34 @@
     }
 
     var dims = getDims();
-    var unitUsd = estimatedUnitPrice(shape, dims, grade, coating, qty);
-    if (!unitUsd) {
+    var ladder = priceLadder(shape, dims, grade, coating, qty);
+    if (!ladder) {
       resultBox.innerHTML = requestQuoteHTML("custom dimensions", "We cannot estimate this geometry automatically. Send us the dimensions for a manual quote.");
       return;
     }
 
-    var totalUsd = unitUsd * qty;
-    var exwUsd = Math.round(unitUsd * 1.10 * 100) / 100; // EXW price (factory net × 1.10)
+    var unitUsd = ladder.exw;          // customer-facing unit price = EXW China
+    var fobUsd = ladder.fob;           // FOB Ningbo (approx, incl. export charges)
+    var exwUsd = ladder.exw;
     var exwTotal = exwUsd * qty;
+    var fobTotal = fobUsd * qty;
 
     var specText = specString(shape, dims, coating);
-    lastQuote = { grade: grade, shape: shape, coating: coating, qty: qty, dims: dims, specText: specText, unitUsd: unitUsd, totalUsd: totalUsd, exwUsd: exwUsd, exwTotal: exwTotal };
+    lastQuote = { grade: grade, shape: shape, coating: coating, qty: qty, dims: dims, specText: specText, unitUsd: exwUsd, totalUsd: exwTotal, exwUsd: exwUsd, exwTotal: exwTotal, fobUsd: fobUsd, fobTotal: fobTotal };
 
     // Save to history
     saveToHistory(lastQuote);
 
     resultBox.innerHTML =
       '<div class="calc-result__head">' +
-        '<span class="calc-result__label">' + L.unitPrice + '</span>' +
-        '<strong class="calc-result__price">' + fmt$(unitUsd) + '</strong>' +
-        '<span class="calc-result__sub">' + L.taxIncl + '</span>' +
+        '<span class="calc-result__label">' + L.exwPrice + '</span>' +
+        '<strong class="calc-result__price">' + fmt$(exwUsd) + '</strong>' +
+        '<span class="calc-result__sub">' + L.perPcExw + '</span>' +
       '</div>' +
       '<div class="calc-result__body">' +
         '<div><span>' + L.quantity + '</span><strong>' + fmtNum(qty) + ' pcs</strong></div>' +
-        '<div><span>' + L.totalEst + '</span><strong>' + fmt$(totalUsd) + '</strong></div>' +
+        '<div><span>' + L.totalExw + '</span><strong>' + fmt$(exwTotal) + '</strong></div>' +
+        '<div><span>' + L.totalFob + '</span><strong>' + fmt$(fobTotal) + '</strong> <span style="font-size:11px;color:#9ca3af;">' + L.approx + '</span></div>' +
         '<div><span>' + L.spec + '</span><strong>' + specText + '</strong></div>' +
         '<div><span>' + L.grade + '</span><strong>' + grade + '</strong></div>' +
         '<div><span>' + L.coating + '</span><strong>' + coatingLabel(coating) + '</strong></div>' +
@@ -350,10 +375,11 @@
         '<div style="background:#f8f9fa;padding:12px;border-radius:6px;">' +
           '<div style="font-weight:600;margin-bottom:8px;color:#0c4a6e;">' + L.dualPricing + '</div>' +
           '<div style="display:flex;gap:20px;flex-wrap:wrap;">' +
-            '<div><span style="color:#666;font-size:13px;">' + L.factoryNet + '</span><br><strong style="font-size:18px;">' + fmt$(unitUsd) + '</strong> <span style="font-size:12px;color:#666;">' + L.perPc + '</span></div>' +
             '<div><span style="color:#666;font-size:13px;">' + L.exwPrice + '</span><br><strong style="font-size:18px;color:#059669;">' + fmt$(exwUsd) + '</strong> <span style="font-size:12px;color:#666;">' + L.perPc + '</span></div>' +
+            '<div><span style="color:#666;font-size:13px;">' + L.fobPrice + '</span><br><strong style="font-size:18px;color:#2563eb;">~' + fmt$(fobUsd) + '</strong> <span style="font-size:12px;color:#666;">' + L.perPc + '</span></div>' +
           '</div>' +
           '<p style="margin-top:10px;font-size:12px;color:#666;">' + L.pricingNote + '</p>' +
+          '<p style="margin-top:6px;font-size:12px;color:#b45309;background:#fffbeb;padding:8px;border-radius:4px;">⚠️ ' + L.fxNote + '</p>' +
         '</div>' +
       '</div>' +
       '<div class="calc-result__actions">' +
@@ -422,20 +448,35 @@
       doc.setFillColor(240, 240, 240);
       doc.rect(20, y-5, 170, 8, "F");
       doc.setFontSize(10);
-      doc.text("Quantity", 25, y);
-      doc.text("Unit Price (USD)", 80, y);
-      doc.text("Total (USD)", 130, y);
+      doc.text("Price terms", 25, y);
+      doc.text("Unit Price (USD)", 85, y);
+      doc.text("Total (USD)", 140, y);
 
       y += 8;
-      doc.text(fmtNum(lastQuote.qty) + " pcs", 25, y);
-      doc.text(fmt$(lastQuote.unitUsd), 80, y);
-      doc.text(fmt$(lastQuote.totalUsd), 130, y);
+      doc.text("EXW China", 25, y);
+      doc.text(fmt$(lastQuote.exwUsd), 85, y);
+      doc.text(fmt$(lastQuote.exwTotal), 140, y);
+
+      y += 7;
+      doc.text("FOB Ningbo (approx.)", 25, y);
+      doc.text("~" + fmt$(lastQuote.fobUsd || lastQuote.exwUsd), 85, y);
+      doc.text("~" + fmt$(lastQuote.fobTotal || lastQuote.exwTotal), 140, y);
+
+      y += 7;
+      doc.text("Quantity", 25, y);
+      doc.text(fmtNum(lastQuote.qty) + " pcs", 85, y);
 
       y += 12;
       doc.setFontSize(9);
-      doc.text("Note: Prices are FOB China, tax included. Valid for 30 days.", 20, y);
-      y += 6;
-      doc.text("Final quote subject to tolerance, magnetization direction, packing and shipping.", 20, y);
+      doc.text("EXW = ex-works at our factory in China.", 20, y);
+      y += 5;
+      doc.text("FOB Ningbo = EXW plus export charges (customs, port charges, trucking to port).", 20, y);
+      y += 5;
+      doc.text("Prices are indicative and float with the USD/CNY market rate.", 20, y);
+      y += 5;
+      doc.text("Final price is fixed at the market rate on the date your deposit is received.", 20, y);
+      y += 5;
+      doc.text("Subject to tolerance, magnetization direction, packing and shipping terms.", 20, y);
 
       // Footer
       doc.setFontSize(8);
@@ -479,7 +520,18 @@
       needed: "* required",
       restore: "Restore",
       del: "Delete",
-      total: "Total", allShapes: "All"
+      total: "Total", allShapes: "All",
+      // V5 price-terms labels
+      dualPricing: "Price Terms",
+      exwPrice: "EXW China",
+      fobPrice: "FOB Ningbo",
+      perPc: "/pc",
+      perPcExw: "per pc · EXW China",
+      totalExw: "Total (EXW)",
+      totalFob: "Total (FOB, approx.)",
+      approx: "approx.",
+      pricingNote: "EXW = ex-works at our factory in China. FOB Ningbo = EXW plus export charges (customs declaration, port charges and trucking to the port), allocated per kg.",
+      fxNote: "Prices are indicative and converted at the current market rate. The final price is fixed at the USD/CNY rate on the date your deposit is received."
     },
     de: {
       quoteTitle: "Dieses Angebot anfordern",
@@ -497,12 +549,17 @@
       restore: "Wiederherstellen",
       del: "Löschen",
       total: "Gesamt", allShapes: "Alle",
-      // Dual pricing labels
-      dualPricing: "Preisoptionen",
-      factoryNet: "Werkselfpreis (FOB ex-works)",
-      exwPrice: "EXW-Preis",
+      // V5 price-terms labels
+      dualPricing: "Preisbasis",
+      exwPrice: "EXW China",
+      fobPrice: "FOB Ningbo",
       perPc: "/Stk",
-      pricingNote: "Werkselfpreis = direkt ab Fabrik. EXW = Werkselfpreis × 1,10 (inkl. Handelsmarge). Beide Preise unterliegen Währungsschwankungen."
+      perPcExw: "pro Stück · EXW China",
+      totalExw: "Gesamt (EXW)",
+      totalFob: "Gesamt (FOB, ca.)",
+      approx: "ca.",
+      pricingNote: "EXW = ab Werk in China. FOB Ningbo = EXW zzgl. Exportkosten (Zollanmeldung, Hafengebühren und Transport zum Hafen), anteilig pro kg.",
+      fxNote: "Preise sind Richtwerte und zum aktuellen Marktkurs umgerechnet. Der endgültige Preis wird zum USD/CNY-Kurs am Tag des Zahlungseingangs der Anzahlung festgelegt."
     },
     es: {
       quoteTitle: "Solicitar este presupuesto",
@@ -520,12 +577,17 @@
       restore: "Restaurar",
       del: "Eliminar",
       total: "Total", allShapes: "Todos",
-      // Dual pricing labels
-      dualPricing: "Opciones de Precio",
-      factoryNet: "Precio de Fábrica (FOB ex-works)",
-      exwPrice: "Precio EXW",
-      perPc: "/unidad",
-      pricingNote: "Precio de fábrica = directo de fábrica. EXW = precio de fábrica × 1.10 (incluye margen comercial). Ambos precios están sujetos a fluctuaciones cambiarias."
+      // V5 price-terms labels
+      dualPricing: "Base de precio",
+      exwPrice: "EXW China",
+      fobPrice: "FOB Ningbo",
+      perPc: "/ud",
+      perPcExw: "por unidad · EXW China",
+      totalExw: "Total (EXW)",
+      totalFob: "Total (FOB, aprox.)",
+      approx: "aprox.",
+      pricingNote: "EXW = en fábrica en China. FOB Ningbo = EXW más gastos de exportación (declaración aduanera, tasas portuarias y transporte al puerto), prorrateados por kg.",
+      fxNote: "Los precios son indicativos y se convierten al tipo de cambio de mercado actual. El precio final se fija al tipo USD/CNY de la fecha en que se recibe el anticipo."
     }
   };
   var L = L10N[HTML_LANG.indexOf("de") === 0 ? "de" : HTML_LANG.indexOf("es") === 0 ? "es" : "en"];
@@ -606,17 +668,22 @@
     var rows = BASE_PRICES.filter(function (b) { return filter === "all" || b.shape === filter; });
 
     tbody.innerHTML = rows.map(function (b) {
-      var base = estimatedPrice10k(b.shape, b, "nickel");
-      var p1k = base * QTY_FACTORS[1000];
-      var p50k = base * QTY_FACTORS[50000];
-      var p500k = base * QTY_FACTORS[500000];
+      function cell(qty) {
+        var lad = priceLadder(b.shape, b, "N35", "nickel", qty);
+        if (!lad) return '<td class="price">—</td>';
+        return '<td class="price">' +
+          '<span class="p-exw" style="display:block;font-weight:700;color:#111827;">' + fmt$(lad.exw) + '</span>' +
+          '<span class="p-fob" style="display:block;font-size:0.85em;color:#2563eb;">~' + fmt$(lad.fob) + '</span>' +
+          '<span style="display:block;font-size:0.62em;letter-spacing:0.04em;color:#9ca3af;text-transform:uppercase;">EXW / FOB</span>' +
+        '</td>';
+      }
 
       return '<tr data-shape="' + b.shape + '">' +
         '<td class="spec">' + b.spec + '</td>' +
         '<td class="img-cell"><img src="' + b.img + '" alt="' + b.spec + '"></td>' +
-        '<td class="price">' + fmt$(p1k) + '</td>' +
-        '<td class="price">' + fmt$(p50k) + '</td>' +
-        '<td class="price">' + fmt$(p500k) + '</td>' +
+        cell(1000) +
+        cell(50000) +
+        cell(500000) +
       '</tr>';
     }).join("");
   }

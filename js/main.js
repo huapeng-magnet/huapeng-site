@@ -110,6 +110,10 @@
   var fmt$ = Pricing.fmt$ || function (n) { return "$" + n.toFixed(2); };
   var fmtNum = Pricing.fmtNum || function (n) { return n.toLocaleString("en-US"); };
   var estimatedUnitPrice = Pricing.estimatedUnitPrice || function () { return null; };
+  /* V5 price ladder: customers see EXW China; FOB Ningbo is the approximate
+     alternative term. Factory net cost is never rendered on the website. */
+  var exwUnitPrice = Pricing.exwUnitPrice || estimatedUnitPrice;
+  var fobUnitPrice = Pricing.fobUnitPrice || exwUnitPrice;
   var specString = Pricing.specString || function () { return ""; };
   var coatingLabel = Pricing.coatingLabel || function (c) { return c; };
   var GRADES = Pricing.GRADES || [
@@ -455,9 +459,13 @@
     var coating = (document.getElementById("cfgCoating") || {}).value || product.coating || "nickel";
     var qty = parseInt(document.getElementById("cfgQty").value, 10) || 0;
     var dims = getConfigDims(product.shape);
-    var price = estimatedUnitPrice(product.shape, dims, grade, coating, qty);
+    var price = exwUnitPrice(product.shape, dims, grade, coating, qty);
     if (price && qty > 0) {
-      priceEl.innerHTML = '<strong>' + fmt$(price) + '</strong> / pc at ' + fmtNum(qty) + ' pcs · Total ' + fmt$(price * qty);
+      var fob = fobUnitPrice(product.shape, dims, grade, coating, qty) || price;
+      priceEl.innerHTML =
+        '<strong>' + fmt$(price) + '</strong> / pc EXW China · Total ' + fmt$(price * qty) +
+        '<br><span style="font-size:0.85em;color:#2563eb;">~' + fmt$(fob) + ' / pc FOB Ningbo · Total ~' + fmt$(fob * qty) + '</span>' +
+        '<br><span style="font-size:0.75em;color:#9ca3af;">Indicative — final price fixed at the USD/CNY rate on deposit date.</span>';
     } else if (qty <= 0) {
       priceEl.textContent = "Please enter a valid quantity";
     } else {
@@ -477,9 +485,10 @@
       if (!shape || !spec) return;
       var dims;
       try { dims = JSON.parse(spec); } catch (e) { return; }
-      var price = estimatedUnitPrice(shape, dims, grade, coating, 10000);
+      var price = exwUnitPrice(shape, dims, grade, coating, 10000);
       if (!price) return;
       priceEl.innerHTML = priceEl.innerHTML.replace(/\$[\d.]+/, fmt$(price));
+      priceEl.setAttribute("title", "EXW China reference price (N35-N52, 10K pcs basis). FOB Ningbo available on request — final price fixed at the USD/CNY rate on deposit date.");
     });
   }
 
@@ -547,7 +556,7 @@
     var spec = product.shape === "assembly"
       ? (document.getElementById("cfgCustom").value.trim() || "Custom assembly")
       : specString(product.shape, dims);
-    var unitPrice = dims ? estimatedUnitPrice(product.shape, dims, grade, coating, qty) : 0;
+    var unitPrice = dims ? exwUnitPrice(product.shape, dims, grade, coating, qty) : 0;
 
     // Build cart item directly (skip drawing upload for now)
     var cartItem = {
@@ -616,8 +625,8 @@
 
   function recalcCartItem(idx) {
     var item = cart[idx];
-    if (!item || !item.dims || !estimatedUnitPrice) return;
-    var price = estimatedUnitPrice(item.shape, item.dims, item.grade, item.coating, item.qty);
+    if (!item || !item.dims || !exwUnitPrice) return;
+    var price = exwUnitPrice(item.shape, item.dims, item.grade, item.coating, item.qty);
     if (price) item.unitPrice = price;
   }
   function recalcCartItems() {
@@ -1248,28 +1257,28 @@
     var cx = 100, cy_top = 60, cy_bot = 140, rx = 60, ry = 15;
 
     if (isAxial) {
-      // 上下两个独立圆盘（N 极上盘 + S 极下盘），中间有明显间隔
+      // Two separate discs stacked axially (N pole on top, S pole below) with a visible gap
       var cx = 100, rx = 60, ry = 12, diskH = 32, gap = 24;
       var topY = 45, botY = topY + diskH + gap; // topY=45, botY=101
-      // 上盘（N 极，红色）
-      // 上盘侧面
+      // Top disc (N pole, red)
+      // Top disc side face
       svg += '<rect x="' + (cx-rx) + '" y="' + topY + '" width="' + (rx*2) + '" height="' + diskH + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
-      // 上盘顶面
+      // Top disc top face
       svg += '<ellipse cx="' + cx + '" cy="' + topY + '" rx="' + rx + '" ry="' + ry + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
-      // 上盘底面弧
+      // Top disc bottom arc
       svg += '<path d="M ' + (cx-rx) + ' ' + (topY+diskH) + ' A ' + rx + ' ' + ry + ' 0 0 0 ' + (cx+rx) + ' ' + (topY+diskH) + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
-      // 上盘 N 文字（侧面中央）
+      // "N" label on the top disc (centered on side face)
       svg += '<text x="' + cx + '" y="' + (topY+diskH/2+6) + '" font-size="20" font-weight="bold" fill="#fff" text-anchor="middle">N</text>';
-      // 下盘（S 极，灰白色）
-      // 下盘侧面
+      // Bottom disc (S pole, light gray)
+      // Bottom disc side face
       svg += '<rect x="' + (cx-rx) + '" y="' + botY + '" width="' + (rx*2) + '" height="' + diskH + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
-      // 下盘顶面
+      // Bottom disc top face
       svg += '<ellipse cx="' + cx + '" cy="' + botY + '" rx="' + rx + '" ry="' + ry + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
-      // 下盘底面弧
+      // Bottom disc bottom arc
       svg += '<path d="M ' + (cx-rx) + ' ' + (botY+diskH) + ' A ' + rx + ' ' + ry + ' 0 0 0 ' + (cx+rx) + ' ' + (botY+diskH) + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
-      // 下盘 S 文字
+      // "S" label on the bottom disc
       svg += '<text x="' + cx + '" y="' + (botY+diskH/2+6) + '" font-size="20" font-weight="bold" fill="#0f172a" text-anchor="middle">S</text>';
-      // 中间间隔线（虚线）
+      // Gap indicator (dashed line)
       svg += '<line x1="' + (cx-rx) + '" y1="' + (topY+diskH) + '" x2="' + (cx+rx) + '" y2="' + (topY+diskH) + '" stroke="' + MAG_STROKE + '" stroke-width="1" stroke-dasharray="4,3"/>';
       svg += '<line x1="' + (cx-rx) + '" y1="' + botY + '" x2="' + (cx+rx) + '" y2="' + botY + '" stroke="' + MAG_STROKE + '" stroke-width="1" stroke-dasharray="4,3"/>';
       caption = 'Axial — N pole top disk, S pole bottom disk';
@@ -1356,31 +1365,31 @@
       svg += '<text x="'+(x+w+w/2)+'" y="'+(y+h/2+5)+'" font-size="14" font-weight="bold" fill="'+MAG_BLUE+'" text-anchor="middle">S</text>';
       caption = 'Diametrical — poles on left/right faces';
     } else {
-      // Axial: 上下两个独立 3D 长方体（N 极上块 + S 极下块），中间有间隔
-      var bW = 100, bH = 38, bD = 20, gap = 18; // 每个长方体宽/高/3D深度 + 中间间隔
+      // Axial: two separate 3D blocks stacked with a gap (N pole on top, S pole below)
+      var bW = 100, bH = 38, bD = 20, gap = 18; // Block width / height / 3D depth + gap between blocks
       var startX = 35, topY = 25, botY = topY + bH + gap; // botY = 81
-      // 上块（N 极，红色）
-      // 前面
+      // Top block (N pole, red)
+      // Front face
       svg += '<rect x="'+startX+'" y="'+topY+'" width="'+bW+'" height="'+bH+'" fill="'+MAG_RED+'" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
-      // 顶面（3D 透视）
+      // Top face (3D perspective)
       svg += '<polygon points="'+startX+','+topY+' '+(startX+bW)+','+topY+' '+(startX+bW+bD)+','+(topY-bD)+' '+(startX+bD)+','+(topY-bD)+'" fill="'+MAG_RED+'" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
-      // 右侧面（3D 透视）
+      // Right side face (3D perspective)
       svg += '<polygon points="'+(startX+bW)+','+topY+' '+(startX+bW+bD)+','+(topY-bD)+' '+(startX+bW+bD)+','+(topY+bH-bD)+' '+(startX+bW)+','+(topY+bH)+'" fill="'+MAG_RED+'" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
-      // 上块 N 文字
+      // "N" label on the top block
       svg += '<text x="'+(startX+bW/2)+'" y="'+(topY+bH/2+5)+'" font-size="20" font-weight="bold" fill="#fff" text-anchor="middle">N</text>';
-      // 中间隔虚线（上面块底面 + 下面块顶面）
+      // Gap dashed lines (bottom face of top block + top face of bottom block)
       svg += '<line x1="'+startX+'" y1="'+(topY+bH)+'" x2="'+(startX+bW)+'" y2="'+(topY+bH)+'" stroke="'+MAG_STROKE+'" stroke-width="1" stroke-dasharray="4,3"/>';
       svg += '<line x1="'+(startX+bD)+'" y1="'+(topY+bH-bD)+'" x2="'+(startX+bW+bD)+'" y2="'+(topY+bH-bD)+'" stroke="'+MAG_STROKE+'" stroke-width="1" stroke-dasharray="4,3"/>';
       svg += '<line x1="'+startX+'" y1="'+botY+'" x2="'+(startX+bW)+'" y2="'+botY+'" stroke="'+MAG_STROKE+'" stroke-width="1" stroke-dasharray="4,3"/>';
       svg += '<line x1="'+(startX+bD)+'" y1="'+(botY-bD)+'" x2="'+(startX+bW+bD)+'" y2="'+(botY-bD)+'" stroke="'+MAG_STROKE+'" stroke-width="1" stroke-dasharray="4,3"/>';
-      // 下块（S 极，灰白色）
-      // 前面
+      // Bottom block (S pole, light gray)
+      // Front face
       svg += '<rect x="'+startX+'" y="'+botY+'" width="'+bW+'" height="'+bH+'" fill="#cbd5e1" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
-      // 顶面
+      // Top face
       svg += '<polygon points="'+startX+','+botY+' '+(startX+bW)+','+botY+' '+(startX+bW+bD)+','+(botY-bD)+' '+(startX+bD)+','+(botY-bD)+'" fill="#cbd5e1" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
-      // 右侧面
+      // Right side face
       svg += '<polygon points="'+(startX+bW)+','+botY+' '+(startX+bW+bD)+','+(botY-bD)+' '+(startX+bW+bD)+','+(botY+bH-bD)+' '+(startX+bW)+','+(botY+bH)+'" fill="#cbd5e1" stroke="'+MAG_STROKE+'" stroke-width="1.5"/>';
-      // 下块 S 文字
+      // "S" label on the bottom block
       svg += '<text x="'+(startX+bW/2)+'" y="'+(botY+bH/2+5)+'" font-size="20" font-weight="bold" fill="#0f172a" text-anchor="middle">S</text>';
       caption = 'Through thickness — N pole top block, S pole bottom block';
     }
@@ -1407,7 +1416,7 @@
       // Through thickness: top ring N (red), bottom ring S (light gray)
       var diskH = 32, gap = 30;
       var topY = 25, botY = topY + diskH + gap;
-      // 上环 (N pole, red)
+      // Top ring (N pole, red)
       svg += '<ellipse cx="' + cx + '" cy="' + topY + '" rx="' + R + '" ry="' + ry + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
       svg += '<ellipse cx="' + cx + '" cy="' + topY + '" rx="' + r + '" ry="' + inner_ry + '" fill="#0a0e1a" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
       svg += '<rect x="' + (cx-R) + '" y="' + topY + '" width="' + (R*2) + '" height="' + diskH + '" fill="' + MAG_RED + '" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
@@ -1419,7 +1428,7 @@
       svg += '<line x1="' + (cx-r) + '" y1="' + (topY+diskH) + '" x2="' + (cx+r) + '" y2="' + (topY+diskH) + '" stroke="' + MAG_STROKE + '" stroke-width="1" stroke-dasharray="4,3"/>';
       svg += '<line x1="' + (cx-R) + '" y1="' + botY + '" x2="' + (cx+R) + '" y2="' + botY + '" stroke="' + MAG_STROKE + '" stroke-width="1" stroke-dasharray="4,3"/>';
       svg += '<line x1="' + (cx-r) + '" y1="' + botY + '" x2="' + (cx+r) + '" y2="' + botY + '" stroke="' + MAG_STROKE + '" stroke-width="1" stroke-dasharray="4,3"/>';
-      // 下环 (S pole, light gray)
+      // Bottom ring (S pole, light gray)
       svg += '<ellipse cx="' + cx + '" cy="' + botY + '" rx="' + R + '" ry="' + ry + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
       svg += '<ellipse cx="' + cx + '" cy="' + botY + '" rx="' + r + '" ry="' + inner_ry + '" fill="#0a0e1a" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
       svg += '<rect x="' + (cx-R) + '" y="' + botY + '" width="' + (R*2) + '" height="' + diskH + '" fill="#cbd5e1" stroke="' + MAG_STROKE + '" stroke-width="1.5"/>';
@@ -1580,7 +1589,7 @@
       langDropdown.classList.remove('show');
     });
 
-    // 拦截"English"选项（href=#），按当前页深度计算根路径
+    // Intercept the "English" option (href=#) and resolve the root path by page depth
     var enLink = langDropdown.querySelector('.lang-option[data-lang="en"]');
     if (enLink && (!enLink.getAttribute('href') || enLink.getAttribute('href') === '#')) {
       enLink.addEventListener('click', function(e) {
