@@ -12,9 +12,14 @@
                       (trading-company cost base)
 
      [3] FOB (Ningbo) ≈ EXW + export charges   ← shown to customers
-                      export charges = customs declaration + port
-                      charges + factory-to-port trucking, allocated
-                      per kg via EXPORT_FEE_CNY_KG
+                      export charges are billed PER SHIPMENT, not per kg:
+                      RMB 1,500 covers customs declaration + Ningbo port
+                      charges + Cixi→Ningbo trucking, however heavy the
+                      shipment is. Per-piece share = 1500 ÷ qty ÷ FX.
+                      FOB is quoted from FOB_MIN_QTY pcs up only — below
+                      that the per-piece share dwarfs the magnet itself
+                      (at 1,000 pcs it is ~USD 0.22/pc), so those tiers
+                      show EXW only.
 
    1.56 = 1.20 (shipping) × 1.30 (margin) × 1.09 (tax)
    Exchange rate loaded live from exchangerate-api.com.
@@ -34,7 +39,20 @@
   var DEFAULT_EXCHANGE = 6.71; // USD/CNY fallback (updated Sep 2026)
   var RATE_API = "https://api.exchangerate-api.com/v4/latest/USD";
   var EXW_MARGIN = 1.10;      // trading-company markup on factory net (10%)
-  var EXPORT_FEE_CNY_KG = 2.00; // FOB uplift: customs + port charges + trucking to Ningbo (per kg)
+
+  /* ---------- FOB uplift: billed PER SHIPMENT (revised 19 Sep 2026) ----------
+     One shipment = customs declaration + Ningbo port charges (THC / docs /
+     handling) + Cixi→Ningbo trucking ≈ RMB 1,500 total, no matter how heavy.
+     Sources: Ningbo port tariff sheet (Zhejiang Single Window), Cixi→Ningbo
+     container trucking rate sheet, and the FOB cost breakdown held in the
+     company knowledge base (port charges ≈ 900–1,000 CNY/shipment + trucking).
+     → If the forwarder's invoice differs, this ONE constant is the knob. */
+  var FOB_FIXED_FEE_CNY = 1500;
+
+  /* Below this quantity we publish EXW only. At 1,000 pcs the RMB 1,500
+     shipment fee works out to ~USD 0.22/pc — more than the magnet itself —
+     so an FOB figure there would mislead rather than inform. */
+  var FOB_MIN_QTY = 50000;
 
   var currentExchange = DEFAULT_EXCHANGE;
 
@@ -122,12 +140,17 @@
   /* ---------- V5 price ladder helpers ----------
      factoryNet → internal only. EXW / FOB → customer-facing. */
 
-  /* FOB uplift in USD/pc for a given mass (export charges are CNY/kg). */
-  function exportFeeUsd(shape, dims) {
-    var m = massKg({ shape: shape, d: dims.d, l: dims.l, w: dims.w, h: dims.h, hole: dims.hole });
-    if (!m || m <= 0) return 0;
-    return EXPORT_FEE_CNY_KG * m / currentExchange;
+  /* Per-piece share of the per-shipment export fee (RMB → USD). */
+  function exportFeeUsd(qty) {
+    if (!qty || qty <= 0) return 0;
+    return FOB_FIXED_FEE_CNY / qty / currentExchange;
   }
+
+  /* Whole-shipment export fee in CNY — for order-level totals and notes. */
+  function exportFeeCnyTotal() { return FOB_FIXED_FEE_CNY; }
+
+  /* Is FOB quoted at this quantity? */
+  function isFobQuoted(qty) { return !!qty && qty >= FOB_MIN_QTY; }
 
   /* EXW China: factory net × 1.10 */
   function exwUnitPrice(shape, dims, grade, coating, qty) {
@@ -136,11 +159,13 @@
     return net * EXW_MARGIN;
   }
 
-  /* FOB Ningbo: EXW + export charges */
+  /* FOB Ningbo: EXW + per-piece share of the shipment fee.
+     Returns null below FOB_MIN_QTY — callers must fall back to EXW. */
   function fobUnitPrice(shape, dims, grade, coating, qty) {
+    if (!isFobQuoted(qty)) return null;
     var exw = exwUnitPrice(shape, dims, grade, coating, qty);
     if (exw === null) return null;
-    return exw + exportFeeUsd(shape, dims);
+    return exw + exportFeeUsd(qty);
   }
 
   /* Full ladder for one spec — handy for cards and tables. */
@@ -148,7 +173,15 @@
     var net = estimatedUnitPrice(shape, dims, grade, coating, qty);
     if (net === null) return null;
     var exw = net * EXW_MARGIN;
-    return { factoryNet: net, exw: exw, fob: exw + exportFeeUsd(shape, dims) };
+    var quoted = isFobQuoted(qty);
+    return {
+      factoryNet: net,
+      exw: exw,
+      fob: quoted ? exw + exportFeeUsd(qty) : null,
+      fobQuoted: quoted,
+      exportFeeShare: exportFeeUsd(qty),
+      shipmentFeeCny: FOB_FIXED_FEE_CNY
+    };
   }
 
   function rateInfo() {
@@ -195,7 +228,8 @@
     MARKUP: MARKUP,
     DEFAULT_EXCHANGE: DEFAULT_EXCHANGE,
     EXW_MARGIN: EXW_MARGIN,
-    EXPORT_FEE_CNY_KG: EXPORT_FEE_CNY_KG,
+    FOB_FIXED_FEE_CNY: FOB_FIXED_FEE_CNY,
+    FOB_MIN_QTY: FOB_MIN_QTY,
     currentExchange: function () { return currentExchange; },
     rateInfo: rateInfo,
     loadExchangeRate: loadExchangeRate,
@@ -210,6 +244,8 @@
     estimatedUnitPrice: estimatedUnitPrice,
     estimatedPrice10k: estimatedPrice10k,
     exportFeeUsd: exportFeeUsd,
+    exportFeeCnyTotal: exportFeeCnyTotal,
+    isFobQuoted: isFobQuoted,
     exwUnitPrice: exwUnitPrice,
     fobUnitPrice: fobUnitPrice,
     priceLadder: priceLadder,

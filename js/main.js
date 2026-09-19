@@ -35,6 +35,7 @@
       "maxMb": "(max 4 MB)",
       "priceCalc": "Est. unit price: calculating…",
       "priceReq": "Price on request",
+      "fobMinNote": "FOB Ningbo is quoted from 50,000 pcs up — below that the RMB 1,500 shipment fee outweighs the magnets, so this tier is EXW only.",
       "addToCart": "Add to Cart",
       "removeImage": "Remove image",
       "decrease": "Decrease",
@@ -64,6 +65,7 @@
       "maxMb": "(max. 4 MB)",
       "priceCalc": "Geschätzter Stückpreis: wird berechnet…",
       "priceReq": "Preis auf Anfrage",
+      "fobMinNote": "FOB Ningbo wird ab 50.000 Stück angeboten — darunter übersteigt die Versandpauschale von RMB 1.500 den Warenwert, daher nur EXW.",
       "addToCart": "In den Warenkorb",
       "removeImage": "Bild entfernen",
       "decrease": "Verringern",
@@ -93,6 +95,7 @@
       "maxMb": "(máx. 4 MB)",
       "priceCalc": "Precio unitario est.: calculando…",
       "priceReq": "Precio a consultar",
+      "fobMinNote": "FOB Ningbo se cotiza a partir de 50.000 unidades — por debajo, la tarifa de envío de RMB 1.500 supera el valor de los imanes, por lo que solo se cotiza EXW.",
       "addToCart": "Añadir al Carrito",
       "removeImage": "Eliminar imagen",
       "decrease": "Disminuir",
@@ -122,6 +125,7 @@
       "maxMb": "(최대 4MB)",
       "priceCalc": "예상 단가: 계산 중…",
       "priceReq": "가격 문의",
+      "fobMinNote": "FOB 닝보는 50,000개 이상부터 견적합니다 — 그 이하에서는 선적 고정비 RMB 1,500이 자석 가격을 상회하므로 EXW만 적용됩니다.",
       "addToCart": "장바구니에 담기",
       "removeImage": "이미지 삭제",
       "decrease": "감소",
@@ -151,6 +155,7 @@
       "maxMb": "（最大4MB）",
       "priceCalc": "推定単価：計算中…",
       "priceReq": "価格はお問い合わせください",
+      "fobMinNote": "FOB 寧波は 50,000 個以上からのご案内です — それ未満では出荷固定費 RMB 1,500 が磁石本体の価格を上回るため、EXW のみとなります。",
       "addToCart": "カートに追加",
       "removeImage": "画像を削除",
       "decrease": "減らす",
@@ -524,10 +529,13 @@
     var dims = getConfigDims(product.shape);
     var price = exwUnitPrice(product.shape, dims, grade, coating, qty);
     if (price && qty > 0) {
-      var fob = fobUnitPrice(product.shape, dims, grade, coating, qty) || price;
+      var fobQuoted = !!(Pricing.isFobQuoted && Pricing.isFobQuoted(qty));
+      var fob = fobQuoted ? fobUnitPrice(product.shape, dims, grade, coating, qty) : null;
       priceEl.innerHTML =
         '<strong>' + fmt$(price) + '</strong> / pc EXW China · Total ' + fmt$(price * qty) +
-        '<br><span style="font-size:0.85em;color:#60a5fa;">~' + fmt$(fob) + ' / pc FOB Ningbo · Total ~' + fmt$(fob * qty) + '</span>' +
+        (fobQuoted
+          ? '<br><span style="font-size:0.85em;color:#60a5fa;">~' + fmt$(fob) + ' / pc FOB Ningbo · Total ~' + fmt$(fob * qty) + '</span>'
+          : '<br><span style="font-size:0.8em;color:#8ba0bd;">' + (dict["fobMinNote"] || "") + '</span>') +
         '<br><span style="font-size:0.75em;color:#8ba0bd;">Indicative — final price fixed at the USD/CNY rate on deposit date.</span>';
     } else if (qty <= 0) {
       priceEl.textContent = "Please enter a valid quantity";
@@ -551,7 +559,7 @@
       var price = exwUnitPrice(shape, dims, grade, coating, 10000);
       if (!price) return;
       priceEl.innerHTML = priceEl.innerHTML.replace(/\$[\d.]+/, fmt$(price));
-      priceEl.setAttribute("title", "EXW China reference price (N35-N52, 10K pcs basis). FOB Ningbo available on request — final price fixed at the USD/CNY rate on deposit date.");
+      priceEl.setAttribute("title", "EXW China reference price (N35-N52, 10K pcs basis). FOB Ningbo quoted from 50K pcs up — final price fixed at the USD/CNY rate on deposit date.");
     });
   }
 

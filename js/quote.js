@@ -79,12 +79,18 @@
   };
 
   /* V5 three-tier cost ladder
-     FACTORY NET (internal) → EXW China (×1.10) → FOB Ningbo (+ export charges) */
+     FACTORY NET (internal) → EXW China (×1.10) → FOB Ningbo (+ shipment fee)
+     Keep in sync with the same constants in js/pricing.js. */
   var COST_CNY_KG = 177.5 * 1.5 * 1.3;    // effective N35 cost benchmark (raised +50%, then +30%)
   var DENSITY_G_CM3 = 7.5;    // sintered NdFeB density
   var MARKUP = 1.56;          // 1.20 shipping × 1.30 margin × 1.09 tax
   var EXW_MARGIN = 1.10;      // trading-company markup on factory net
-  var EXPORT_FEE_CNY_KG = 2.00; // FOB uplift: customs + port charges + trucking to Ningbo (per kg)
+
+  /* FOB uplift is billed PER SHIPMENT (customs + Ningbo port charges +
+     Cixi→Ningbo trucking ≈ RMB 1,500 in total, however heavy the shipment).
+     FOB is quoted from FOB_MIN_QTY pcs up; below that → EXW only. */
+  var FOB_FIXED_FEE_CNY = 1500;
+  var FOB_MIN_QTY = 50000;
 
   var GRADES = [
     { grade: "N35", br: "11.7–12.1", hcj: "≥12.0", bhmax: "33–36", temp: "80°C", use: "General-purpose holding, sensors, consumer electronics" },
@@ -143,17 +149,41 @@
   /* ---------- V5 price ladder ----------
      Every customer-facing price is derived from the factory net cost.
      Returns null when the geometry cannot be auto-priced. */
-  function exportFeeUsd(shape, dims) {
-    var m = massKg({ shape: shape, d: dims.d, l: dims.l, w: dims.w, h: dims.h, hole: dims.hole });
-    if (!m || m <= 0) return 0;
-    return EXPORT_FEE_CNY_KG * m / rate;
+
+  /* Per-piece share of the per-shipment export fee. */
+  function exportFeeUsd(qty) {
+    if (!qty || qty <= 0) return 0;
+    return FOB_FIXED_FEE_CNY / qty / rate;
+  }
+
+  function isFobQuoted(qty) { return !!qty && qty >= FOB_MIN_QTY; }
+
+  function exwUnitPrice(shape, dims, grade, coating, qty) {
+    var net = estimatedUnitPrice(shape, dims, grade, coating, qty);
+    if (net === null) return null;
+    return net * EXW_MARGIN;
+  }
+
+  function fobUnitPrice(shape, dims, grade, coating, qty) {
+    if (!isFobQuoted(qty)) return null;
+    var exw = exwUnitPrice(shape, dims, grade, coating, qty);
+    if (exw === null) return null;
+    return exw + exportFeeUsd(qty);
   }
 
   function priceLadder(shape, dims, grade, coating, qty) {
     var net = estimatedUnitPrice(shape, dims, grade, coating, qty);
     if (net === null) return null;
     var exw = net * EXW_MARGIN;
-    return { factoryNet: net, exw: exw, fob: exw + exportFeeUsd(shape, dims) };
+    var quoted = isFobQuoted(qty);
+    return {
+      factoryNet: net,
+      exw: exw,
+      fob: quoted ? exw + exportFeeUsd(qty) : null,
+      fobQuoted: quoted,
+      exportFeeShare: exportFeeUsd(qty),
+      shipmentFeeCny: FOB_FIXED_FEE_CNY
+    };
   }
 
   /* ---------- Exchange rate ---------- */
@@ -352,13 +382,14 @@
     }
 
     var unitUsd = ladder.exw;          // customer-facing unit price = EXW China
-    var fobUsd = ladder.fob;           // FOB Ningbo (approx, incl. export charges)
     var exwUsd = ladder.exw;
+    var fobQuoted = !!ladder.fobQuoted; // FOB only from FOB_MIN_QTY pcs up
+    var fobUsd = fobQuoted ? ladder.fob : null;
     var exwTotal = exwUsd * qty;
-    var fobTotal = fobUsd * qty;
+    var fobTotal = fobQuoted ? fobUsd * qty : null;
 
     var specText = specString(shape, dims, coating);
-    lastQuote = { grade: grade, shape: shape, coating: coating, qty: qty, dims: dims, specText: specText, unitUsd: exwUsd, totalUsd: exwTotal, exwUsd: exwUsd, exwTotal: exwTotal, fobUsd: fobUsd, fobTotal: fobTotal };
+    lastQuote = { grade: grade, shape: shape, coating: coating, qty: qty, dims: dims, specText: specText, unitUsd: exwUsd, totalUsd: exwTotal, exwUsd: exwUsd, exwTotal: exwTotal, fobUsd: fobUsd, fobTotal: fobTotal, fobQuoted: fobQuoted };
 
     // Save to history
     saveToHistory(lastQuote);
@@ -372,7 +403,9 @@
       '<div class="calc-result__body">' +
         '<div><span>' + L.quantity + '</span><strong>' + fmtNum(qty) + ' pcs</strong></div>' +
         '<div><span>' + L.totalExw + '</span><strong>' + fmt$(exwTotal) + '</strong></div>' +
-        '<div><span>' + L.totalFob + '</span><strong>' + fmt$(fobTotal) + '</strong> <span style="font-size:11px;color:#8ba0bd;">' + L.approx + '</span></div>' +
+        (fobQuoted
+          ? '<div><span>' + L.totalFob + '</span><strong>' + fmt$(fobTotal) + '</strong> <span style="font-size:11px;color:#8ba0bd;">' + L.approx + '</span></div>'
+          : '<div><span>' + L.totalFob + '</span><strong style="color:#8ba0bd;font-weight:500;">' + L.fobNotQuoted + '</strong></div>') +
         '<div><span>' + L.spec + '</span><strong>' + specText + '</strong></div>' +
         '<div><span>' + L.grade + '</span><strong>' + grade + '</strong></div>' +
         '<div><span>' + L.coating + '</span><strong>' + coatingLabel(coating) + '</strong></div>' +
@@ -381,7 +414,9 @@
           '<div style="font-weight:600;margin-bottom:8px;color:#22d3ee;">' + L.dualPricing + '</div>' +
           '<div style="display:flex;gap:20px;flex-wrap:wrap;">' +
             '<div><span style="color:#9fb3d1;font-size:13px;">' + L.exwPrice + '</span><br><strong style="font-size:18px;color:#34d399;">' + fmt$(exwUsd) + '</strong> <span style="font-size:12px;color:#9fb3d1;">' + L.perPc + '</span></div>' +
-            '<div><span style="color:#9fb3d1;font-size:13px;">' + L.fobPrice + '</span><br><strong style="font-size:18px;color:#60a5fa;">~' + fmt$(fobUsd) + '</strong> <span style="font-size:12px;color:#9fb3d1;">' + L.perPc + '</span></div>' +
+            (fobQuoted
+              ? '<div><span style="color:#9fb3d1;font-size:13px;">' + L.fobPrice + '</span><br><strong style="font-size:18px;color:#60a5fa;">~' + fmt$(fobUsd) + '</strong> <span style="font-size:12px;color:#9fb3d1;">' + L.perPc + '</span></div>'
+              : '<div style="max-width:300px;"><span style="color:#9fb3d1;font-size:13px;">' + L.fobPrice + '</span><br><strong style="font-size:12px;color:#8ba0bd;font-weight:500;line-height:1.5;">' + L.fobMinNote + '</strong></div>') +
           '</div>' +
           '<p style="margin-top:10px;font-size:12px;color:#9fb3d1;">' + L.pricingNote + '</p>' +
           '<p style="margin-top:6px;font-size:12px;color:#fbbf24;background:rgba(245,158,11,0.12);padding:8px;border-radius:4px;">⚠️ ' + L.fxNote + '</p>' +
@@ -463,9 +498,16 @@
       doc.text(fmt$(lastQuote.exwTotal), 140, y);
 
       y += 7;
-      doc.text("FOB Ningbo (approx.)", 25, y);
-      doc.text("~" + fmt$(lastQuote.fobUsd || lastQuote.exwUsd), 85, y);
-      doc.text("~" + fmt$(lastQuote.fobTotal || lastQuote.exwTotal), 140, y);
+      if (lastQuote.fobQuoted) {
+        doc.text("FOB Ningbo (approx.)", 25, y);
+        doc.text("~" + fmt$(lastQuote.fobUsd), 85, y);
+        doc.text("~" + fmt$(lastQuote.fobTotal), 140, y);
+      } else {
+        /* Below the FOB threshold we quote EXW only — say so instead of
+           printing a meaningless FOB figure. */
+        doc.text("FOB Ningbo", 25, y);
+        doc.text("Quoted from 50,000 pcs up", 85, y);
+      }
 
       y += 7;
       doc.text("Quantity", 25, y);
@@ -535,7 +577,9 @@
       totalExw: "Total (EXW)",
       totalFob: "Total (FOB, approx.)",
       approx: "approx.",
-      pricingNote: "EXW = ex-works at our factory in China. FOB Ningbo = EXW plus export charges (customs declaration, port charges and trucking to the port), allocated per kg.",
+      fobNotQuoted: "EXW only",
+      fobMinNote: "FOB Ningbo is quoted from 50,000 pcs up. Below that, the RMB 1,500 shipment fee costs more than the magnets themselves — so we quote EXW only.",
+      pricingNote: "EXW = ex-works at our factory in China. FOB Ningbo = EXW plus the shipment's export charges (customs declaration, Ningbo port charges and trucking to the port) — RMB 1,500 per shipment, shared across the whole order.",
       fxNote: "Prices are indicative and converted at the current market rate. The final price is fixed at the USD/CNY rate on the date your deposit is received."
     },
     de: {
@@ -563,7 +607,9 @@
       totalExw: "Gesamt (EXW)",
       totalFob: "Gesamt (FOB, ca.)",
       approx: "ca.",
-      pricingNote: "EXW = ab Werk in China. FOB Ningbo = EXW zzgl. Exportkosten (Zollanmeldung, Hafengebühren und Transport zum Hafen), anteilig pro kg.",
+      fobNotQuoted: "nur EXW",
+      fobMinNote: "FOB Ningbo wird ab 50.000 Stück angeboten. Darunter übersteigt die Versandpauschale von RMB 1.500 den Wert der Magnete selbst — daher nur EXW.",
+      pricingNote: "EXW = ab Werk in China. FOB Ningbo = EXW zzgl. der Exportkosten der Sendung (Zollanmeldung, Hafengebühren Ningbo und Transport zum Hafen) — RMB 1.500 pro Sendung, auf die gesamte Bestellung verteilt.",
       fxNote: "Preise sind Richtwerte und zum aktuellen Marktkurs umgerechnet. Der endgültige Preis wird zum USD/CNY-Kurs am Tag des Zahlungseingangs der Anzahlung festgelegt."
     },
     es: {
@@ -591,7 +637,9 @@
       totalExw: "Total (EXW)",
       totalFob: "Total (FOB, aprox.)",
       approx: "aprox.",
-      pricingNote: "EXW = en fábrica en China. FOB Ningbo = EXW más gastos de exportación (declaración aduanera, tasas portuarias y transporte al puerto), prorrateados por kg.",
+      fobNotQuoted: "solo EXW",
+      fobMinNote: "FOB Ningbo se cotiza a partir de 50.000 unidades. Por debajo, la tarifa de envío de RMB 1.500 supera el valor de los propios imanes, por lo que solo cotizamos EXW.",
+      pricingNote: "EXW = en fábrica en China. FOB Ningbo = EXW más los gastos de exportación del envío (declaración aduanera, tasas portuarias de Ningbo y transporte al puerto) — RMB 1.500 por envío, repartidos entre todo el pedido.",
       fxNote: "Los precios son indicativos y se convierten al tipo de cambio de mercado actual. El precio final se fija al tipo USD/CNY de la fecha en que se recibe el anticipo."
     },
     ko: {
@@ -618,7 +666,9 @@
       totalExw: "합계 (EXW)",
       totalFob: "합계 (FOB, 약)",
       approx: "약",
-      pricingNote: "EXW = 중국 자사 공장 인도 조건입니다. FOB 닝보 = EXW에 수출 비용(통관 신고, 항만 부대비용, 공장에서 항구까지의 운송비)을 포함한 조건으로, 중량(kg) 기준으로 배분됩니다.",
+      fobNotQuoted: "EXW 전용",
+      fobMinNote: "FOB 닝보는 50,000개 이상부터 견적합니다. 그 이하 수량에서는 선적 고정비 RMB 1,500이 자석 가격보다 커지므로 EXW만 견적합니다.",
+      pricingNote: "EXW = 중국 자사 공장 인도 조건입니다. FOB 닝보 = EXW에 해당 선적의 수출 비용(통관 신고, 닝보 항만 부대비용, 공장에서 항구까지의 운송비)을 포함한 조건이며, 선적 1건당 RMB 1,500을 전체 주문에 배분합니다.",
       fxNote: "가격은 참고용이며 현재 시장 환율로 환산한 금액입니다. 최종 가격은 계약금 입금일의 USD/CNY 환율로 확정됩니다."
     },
     ja: {
@@ -645,7 +695,9 @@
       totalExw: "合計（EXW）",
       totalFob: "合計（FOB、概算）",
       approx: "概算",
-      pricingNote: "EXW = 中国自社工場渡し条件です。FOB 寧波 = EXW に輸出費用（通関申告、港湾諸費用、工場から港までの輸送費）を加えた条件で、重量（kg）あたりに按分されます。",
+      fobNotQuoted: "EXW のみ",
+      fobMinNote: "FOB 寧波は 50,000 個以上からのご案内です。それ未満では出荷固定費 RMB 1,500 が磁石本体の価格を上回るため、EXW のみのご案内となります。",
+      pricingNote: "EXW = 中国自社工場渡し条件です。FOB 寧波 = EXW に当該出荷の輸出費用（通関申告、寧波港の港湾諸費用、工場から港までの輸送費）を加えた条件で、1 出荷あたり RMB 1,500 を全注文に按分します。",
       fxNote: "価格は参考値であり、現在の市場レートで換算しています。最終価格は手付金ご入金日の USD/CNY レートで確定します。"
     }
   };
@@ -734,6 +786,14 @@
       function cell(qty) {
         var lad = priceLadder(b.shape, b, "N35", "nickel", qty);
         if (!lad) return '<td class="price">—</td>';
+        if (!lad.fobQuoted) {
+          /* Small tiers: FOB is not quoted — the RMB 1,500 shipment fee
+             would outweigh the magnets themselves. Show EXW only. */
+          return '<td class="price">' +
+            '<span class="p-exw" style="display:block;font-weight:700;color:#e8f1ff;">' + fmt$(lad.exw) + '</span>' +
+            '<span style="display:block;font-size:0.62em;letter-spacing:0.04em;color:#8ba0bd;text-transform:uppercase;">' + L.fobNotQuoted + '</span>' +
+          '</td>';
+        }
         return '<td class="price">' +
           '<span class="p-exw" style="display:block;font-weight:700;color:#e8f1ff;">' + fmt$(lad.exw) + '</span>' +
           '<span class="p-fob" style="display:block;font-size:0.85em;color:#60a5fa;">~' + fmt$(lad.fob) + '</span>' +

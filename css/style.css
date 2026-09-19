@@ -74,15 +74,15 @@ img{ max-width:100%; display:block; }
   background:rgba(7,11,20,0.78); backdrop-filter:blur(14px);
   border-bottom:1px solid rgba(56,189,248,0.14);
 }
-.header__inner{ display:flex; align-items:center; justify-content:space-between; padding:14px 0; gap:20px; }
+.header__inner{ display:flex; align-items:center; justify-content:space-between; padding:12px 0 0; gap:20px; flex-wrap:wrap; }
 
 .brand{ display:flex; align-items:center; gap:10px; }
 .brand__mark{ filter:drop-shadow(0 0 8px rgba(34,211,238,0.5)); display:flex; }
 .brand__text{ font-weight:800; letter-spacing:1px; font-size:18px; }
 .brand__text span{ color:var(--cyan); margin-left:6px; font-weight:600; }
 
-.nav{ display:flex; gap:26px; font-weight:500; }
-.nav a{ color:var(--ink-soft); position:relative; padding:4px 0; transition:.2s; }
+.nav{ display:flex; align-items:center; justify-content:center; gap:16px; font-weight:500; font-size:13.5px; flex-wrap:nowrap; min-width:0; order:3; width:100%; padding-bottom:10px; }
+.nav a{ color:var(--ink-soft); position:relative; padding:4px 0; transition:.2s; white-space:nowrap; }
 .nav a:hover{ color:var(--ink); }
 .nav a::after{ content:""; position:absolute; left:0; bottom:-2px; width:0; height:2px; background:linear-gradient(90deg,var(--cyan),var(--blue)); transition:.25s; }
 .nav a:hover::after{ width:100%; }
@@ -759,6 +759,20 @@ select option:checked{ background:#d1f4ff linear-gradient(0deg,#d1f4ff,#d1f4ff);
 .modal--maximized .detail__grid{ grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); }
 
 /* ---------- Search responsive ---------- */
+@media (max-width: 1280px){
+  .nav{ gap:11px; font-size:12.5px; }
+  .search__input{ width:130px; }
+  .search__input:focus{ width:160px; }
+}
+@media (max-width: 1080px){
+  .nav{ display:none; }
+  .nav-toggle{ display:block; }
+  .nav.open{
+    display:flex; flex-direction:column; gap:0; position:absolute; top:100%; left:0; right:0;
+    background:rgba(7,11,20,0.97); padding:14px 20px; border-bottom:1px solid var(--panel-br);
+  }
+  .nav.open a{ padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.06); }
+}
 @media (max-width: 880px){
   .search__input{ width:160px; }
   .search__input:focus{ width:190px; }

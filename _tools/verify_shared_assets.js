@@ -14,7 +14,7 @@
 const { chromium } = require('playwright');
 
 const PORT = process.env.PORT || 8899;
-const ORIGIN = `http://127.0.0.1:${PORT}`;
+const ORIGIN = process.env.ORIGIN || `http://127.0.0.1:${PORT}`;
 
 const PAGES = [
   ['en index', '/'],
