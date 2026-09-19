@@ -1,7 +1,7 @@
 /*!
  * HP Magnet Calculator — UI mount layer
  * Renders into any container. Exposes HPMagnetCalcUI.mount().
- * v1.1.1 · 2026-09-19
+ * v1.2.1 · 2026-09-19
  */
 (function (global) {
   'use strict';
@@ -22,6 +22,38 @@
         mwb: 'mWb', gram: 'g', mm2: 'mm²', mm3: 'mm³'
       },
       note: 'Theoretical estimate at zero gap. Real pull depends on steel grade, thickness, surface finish and coating — verify by test.'
+    },
+    de: {
+      calculators: { surfaceField: 'Oberflächenfeld', moment: 'Magnetisches Moment', pullForce: 'Haftkraft' },
+      shapes: { block: 'Block', disc: 'Scheibe', ring: 'Ring' },
+      material: 'Material', grade: 'Sorte',
+      dims: { L: 'Länge L (mm)', W: 'Breite W (mm)', D: 'Durchmesser D (mm)', d: 'Bohrung d (mm)', T: 'Dicke T (mm)' },
+      calc: 'Berechnen', reset: 'Zurücksetzen',
+      results: {
+        surfaceField: 'Oberflächenflussdichte', moment: 'Magnetisches Moment', pullForce: 'Geschätzte Haftkraft'
+      },
+      extra: { flux: 'Fluss', weight: 'Gewicht', area: 'Polfläche', volume: 'Volumen' },
+      units: {
+        gauss: 'Gauss', tesla: 'T', am2: 'A·m²', gaussCm3: 'G·cm³', newton: 'N', kgf: 'kgf', lbf: 'lbf',
+        mwb: 'mWb', gram: 'g', mm2: 'mm²', mm3: 'mm³'
+      },
+      note: 'Theoretischer Näherungswert bei Spaltweite null. Die tatsächliche Haftkraft hängt von Stahlsorte, Dicke, Oberflächenbeschaffenheit und Beschichtung ab — bitte durch Test verifizieren.'
+    },
+    es: {
+      calculators: { surfaceField: 'Campo superficial', moment: 'Momento magnético', pullForce: 'Fuerza de atracción' },
+      shapes: { block: 'Bloque', disc: 'Disco', ring: 'Anillo' },
+      material: 'Material', grade: 'Grado',
+      dims: { L: 'Longitud L (mm)', W: 'Ancho W (mm)', D: 'Diámetro D (mm)', d: 'Agujero d (mm)', T: 'Espesor T (mm)' },
+      calc: 'Calcular', reset: 'Restablecer',
+      results: {
+        surfaceField: 'Densidad de flujo superficial', moment: 'Momento magnético', pullForce: 'Fuerza de atracción estimada'
+      },
+      extra: { flux: 'Flujo', weight: 'Peso', area: 'Área polar', volume: 'Volumen' },
+      units: {
+        gauss: 'Gauss', tesla: 'T', am2: 'A·m²', gaussCm3: 'G·cm³', newton: 'N', kgf: 'kgf', lbf: 'lbf',
+        mwb: 'mWb', gram: 'g', mm2: 'mm²', mm3: 'mm³'
+      },
+      note: 'Estimación teórica con entrehierro nulo. La fuerza real depende del tipo de acero, el espesor, el acabado superficial y el recubrimiento; verifíquela mediante ensayo.'
     }
   };
 
@@ -32,6 +64,12 @@
   };
 
   var DEFAULTS = { block: { L: 20, W: 10, T: 5 }, disc: { D: 20, T: 5 }, ring: { D: 20, d: 10, T: 5 } };
+
+  /* An unknown shape must never take the whole widget down. Arc segments, for
+     instance, have no closed-form solution, so a host page that passes 'arc'
+     gets the disc model rather than a TypeError. */
+  function dimsFor(shape) { return DIMS[shape] || DIMS.disc; }
+  function defaultsFor(shape) { return DEFAULTS[shape] || DEFAULTS.disc; }
 
   function el(tag, cls, html) {
     var n = document.createElement(tag);
@@ -146,14 +184,14 @@
       grWrap.appendChild(selG);
       form.appendChild(grWrap);
 
-      DIMS[state.shape].forEach(function (key) {
+      dimsFor(state.shape).forEach(function (key) {
         var w = el('label', 'hpmc__field');
         w.appendChild(el('span', 'hpmc__label', T.dims[key]));
         var i = el('input', 'hpmc__input');
         i.type = 'number';
         i.step = '0.1';
         i.min = '0';
-        i.value = state.dims[key] != null ? state.dims[key] : DEFAULTS[state.shape][key];
+        i.value = state.dims[key] != null ? state.dims[key] : defaultsFor(state.shape)[key];
         i.addEventListener('input', function () { state.dims[key] = parseFloat(i.value); });
         w.appendChild(i);
         form.appendChild(w);
@@ -162,9 +200,9 @@
 
     function readDims() {
       var d = {};
-      DIMS[state.shape].forEach(function (k) {
+      dimsFor(state.shape).forEach(function (k) {
         var v = state.dims[k];
-        d[k] = (v == null || isNaN(v)) ? DEFAULTS[state.shape][k] : v;
+        d[k] = (v == null || isNaN(v)) ? defaultsFor(state.shape)[k] : v;
       });
       return d;
     }
@@ -227,7 +265,7 @@
     };
   }
 
-  var UI = { version: '1.1.1', mount: mount, lang: LANG };
+  var UI = { version: '1.2.1', mount: mount, lang: LANG };
   global.HPMagnetCalcUI = UI;
   if (typeof module !== 'undefined' && module.exports) module.exports = UI;
 })(typeof window !== 'undefined' ? window : globalThis);

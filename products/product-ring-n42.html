@@ -158,6 +158,47 @@ h2+p{color:var(--ink-soft);font-size:.94rem;margin-top:-.5rem;margin-bottom:1.1r
 .footer__row{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
 .footer a:hover{color:var(--cyan)}
 
+/* embedded magnet calculator */
+.hpmc{
+  --hpmc-surface:var(--panel);--hpmc-surface-2:#0f172a;--hpmc-border:var(--panel-br);
+  --hpmc-text:var(--ink);--hpmc-muted:#9fb3d1;--hpmc-accent:var(--cyan);--hpmc-value:#67e8f9;
+  max-width:860px;margin:1.4rem 0 0;color:var(--hpmc-text);
+}
+.hpmc__row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.hpmc__tab{flex:1 1 0;min-width:108px;padding:10px 12px;border:1px solid var(--hpmc-border);
+  border-radius:10px;background:var(--hpmc-surface);color:var(--hpmc-muted);font-size:13.5px;
+  font-family:inherit;cursor:pointer;transition:.15s}
+.hpmc__tab:hover{border-color:var(--hpmc-accent);color:var(--hpmc-text)}
+.hpmc__tab.is-active{background:linear-gradient(135deg,var(--hpmc-accent),var(--blue));
+  border-color:transparent;color:#04121a;font-weight:700}
+.hpmc__form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;
+  padding:16px;background:var(--hpmc-surface);border:1px solid var(--hpmc-border);border-radius:14px}
+.hpmc__field{display:flex;flex-direction:column;gap:6px}
+.hpmc__label{font-size:13px;color:var(--hpmc-muted)}
+.hpmc__input{width:100%;padding:10px 12px;border:1px solid var(--hpmc-border);border-radius:9px;
+  background:var(--hpmc-surface-2);color:var(--hpmc-text);font-size:15px;font-family:inherit}
+.hpmc__input:focus{outline:none;border-color:var(--hpmc-accent);box-shadow:0 0 0 3px rgba(34,211,238,.14)}
+.hpmc__btn{width:100%;padding:13px;border:none;border-radius:10px;
+  background:linear-gradient(135deg,var(--hpmc-accent),var(--blue));color:#04121a;
+  font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:.2s}
+.hpmc__btn:hover{transform:translateY(-1px);box-shadow:0 0 24px rgba(34,211,238,.35)}
+.hpmc__out{margin-top:14px;padding:20px;background:var(--hpmc-surface);
+  border:1px solid var(--hpmc-border);border-radius:14px;text-align:center}
+.hpmc__outlabel{font-size:13px;color:var(--hpmc-muted);margin-bottom:6px}
+.hpmc__big{font-size:clamp(1.8rem,4vw,2.3rem);font-weight:800;color:var(--hpmc-value);line-height:1.15}
+.hpmc__sub{margin-top:8px;font-size:14px;color:var(--hpmc-muted)}
+.hpmc__err{color:#fca5a5;font-size:14px}
+.hpmc__extras{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:10px;
+  margin-top:14px;padding-top:14px;border-top:1px solid var(--hpmc-border);text-align:left}
+.hpmc__extras span{font-size:12px;color:var(--hpmc-muted);display:block}
+.hpmc__extras b{color:var(--hpmc-text);font-size:15px;display:block;margin-top:2px}
+.hpmc__note{margin-top:12px;font-size:12px;line-height:1.65;color:var(--hpmc-muted)}
+.calc-more{margin-top:1rem;font-size:.88rem}
+.calc-more a{color:var(--cyan)}
+.calc-more a:hover{text-decoration:underline}
+.calc-note{margin-top:.7rem;font-size:.82rem;color:var(--ink-dim);line-height:1.62;
+  border-left:2px solid var(--panel-br);padding-left:.8rem}
+
 @media(max-width:760px){
   .product-hero{grid-template-columns:1fr;gap:26px}
   .gallery{padding:16px}
@@ -299,6 +340,16 @@ h2+p{color:var(--ink-soft);font-size:.94rem;margin-top:-.5rem;margin-bottom:1.1r
           <span><i style="background:#94a3b8"></i>External field lines</span>
         </div>
       </div>
+    </section>
+
+    <section class="block" id="calculator">
+      <h2>Calculate your own dimensions</h2>
+      <p>Enter the size you actually need and see the surface field, magnetic moment and
+      estimated pull force for a N42 ring magnet. Switch to the other
+      calculators for the magnetic moment, or the other shapes if your design is not a
+      ring.</p>
+      <div id="hp-product-calc"></div>
+      <p class="calc-more"><a href="/calculator.html">Open the full magnet calculator &rarr;</a></p>
     </section>
 
     <section class="block">
@@ -443,6 +494,636 @@ h2+p{color:var(--ink-soft);font-size:.94rem;margin-top:-.5rem;margin-bottom:1.1r
       showLines = true; render();
     });
     render();
+  })();
+  </script>
+
+  <script>
+  /*! HP-INLINE-ENGINE - generated from calc/magnet-calculator.js. DO NOT EDIT. */
+/*!
+ * HP Magnet Calculator — core engine
+ * Pure computation, no DOM dependency. Safe to require from any page.
+ * v1.1.1 · 2026-09-19
+ */
+(function (global) {
+  'use strict';
+
+  var MU0 = 4 * Math.PI * 1e-7;
+
+  var FALLBACK = {
+    materials: {
+      ndfeb: { name: 'Sintered NdFeB', density: 7.5 },
+      smco: { name: 'Sintered SmCo', density: 8.4 }
+    },
+    grades: {
+      ndfeb: {
+        N35: { Br: 1.17 }, N38: { Br: 1.22 }, N40: { Br: 1.26 }, N42: { Br: 1.29 },
+        N45: { Br: 1.33 }, N48: { Br: 1.37 }, N50: { Br: 1.42 }, N52: { Br: 1.45 }
+      },
+      smco: {
+        SmCo24: { Br: 1.05 }, SmCo26: { Br: 1.07 }, SmCo28: { Br: 1.10 }
+      }
+    },
+    correction: { surfaceField: 1.0 },
+    units: { newtonPerKgf: 9.80665, newtonPerLbf: 4.44822, gaussPerTesla: 10000 }
+  };
+
+  var CONFIG = FALLBACK;
+
+  function setConfig(cfg) {
+    if (cfg && typeof cfg === 'object') CONFIG = cfg;
+    return CONFIG;
+  }
+
+  function getConfig() { return CONFIG; }
+
+  function unit(key) {
+    var u = CONFIG.units || FALLBACK.units;
+    return u[key];
+  }
+
+  function correction() {
+    var c = CONFIG.correction && CONFIG.correction.surfaceField;
+    return (typeof c === 'number') ? c : FALLBACK.correction.surfaceField;
+  }
+
+  function remanence(material, grade) {
+    var m = (CONFIG.grades && CONFIG.grades[material]) || FALLBACK.grades.ndfeb;
+    var g = m[grade];
+    if (!g) throw new Error('Unknown grade: ' + grade);
+    return g.Br;
+  }
+
+  /* ---------- geometry: areas and volumes in SI ---------- */
+
+  function assertPositive(name, v) {
+    if (typeof v !== 'number' || !isFinite(v) || v <= 0) {
+      throw new Error(name + ' must be a positive number');
+    }
+  }
+
+  function assertRing(ro, ri) {
+    if (typeof ri !== 'number' || !isFinite(ri) || ri < 0) {
+      throw new Error('Bore d must be zero or a positive number');
+    }
+    if (ri >= ro) {
+      throw new Error('Bore d must be smaller than outer diameter D');
+    }
+  }
+
+  function areaM2(shape, d) {
+    if (shape === 'block') {
+      assertPositive('Length L', d.L);
+      assertPositive('Width W', d.W);
+      return (d.L * d.W) * 1e-6;
+    }
+    if (shape === 'disc') {
+      assertPositive('Diameter D', d.D);
+      return Math.PI * (d.D / 2) * (d.D / 2) * 1e-6;
+    }
+    if (shape === 'ring') {
+      assertPositive('Outer diameter D', d.D);
+      var ro = d.D / 2, ri = d.d / 2;
+      assertRing(ro, ri);
+      return Math.PI * (ro * ro - ri * ri) * 1e-6;
+    }
+    throw new Error('Unknown shape: ' + shape);
+  }
+
+  function volumeM3(shape, d) {
+    assertPositive('Thickness T', d.T);
+    if (shape === 'block') {
+      assertPositive('Length L', d.L);
+      assertPositive('Width W', d.W);
+      return (d.L * d.W * d.T) * 1e-9;
+    }
+    if (shape === 'disc') {
+      assertPositive('Diameter D', d.D);
+      return Math.PI * (d.D / 2) * (d.D / 2) * d.T * 1e-9;
+    }
+    if (shape === 'ring') {
+      assertPositive('Outer diameter D', d.D);
+      var ro = d.D / 2, ri = d.d / 2;
+      assertRing(ro, ri);
+      return Math.PI * (ro * ro - ri * ri) * d.T * 1e-9;
+    }
+    throw new Error('Unknown shape: ' + shape);
+  }
+
+  /* ---------- surface field (Gauss, on-axis at pole face) ---------- */
+
+  function discFieldGauss(D, T, Br) {
+    var R = D / 2;
+    return (Br / 2) * (T / Math.sqrt(R * R + T * T)) * 1e4;
+  }
+
+  function blockFieldGauss(L, W, T, Br) {
+    // Strict on-axis solution at the pole face (magnetic-charge / solid-angle model):
+    //   B = (Br/2) * [ 1 - (2/pi)*atan( LW / (2T*sqrt(4T^2+L^2+W^2)) ) ]
+    // Limits checked: T->0 => 0 (thin plate cannot hold field), T->inf => Br/2 (long prism).
+    var a = (L * W) / (2 * T * Math.sqrt(4 * T * T + L * L + W * W));
+    return (Br / 2) * (1 - (2 / Math.PI) * Math.atan(a)) * 1e4;
+  }
+
+  function surfaceFieldGauss(shape, d, Br, applyCorrection) {
+    assertPositive('Thickness T', d.T);
+    var B;
+    if (shape === 'block') {
+      assertPositive('Length L', d.L);
+      assertPositive('Width W', d.W);
+      B = blockFieldGauss(d.L, d.W, d.T, Br);
+    } else if (shape === 'disc') {
+      assertPositive('Diameter D', d.D);
+      B = discFieldGauss(d.D, d.T, Br);
+    } else if (shape === 'ring') {
+      assertPositive('Outer diameter D', d.D);
+      var ro = d.D / 2, ri = d.d / 2;
+      assertRing(ro, ri);
+      var Ao = Math.PI * (d.D / 2) * (d.D / 2);
+      var Ai = Math.PI * (d.d / 2) * (d.d / 2);
+      B = discFieldGauss(d.D, d.T, Br) * ((Ao - Ai) / Ao);
+    } else {
+      throw new Error('Unknown shape: ' + shape);
+    }
+    if (applyCorrection === false) return B;
+    return B * correction();
+  }
+
+  /* ---------- magnetic moment (A·m^2) ---------- */
+
+  function momentAm2(shape, d, Br) {
+    var M = Br / MU0;
+    return M * volumeM3(shape, d);
+  }
+
+  /* ---------- material helpers ---------- */
+
+  function density(material) {
+    var m = (CONFIG.materials && CONFIG.materials[material]) || FALLBACK.materials.ndfeb;
+    return (typeof m.density === 'number') ? m.density : 7.5; // g/cm^3
+  }
+
+  function materialName(material) {
+    var m = (CONFIG.materials && CONFIG.materials[material]) || FALLBACK.materials.ndfeb;
+    return m.name || material;
+  }
+
+  /* ---------- flux through the pole face (milliWeber) ---------- */
+
+  function fluxMilliWeber(shape, d, Bg) {
+    var BT = Bg / 1e4;
+    return BT * areaM2(shape, d) * 1000; // Wb -> mWb
+  }
+
+  /* ---------- weight (gram) ---------- */
+
+  function weightGram(shape, d, material) {
+    var volCm3 = volumeM3(shape, d) * 1e6;
+    return volCm3 * density(material);
+  }
+
+  /* ---------- pull force (Newton, Maxwell stress + image method) ---------- */
+
+  function pullForceNewton(shape, d, Br) {
+    var Bg = surfaceFieldGauss(shape, d, Br);
+    var BT = Bg / 1e4;
+    return 2 * BT * BT * areaM2(shape, d) / MU0;
+  }
+
+  /* ---------- unit conversion ---------- */
+
+  function toKgf(n) { return n / unit('newtonPerKgf'); }
+  function toLbf(n) { return n / unit('newtonPerLbf'); }
+  function toGaussFromTesla(t) { return t * unit('gaussPerTesla'); }
+  function toGaussCm3FromAm2(a) { return a * 1000; }
+
+  /* ---------- one-shot convenience: run any calculator ---------- */
+
+  function run(kind, material, grade, shape, dims) {
+    var Br = remanence(material, grade);
+    var Bg = surfaceFieldGauss(shape, dims, Br);
+    var out = {
+      kind: kind, material: material, grade: grade, shape: shape, Br: Br,
+      gauss: Bg,
+      tesla: Bg / 1e4,
+      areaMm2: areaM2(shape, dims) * 1e6,
+      volumeMm3: volumeM3(shape, dims) * 1e9,
+      fluxMw: fluxMilliWeber(shape, dims, Bg),
+      weightG: weightGram(shape, dims, material)
+    };
+    if (kind === 'surfaceField') {
+      /* gauss / tesla already populated above */
+    } else if (kind === 'moment') {
+      out.am2 = momentAm2(shape, dims, Br);
+      out.gaussCm3 = toGaussCm3FromAm2(out.am2);
+    } else if (kind === 'pullForce') {
+      out.newton = pullForceNewton(shape, dims, Br);
+      out.kgf = toKgf(out.newton);
+      out.lbf = toLbf(out.newton);
+    } else {
+      throw new Error('Unknown calculator: ' + kind);
+    }
+    return out;
+  }
+
+  var API = {
+    version: '1.1.1',
+    MU0: MU0,
+    setConfig: setConfig,
+    getConfig: getConfig,
+    remanence: remanence,
+    density: density,
+    materialName: materialName,
+    areaM2: areaM2,
+    volumeM3: volumeM3,
+    surfaceFieldGauss: surfaceFieldGauss,
+    fluxMilliWeber: fluxMilliWeber,
+    weightGram: weightGram,
+    momentAm2: momentAm2,
+    pullForceNewton: pullForceNewton,
+    toKgf: toKgf,
+    toLbf: toLbf,
+    toGaussFromTesla: toGaussFromTesla,
+    toGaussCm3FromAm2: toGaussCm3FromAm2,
+    run: run
+  };
+
+  global.HPMagnetCalc = API;
+  if (typeof module !== 'undefined' && module.exports) module.exports = API;
+})(typeof window !== 'undefined' ? window : globalThis);
+  </script>
+
+  <script>
+  /*! HP-INLINE-UI - generated from calc/magnet-calculator-ui.js. DO NOT EDIT. */
+/*!
+ * HP Magnet Calculator — UI mount layer
+ * Renders into any container. Exposes HPMagnetCalcUI.mount().
+ * v1.2.1 · 2026-09-19
+ */
+(function (global) {
+  'use strict';
+
+  var LANG = {
+    en: {
+      calculators: { surfaceField: 'Surface field', moment: 'Magnetic moment', pullForce: 'Pull force' },
+      shapes: { block: 'Block', disc: 'Disc', ring: 'Ring' },
+      material: 'Material', grade: 'Grade',
+      dims: { L: 'Length L (mm)', W: 'Width W (mm)', D: 'Diameter D (mm)', d: 'Bore d (mm)', T: 'Thickness T (mm)' },
+      calc: 'Calculate', reset: 'Reset',
+      results: {
+        surfaceField: 'Surface flux density', moment: 'Magnetic moment', pullForce: 'Estimated pull force'
+      },
+      extra: { flux: 'Flux', weight: 'Weight', area: 'Pole area', volume: 'Volume' },
+      units: {
+        gauss: 'Gauss', tesla: 'T', am2: 'A·m²', gaussCm3: 'G·cm³', newton: 'N', kgf: 'kgf', lbf: 'lbf',
+        mwb: 'mWb', gram: 'g', mm2: 'mm²', mm3: 'mm³'
+      },
+      note: 'Theoretical estimate at zero gap. Real pull depends on steel grade, thickness, surface finish and coating — verify by test.'
+    },
+    de: {
+      calculators: { surfaceField: 'Oberflächenfeld', moment: 'Magnetisches Moment', pullForce: 'Haftkraft' },
+      shapes: { block: 'Block', disc: 'Scheibe', ring: 'Ring' },
+      material: 'Material', grade: 'Sorte',
+      dims: { L: 'Länge L (mm)', W: 'Breite W (mm)', D: 'Durchmesser D (mm)', d: 'Bohrung d (mm)', T: 'Dicke T (mm)' },
+      calc: 'Berechnen', reset: 'Zurücksetzen',
+      results: {
+        surfaceField: 'Oberflächenflussdichte', moment: 'Magnetisches Moment', pullForce: 'Geschätzte Haftkraft'
+      },
+      extra: { flux: 'Fluss', weight: 'Gewicht', area: 'Polfläche', volume: 'Volumen' },
+      units: {
+        gauss: 'Gauss', tesla: 'T', am2: 'A·m²', gaussCm3: 'G·cm³', newton: 'N', kgf: 'kgf', lbf: 'lbf',
+        mwb: 'mWb', gram: 'g', mm2: 'mm²', mm3: 'mm³'
+      },
+      note: 'Theoretischer Näherungswert bei Spaltweite null. Die tatsächliche Haftkraft hängt von Stahlsorte, Dicke, Oberflächenbeschaffenheit und Beschichtung ab — bitte durch Test verifizieren.'
+    },
+    es: {
+      calculators: { surfaceField: 'Campo superficial', moment: 'Momento magnético', pullForce: 'Fuerza de atracción' },
+      shapes: { block: 'Bloque', disc: 'Disco', ring: 'Anillo' },
+      material: 'Material', grade: 'Grado',
+      dims: { L: 'Longitud L (mm)', W: 'Ancho W (mm)', D: 'Diámetro D (mm)', d: 'Agujero d (mm)', T: 'Espesor T (mm)' },
+      calc: 'Calcular', reset: 'Restablecer',
+      results: {
+        surfaceField: 'Densidad de flujo superficial', moment: 'Momento magnético', pullForce: 'Fuerza de atracción estimada'
+      },
+      extra: { flux: 'Flujo', weight: 'Peso', area: 'Área polar', volume: 'Volumen' },
+      units: {
+        gauss: 'Gauss', tesla: 'T', am2: 'A·m²', gaussCm3: 'G·cm³', newton: 'N', kgf: 'kgf', lbf: 'lbf',
+        mwb: 'mWb', gram: 'g', mm2: 'mm²', mm3: 'mm³'
+      },
+      note: 'Estimación teórica con entrehierro nulo. La fuerza real depende del tipo de acero, el espesor, el acabado superficial y el recubrimiento; verifíquela mediante ensayo.'
+    }
+  };
+
+  var DIMS = {
+    block: ['L', 'W', 'T'],
+    disc: ['D', 'T'],
+    ring: ['D', 'd', 'T']
+  };
+
+  var DEFAULTS = { block: { L: 20, W: 10, T: 5 }, disc: { D: 20, T: 5 }, ring: { D: 20, d: 10, T: 5 } };
+
+  /* An unknown shape must never take the whole widget down. Arc segments, for
+     instance, have no closed-form solution, so a host page that passes 'arc'
+     gets the disc model rather than a TypeError. */
+  function dimsFor(shape) { return DIMS[shape] || DIMS.disc; }
+  function defaultsFor(shape) { return DEFAULTS[shape] || DEFAULTS.disc; }
+
+  function el(tag, cls, html) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (html != null) n.innerHTML = html;
+    return n;
+  }
+
+  function fmt(v, digits) {
+    if (!isFinite(v)) return '—';
+    if (Math.abs(v) >= 1000) return v.toFixed(0);
+    return v.toFixed(digits == null ? 2 : digits);
+  }
+
+  function mount(target, opts) {
+    opts = opts || {};
+    var host = (typeof target === 'string') ? document.querySelector(target) : target;
+    if (!host) throw new Error('HPMagnetCalcUI: mount target not found');
+    var calc = opts.engine || global.HPMagnetCalc;
+    if (!calc) throw new Error('HPMagnetCalcUI: engine not loaded');
+    var T = LANG[opts.lang] || LANG.en;
+
+    var state = {
+      calculator: opts.calculator || 'pullForce',
+      shape: opts.shape || 'disc',
+      material: opts.material || 'ndfeb',
+      grade: opts.grade || 'N42',
+      dims: {}
+    };
+
+    var cfg = calc.getConfig() || {};
+    var gradesFor = function (m) {
+      var g = (cfg.grades && cfg.grades[m]) || {};
+      return Object.keys(g);
+    };
+
+    host.classList.add('hpmc');
+    if (opts.theme === 'light') host.classList.add('hpmc--light');
+    host.innerHTML = '';
+
+    var calcRow = el('div', 'hpmc__row hpmc__row--tabs');
+    var shapeRow = el('div', 'hpmc__row hpmc__row--tabs');
+    var form = el('div', 'hpmc__form');
+    var out = el('div', 'hpmc__out');
+
+    host.appendChild(calcRow);
+    host.appendChild(shapeRow);
+    host.appendChild(form);
+    var btnRow = el('div', 'hpmc__row');
+    var btn = el('button', 'hpmc__btn', T.calc);
+    btn.type = 'button';
+    btnRow.appendChild(btn);
+    host.appendChild(btnRow);
+    host.appendChild(out);
+    host.appendChild(el('p', 'hpmc__note', T.note));
+
+    function tab(active, label, onClick) {
+      var b = el('button', 'hpmc__tab' + (active ? ' is-active' : ''), label);
+      b.type = 'button';
+      b.addEventListener('click', onClick);
+      return b;
+    }
+
+    function renderCalcRow() {
+      calcRow.innerHTML = '';
+      Object.keys(T.calculators).forEach(function (k) {
+        calcRow.appendChild(tab(state.calculator === k, T.calculators[k], function () {
+          state.calculator = k; renderAll();
+        }));
+      });
+    }
+
+    function renderShapeRow() {
+      shapeRow.innerHTML = '';
+      Object.keys(T.shapes).forEach(function (k) {
+        shapeRow.appendChild(tab(state.shape === k, T.shapes[k], function () {
+          state.shape = k; state.dims = {}; renderAll();
+        }));
+      });
+    }
+
+    function renderForm() {
+      form.innerHTML = '';
+
+      var matWrap = el('label', 'hpmc__field');
+      matWrap.appendChild(el('span', 'hpmc__label', T.material));
+      var selM = el('select', 'hpmc__input');
+      Object.keys(cfg.materials || { ndfeb: 1 }).forEach(function (m) {
+        var o = el('option', null, (cfg.materials && cfg.materials[m] && cfg.materials[m].name) || m);
+        o.value = m;
+        if (m === state.material) o.selected = true;
+        selM.appendChild(o);
+      });
+      selM.addEventListener('change', function () {
+        state.material = selM.value;
+        state.grade = gradesFor(state.material)[0];
+        renderAll();
+      });
+      matWrap.appendChild(selM);
+      form.appendChild(matWrap);
+
+      var grWrap = el('label', 'hpmc__field');
+      grWrap.appendChild(el('span', 'hpmc__label', T.grade));
+      var selG = el('select', 'hpmc__input');
+      gradesFor(state.material).forEach(function (g) {
+        var o = el('option', null, g);
+        o.value = g;
+        if (g === state.grade) o.selected = true;
+        selG.appendChild(o);
+      });
+      selG.addEventListener('change', function () { state.grade = selG.value; });
+      grWrap.appendChild(selG);
+      form.appendChild(grWrap);
+
+      dimsFor(state.shape).forEach(function (key) {
+        var w = el('label', 'hpmc__field');
+        w.appendChild(el('span', 'hpmc__label', T.dims[key]));
+        var i = el('input', 'hpmc__input');
+        i.type = 'number';
+        i.step = '0.1';
+        i.min = '0';
+        i.value = state.dims[key] != null ? state.dims[key] : defaultsFor(state.shape)[key];
+        i.addEventListener('input', function () { state.dims[key] = parseFloat(i.value); });
+        w.appendChild(i);
+        form.appendChild(w);
+      });
+    }
+
+    function readDims() {
+      var d = {};
+      dimsFor(state.shape).forEach(function (k) {
+        var v = state.dims[k];
+        d[k] = (v == null || isNaN(v)) ? defaultsFor(state.shape)[k] : v;
+      });
+      return d;
+    }
+
+    function renderResult() {
+      var d = readDims();
+      var r;
+      try {
+        r = calc.run(state.calculator, state.material, state.grade, state.shape, d);
+      } catch (e) {
+        out.innerHTML = '<div class="hpmc__err">' + e.message + '</div>';
+        return;
+      }
+      var u = T.units;
+      var primary, secondary;
+      if (state.calculator === 'surfaceField') {
+        primary = fmt(r.gauss, 0) + ' ' + u.gauss;
+        secondary = fmt(r.tesla, 4) + ' ' + u.tesla;
+      } else if (state.calculator === 'moment') {
+        primary = fmt(r.am2, 4) + ' ' + u.am2;
+        secondary = fmt(r.gaussCm3, 1) + ' ' + u.gaussCm3;
+      } else {
+        primary = fmt(r.kgf, 2) + ' ' + u.kgf;
+        secondary = fmt(r.newton, 2) + ' ' + u.newton + ' · ' + fmt(r.lbf, 2) + ' ' + u.lbf;
+      }
+      out.innerHTML = '<div class="hpmc__outlabel">' + T.results[state.calculator] + '</div>' +
+        '<div class="hpmc__big">' + primary + '</div>' +
+        '<div class="hpmc__sub">' + secondary + '</div>' +
+        '<div class="hpmc__extras">' +
+          '<span>' + T.extra.flux + ' <b>' + fmt(r.fluxMw, 4) + '</b> ' + u.mwb + '</span>' +
+          '<span>' + T.extra.weight + ' <b>' + fmt(r.weightG, 2) + '</b> ' + u.gram + '</span>' +
+          '<span>' + T.extra.area + ' <b>' + fmt(r.areaMm2, 1) + '</b> ' + u.mm2 + '</span>' +
+          '<span>' + T.extra.volume + ' <b>' + fmt(r.volumeMm3, 1) + '</b> ' + u.mm3 + '</span>' +
+        '</div>';
+      return r;
+    }
+
+    function renderAll() {
+      renderCalcRow();
+      renderShapeRow();
+      renderForm();
+      renderResult();
+    }
+
+    btn.addEventListener('click', function () {
+      var r = renderResult();
+      if (typeof opts.onResult === 'function' && r) opts.onResult(r);
+    });
+
+    renderAll();
+
+    return {
+      state: state,
+      recalc: renderResult,
+      set: function (patch) {
+        Object.keys(patch || {}).forEach(function (k) { state[k] = patch[k]; });
+        renderAll();
+      },
+      element: host
+    };
+  }
+
+  var UI = { version: '1.2.1', mount: mount, lang: LANG };
+  global.HPMagnetCalcUI = UI;
+  if (typeof module !== 'undefined' && module.exports) module.exports = UI;
+})(typeof window !== 'undefined' ? window : globalThis);
+  </script>
+
+  <script>
+  /*! HP-INLINE-CONFIG - generated from calc/magnet-calculator.config.json. DO NOT EDIT. */
+  var HP_CALC_CONFIG = {
+  "version": "1.1.0",
+  "updated": "2026-09-18",
+  "note": "Data source for the magnet calculator. Edit values here — no code change needed.",
+  "materials": {
+    "ndfeb": {
+      "name": "Sintered NdFeB",
+      "density": 7.5
+    },
+    "smco": {
+      "name": "Sintered SmCo",
+      "density": 8.4
+    }
+  },
+  "grades": {
+    "ndfeb": {
+      "N35": {
+        "Br": 1.17,
+        "BHmax": 35
+      },
+      "N38": {
+        "Br": 1.22,
+        "BHmax": 38
+      },
+      "N40": {
+        "Br": 1.26,
+        "BHmax": 40
+      },
+      "N42": {
+        "Br": 1.29,
+        "BHmax": 42
+      },
+      "N45": {
+        "Br": 1.33,
+        "BHmax": 45
+      },
+      "N48": {
+        "Br": 1.37,
+        "BHmax": 48
+      },
+      "N50": {
+        "Br": 1.42,
+        "BHmax": 50
+      },
+      "N52": {
+        "Br": 1.45,
+        "BHmax": 52
+      }
+    },
+    "smco": {
+      "SmCo24": {
+        "Br": 1.05,
+        "BHmax": 24
+      },
+      "SmCo26": {
+        "Br": 1.07,
+        "BHmax": 26
+      },
+      "SmCo28": {
+        "Br": 1.1,
+        "BHmax": 28
+      }
+    }
+  },
+  "correction": {
+    "surfaceField": 1.0,
+    "note": "Calibrated against measured data. Pull force is theoretical and runs 30-50% above real contact values."
+  },
+  "units": {
+    "newtonPerKgf": 9.80665,
+    "newtonPerLbf": 4.44822,
+    "gaussPerTesla": 10000,
+    "ampereMeterSquaredPerGaussCm3": 0.001
+  },
+  "shapes": [
+    "block",
+    "disc",
+    "ring"
+  ],
+  "calculators": [
+    "surfaceField",
+    "moment",
+    "pullForce"
+  ]
+};
+  (function () {
+    function boot() {
+      if (window.HPMagnetCalc && HP_CALC_CONFIG) HPMagnetCalc.setConfig(HP_CALC_CONFIG);
+      HPMagnetCalcUI.mount('#hp-product-calc', {
+        lang: 'en', calculator: 'pullForce',
+        shape: 'ring', material: 'ndfeb', grade: 'N42'
+      });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+    else boot();
   })();
   </script>
 </body>

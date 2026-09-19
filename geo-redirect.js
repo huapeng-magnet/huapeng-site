@@ -58,9 +58,10 @@
   var query = window.location.search || "";
 
   /* Only redirect on pages that actually have localised versions
-     (de/ and es/ currently ship index + request-quote). Any other
-     page keeps its language so we never send a visitor to a 404. */
-  var REDIRECTABLE = ["/", "/index.html", "/request-quote.html", "/request-quote"];
+     (de/ and es/ currently ship index, request-quote and calculator).
+     Any other page keeps its language so we never send a visitor to a 404. */
+  var REDIRECTABLE = ["/", "/index.html", "/request-quote.html", "/request-quote",
+                      "/calculator.html", "/calculator"];
   if (REDIRECTABLE.indexOf(bare) === -1) return;
 
   function go(lang, persist) {
