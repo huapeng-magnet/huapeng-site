@@ -224,9 +224,9 @@ h2+p{color:var(--ink-soft);font-size:.94rem;margin-top:-.5rem;margin-bottom:1.1r
         <table class="spec">
           <tr><th>Grade</th><td>N42</td></tr>
           <tr><th>Shape</th><td>Disc (Round)</td></tr>
-          <tr><th>Max energy product</th><td>40 - 43 MGOe (318 - 342 kJ/m3)</td></tr>
+          <tr><th>Max energy product</th><td>40 - 43 MGOe (318 - 342 kJ/m&sup3;)</td></tr>
           <tr><th>Remanence (Br)</th><td>1.29 - 1.32 T</td></tr>
-          <tr><th>Coercivity (Hcb / Hcj)</th><td>>= 923 kA/m / >= 955 kA/m</td></tr>
+          <tr><th>Coercivity (Hcb / Hcj)</th><td>&ge; 923 kA/m / >= 955 kA/m</td></tr>
           <tr><th>Max operating temperature</th><td>+80 C</td></tr>
           <tr><th>Magnetization</th><td>Axial (flat poles) or radial, on request</td></tr>
           <tr><th>Coating</th><td>Ni-Cu-Ni, zinc or black nickel</td></tr>
@@ -252,7 +252,7 @@ h2+p{color:var(--ink-soft);font-size:.94rem;margin-top:-.5rem;margin-bottom:1.1r
 
     <section class="block" id="pricing">
       <h2>Reference price &mdash; EXW China, per piece</h2>
-      <p>Priced from the current cost model on <b>indicative reference for a D10 x 3 mm disc, nickel plated</b>. FOB Ningbo is quoted from 50,000 pcs up.</p>
+      <p>Priced from the current cost model. The figures below are an <b>indicative reference for a D10 x 3 mm disc, nickel plated</b>; FOB Ningbo is quoted from 50,000 pcs up.</p>
       <div class="price-panel">
         <div class="price-grid">
           <div class="price-cell">
@@ -414,16 +414,17 @@ h2+p{color:var(--ink-soft);font-size:.94rem;margin-top:-.5rem;margin-bottom:1.1r
       if (!showLines) return;
       ctx.strokeStyle = 'rgba(148,163,184,.45)';
       ctx.lineWidth = 1.2;
-      var span = shape === 'block' ? 150 : 108;
-      for (var i = 0; i < 9; i++) {
-        var off = (i - 4) * 22;
+      // Field lines leave the north face and return to the south face, so each
+      // one bows out from the body and comes back - never a closed loop.
+      var base = shape === 'block' ? 130 : 78;
+      for (var i = 1; i <= 5; i++) {
+        var rx = base + i * 44;              // canvas is 880x380, so keep
+        var ry = base * 1.02 + i * 11;       // |ry| under 190 and |rx| under 440
         ctx.beginPath();
-        ctx.moveTo(cx - span, cy + off);
-        ctx.bezierCurveTo(cx - span - 90, cy + off - 70, cx - span - 90, cy + off + 70, cx - span, cy + off);
+        ctx.ellipse(cx, cy, rx, ry, 0, Math.PI * 0.62, Math.PI * 1.38);
         ctx.stroke();
         ctx.beginPath();
-        ctx.moveTo(cx + span, cy + off);
-        ctx.bezierCurveTo(cx + span + 90, cy + off - 70, cx + span + 90, cy + off + 70, cx + span, cy + off);
+        ctx.ellipse(cx, cy, rx, ry, 0, Math.PI * -0.38, Math.PI * 0.38);
         ctx.stroke();
       }
     }

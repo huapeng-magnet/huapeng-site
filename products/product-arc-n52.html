@@ -198,17 +198,14 @@ h2+p{color:var(--ink-soft);font-size:.94rem;margin-top:-.5rem;margin-bottom:1.1r
       <marker id="arrowN" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#f87171"/></marker>
       <marker id="arrowS" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#60a5fa"/></marker>
     </defs>
-    <path d="M100 100 L100 24 A76 76 0 0 1 155 55 Z" fill="url(#metalGrad)" stroke="#8296ad" stroke-width="1.5"/>
-    <path d="M100 100 L100 52 A48 48 0 0 1 134 71 Z" fill="#0b1220" stroke="#8296ad" stroke-width="1.5"/>
-    <path d="M100 24 A76 76 0 0 1 155 55" fill="none" stroke="#ef4444" stroke-width="10" stroke-linecap="round"/>
-    <path d="M100 52 A48 48 0 0 1 134 71" fill="none" stroke="#3b82f6" stroke-width="8" stroke-linecap="round"/>
-    <line x1="100" y1="20" x2="100" y2="4" stroke="#f87171" stroke-width="3" marker-end="url(#arrowN)"/>
-    <line x1="146" y1="42" x2="158" y2="30" stroke="#f87171" stroke-width="3" marker-end="url(#arrowN)"/>
-    <line x1="100" y1="56" x2="100" y2="74" stroke="#60a5fa" stroke-width="3" marker-end="url(#arrowS)"/>
-    <line x1="126" y1="66" x2="134" y2="80" stroke="#60a5fa" stroke-width="3" marker-end="url(#arrowS)"/>
-    <text x="88" y="16" text-anchor="middle" fill="#f87171" font-size="16" font-weight="700">N</text>
-    <text x="112" y="88" text-anchor="middle" fill="#60a5fa" font-size="16" font-weight="700">S</text>
-    <circle cx="100" cy="100" r="3" fill="#8296ad"/>
+    <circle cx="100" cy="100" r="58" fill="none" stroke="#334155" stroke-width="28" stroke-dasharray="5 8" opacity=".45"/>
+    <path d="M81.4 30.4 A72 72 0 0 1 169.6 81.4 L142.5 88.6 A44 44 0 0 0 88.6 57.5 Z" fill="url(#metalGrad)" stroke="#8296ad" stroke-width="1.5"/>
+    <path d="M81.4 30.4 A72 72 0 0 1 169.6 81.4" fill="none" stroke="#ef4444" stroke-width="9" stroke-linecap="round"/>
+    <path d="M142.5 88.6 A44 44 0 0 0 88.6 57.5" fill="none" stroke="#3b82f6" stroke-width="7" stroke-linecap="round"/>
+    <line x1="136" y1="38" x2="145" y2="23" stroke="#f87171" stroke-width="3" marker-end="url(#arrowN)"/>
+    <line x1="121" y1="62" x2="113" y2="75" stroke="#60a5fa" stroke-width="3" marker-end="url(#arrowS)"/>
+    <text x="156" y="20" text-anchor="middle" fill="#f87171" font-size="16" font-weight="700">N</text>
+    <text x="102" y="90" text-anchor="middle" fill="#60a5fa" font-size="16" font-weight="700">S</text>
   </svg>
       </div>
 
@@ -220,9 +217,9 @@ h2+p{color:var(--ink-soft);font-size:.94rem;margin-top:-.5rem;margin-bottom:1.1r
         <table class="spec">
           <tr><th>Grade</th><td>N52</td></tr>
           <tr><th>Shape</th><td>Arc segment (wedge)</td></tr>
-          <tr><th>Max energy product</th><td>50 - 53 MGOe (398 - 422 kJ/m3)</td></tr>
+          <tr><th>Max energy product</th><td>50 - 53 MGOe (398 - 422 kJ/m&sup3;)</td></tr>
           <tr><th>Remanence (Br)</th><td>1.42 - 1.47 T</td></tr>
-          <tr><th>Coercivity (Hcb / Hcj)</th><td>>= 836 kA/m / >= 876 kA/m</td></tr>
+          <tr><th>Coercivity (Hcb / Hcj)</th><td>&ge; 836 kA/m / &ge; 876 kA/m</td></tr>
           <tr><th>Max operating temperature</th><td>+80 C</td></tr>
           <tr><th>Magnetization</th><td>Radial or parallel, on request</td></tr>
           <tr><th>Coating</th><td>Ni-Cu-Ni, zinc or black nickel</td></tr>
@@ -410,16 +407,17 @@ h2+p{color:var(--ink-soft);font-size:.94rem;margin-top:-.5rem;margin-bottom:1.1r
       if (!showLines) return;
       ctx.strokeStyle = 'rgba(148,163,184,.45)';
       ctx.lineWidth = 1.2;
-      var span = shape === 'block' ? 150 : 108;
-      for (var i = 0; i < 9; i++) {
-        var off = (i - 4) * 22;
+      // Field lines leave the north face and return to the south face, so each
+      // one bows out from the body and comes back - never a closed loop.
+      var base = shape === 'block' ? 130 : 78;
+      for (var i = 1; i <= 5; i++) {
+        var rx = base + i * 44;              // canvas is 880x380, so keep
+        var ry = base * 1.02 + i * 11;       // |ry| under 190 and |rx| under 440
         ctx.beginPath();
-        ctx.moveTo(cx - span, cy + off);
-        ctx.bezierCurveTo(cx - span - 90, cy + off - 70, cx - span - 90, cy + off + 70, cx - span, cy + off);
+        ctx.ellipse(cx, cy, rx, ry, 0, Math.PI * 0.62, Math.PI * 1.38);
         ctx.stroke();
         ctx.beginPath();
-        ctx.moveTo(cx + span, cy + off);
-        ctx.bezierCurveTo(cx + span + 90, cy + off - 70, cx + span + 90, cy + off + 70, cx + span, cy + off);
+        ctx.ellipse(cx, cy, rx, ry, 0, Math.PI * -0.38, Math.PI * 0.38);
         ctx.stroke();
       }
     }
