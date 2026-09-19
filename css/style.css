@@ -498,6 +498,7 @@ select option:checked{ background:#d1f4ff linear-gradient(0deg,#d1f4ff,#d1f4ff);
   .hero__arrow{ display:none; }
   .footer__grid{ grid-template-columns:1fr; }
   .promo-banner{ flex-direction:column; align-items:flex-start; }
+  .slide__cta .btn{ width:100%; max-width:100%; justify-content:center; }
   .contact{ grid-template-columns:1fr; }
   .contact__form{ grid-template-columns:1fr; }
   .checkout{ grid-template-columns:1fr; }
@@ -585,7 +586,7 @@ select option:checked{ background:#d1f4ff linear-gradient(0deg,#d1f4ff,#d1f4ff);
   border-color:var(--cyan); color:var(--cyan); background:rgba(34,211,238,0.08);
 }
 
-.table-wrap{ overflow-x:auto; border:1px solid var(--panel-br); border-radius:var(--radius); background:var(--panel); backdrop-filter:blur(8px); }
+.table-wrap{ overflow-x:auto; max-width:100%; border:1px solid var(--panel-br); border-radius:var(--radius); background:var(--panel); backdrop-filter:blur(8px); -webkit-overflow-scrolling:touch; }
 .price-table, .spec-table{ width:100%; border-collapse:collapse; min-width:720px; }
 .price-table th, .price-table td, .spec-table th, .spec-table td{
   padding:14px 16px; text-align:left; border-bottom:1px solid rgba(255,255,255,0.06); font-size:14px;
@@ -810,7 +811,7 @@ select option:checked{ background:#d1f4ff linear-gradient(0deg,#d1f4ff,#d1f4ff);
 /* ===========================================================
    Grade-Temperature Table
    =========================================================== */
-.grade-table-wrap{ max-width:900px; margin:0 auto; }
+.grade-table-wrap{ max-width:100%; margin:0 auto; overflow-x:auto; -webkit-overflow-scrolling:touch; border-radius:var(--radius); }
 .grade-table{ width:100%; border-collapse:collapse; font-size:14px; }
 .grade-table th{ text-align:left; padding:12px 16px; background:rgba(34,211,238,0.08); color:var(--cyan); font-weight:700; border-bottom:2px solid rgba(34,211,238,0.25); white-space:nowrap; }
 .grade-table td{ padding:11px 16px; border-bottom:1px solid rgba(255,255,255,0.06); vertical-align:middle; }
