@@ -95,15 +95,46 @@
     return; // already on the preferred language
   }
 
-  /* ---------- 3 & 4. Detect, then redirect ---------- */
+  /* ---------- 3 & 4. Detect, then redirect ----------
+     Three explicit lists, checked in order (de -> es -> en).
+     Anything not listed anywhere also falls through to English, so the
+     EN_COUNTRIES list is documentation as much as logic: it spells out the
+     markets we deliberately serve in English instead of leaving them to an
+     implicit default. Add a country to EN_COUNTRIES when English is an
+     official or primary business language there. */
+
+  /* German-speaking */
   var DE_COUNTRIES = ["de", "at", "ch", "li", "lu"];
+
+  /* Spanish-speaking: Spain + Latin America */
   var ES_COUNTRIES = ["es", "mx", "ar", "co", "cl", "pe", "ve", "cr", "pa", "uy", "py", "bo", "ec", "gt", "hn", "ni", "sv", "do", "cu", "pr", "ad"];
+
+  /* English-speaking / English is an OFFICIAL language.
+     Core export markets first, then the wider Anglophone set.
+     Kept as an explicit list rather than relying on the implicit default so a
+     reviewer can see at a glance which countries we deliberately serve in
+     English. Behaviour is unchanged either way: anything not listed anywhere
+     also falls through to English at the bottom of langForCountry(). */
+  var EN_COUNTRIES = [
+    // core English-speaking markets
+    "us", "gb", "ie", "ca", "au", "nz",
+    // Asia-Pacific: English is an official language
+    "in", "sg", "ph", "my", "pk", "lk", "bd",
+    // Africa: English is an official language
+    "za", "ng", "ke", "gh", "tz", "ug", "zm", "zw", "bw", "na",
+    "mw", "mu", "sc", "rw", "sl", "lr", "gm",
+    // Pacific & Caribbean
+    "fj", "pg", "sb", "vu", "ws", "to", "nr", "ki", "tv",
+    "jm", "tt", "bb", "bs", "bz", "gy", "ag", "dm", "gd", "kn", "lc",
+    "vc", "ai", "bm", "vg", "ky", "ms", "tc", "fk", "gi", "mt"
+  ];
 
   function langForCountry(cc) {
     cc = (cc || "").toLowerCase();
     if (DE_COUNTRIES.indexOf(cc) !== -1) return "de";
     if (ES_COUNTRIES.indexOf(cc) !== -1) return "es";
-    return "en";
+    if (EN_COUNTRIES.indexOf(cc) !== -1) return "en";
+    return "en"; // anything unlisted also gets English
   }
 
   function langForBrowser() {
