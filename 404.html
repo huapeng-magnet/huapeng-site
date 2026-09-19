@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page not found | Huapeng Magnetics</title>
+  <meta name="robots" content="noindex, follow" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    .nf {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 48px 22px;
+      gap: 0;
+    }
+    .nf__code {
+      font-size: clamp(4.5rem, 16vw, 9rem);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #22d3ee, #3b82f6 70%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.35rem;
+    }
+    .nf__title {
+      font-size: clamp(1.15rem, 2.6vw, 1.6rem);
+      color: var(--ink);
+      margin-bottom: 0.6rem;
+    }
+    .nf__text {
+      color: var(--ink-soft);
+      max-width: 34rem;
+      font-size: 0.97rem;
+      line-height: 1.7;
+      margin-bottom: 1.9rem;
+    }
+    .nf__links {
+      display: flex;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 2.2rem;
+    }
+    .nf__quick {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 40rem;
+    }
+    .nf__quick a {
+      font-size: 0.85rem;
+      padding: 0.42rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid var(--panel-br);
+      color: var(--ink-soft);
+      transition: 0.18s;
+    }
+    .nf__quick a:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+    .nf__hint {
+      margin-top: 2.4rem;
+      font-size: 0.8rem;
+      color: #8ba0bd;
+    }
+    .nf__hint a { color: #60a5fa; }
+  </style>
+</head>
+<body>
+  <main class="nf">
+    <div class="nf__code">404</div>
+
+    <h1 class="nf__title" id="nfTitle">This page has moved, or never existed</h1>
+    <p class="nf__text" id="nfText">
+      The link may be out of date. Everything we make is still one click away &mdash;
+      start from the homepage, or go straight to a quotation.
+    </p>
+
+    <div class="nf__links">
+      <a class="btn btn--primary" href="/" id="nfHome">Back to homepage</a>
+      <a class="btn btn--ghost" href="/request-quote.html" id="nfQuote">Request a quotation</a>
+    </div>
+
+    <nav class="nf__quick" aria-label="Popular pages">
+      <a href="/index.html#products">Products</a>
+      <a href="/products/product-disc-n52.html">Disc magnets</a>
+      <a href="/products/product-block-n52.html">Block magnets</a>
+      <a href="/products/product-ring-n42.html">Ring magnets</a>
+      <a href="/products/product-arc-n42.html">Arc segments</a>
+      <a href="/index.html#contact">Contact</a>
+    </nav>
+
+    <p class="nf__hint" id="nfHint">
+      Arrived here from a link on our own site? <a href="/index.html#contact">Tell us</a> and we will fix it.
+    </p>
+  </main>
+
+  <script>
+  /* The site ships in five languages; matching the visitor's browser here
+     costs nothing and avoids bouncing a German buyer into an English dead end. */
+  (function () {
+    var l = (navigator.language || 'en').slice(0, 2).toLowerCase();
+    var t = {
+      de: ['Diese Seite wurde verschoben &ndash; oder hat nie existiert',
+           'Der Link ist m&ouml;glicherweise veraltet. Alles, was wir fertigen, ist weiterhin nur einen Klick entfernt &ndash; starten Sie auf der Startseite oder gehen Sie direkt zur Anfrage.',
+           'Zur&uuml;ck zur Startseite',
+           'Angebot anfordern',
+           'Sie sind &uuml;ber einen Link auf unserer eigenen Seite hierher gekommen? <a href="/de/index.html#contact">Sagen Sie uns Bescheid</a>, wir korrigieren ihn.'],
+      es: ['Esta p&aacute;gina se ha movido o nunca existi&oacute;',
+           'Es posible que el enlace est&eacute; desactualizado. Todo lo que fabricamos sigue a un clic de distancia: empiece en la p&aacute;gina de inicio o vaya directamente a solicitar una cotizaci&oacute;n.',
+           'Volver al inicio',
+           'Solicitar cotizaci&oacute;n',
+           '&iquest;Lleg&oacute; aqu&iacute; desde un enlace de nuestro propio sitio? <a href="/es/index.html#contact">Av&iacute;senos</a> y lo corregiremos.'],
+      ko: ['페이지를 찾을 수 없습니다',
+           '링크가 오래되었을 수 있습니다. 모든 제품은 여전히 클릭 한 번이면 확인하실 수 있습니다. 홈페이지에서 시작하시거나 견적을 바로 요청하세요.',
+           '홈페이지로 돌아가기',
+           '견적 요청',
+           '저희 사이트의 링크를 통해 오셨나요? <a href="/index.html#contact">알려주시면</a> 수정하겠습니다.'],
+      ja: ['ページが見つかりません',
+           'リンクが古くなっている可能性があります。すべての製品はワンクリックでご確認いただけます。ホームページから始めるか、そのままお見積もりをご依頼ください。',
+           'ホームページへ戻る',
+           'お見積もりを依頼',
+           '当サイト内のリンクからいらっしゃいましたか？<a href="/index.html#contact">お知らせください</a>、修正いたします。']
+    }[l];
+    if (!t) return;
+    document.getElementById('nfTitle').innerHTML = t[0];
+    document.getElementById('nfText').innerHTML = t[1];
+    document.getElementById('nfHome').textContent = t[2];
+    document.getElementById('nfQuote').textContent = t[3];
+    document.getElementById('nfHint').innerHTML = t[4];
+    document.documentElement.lang = l;
+  })();
+  </script>
+</body>
+</html>

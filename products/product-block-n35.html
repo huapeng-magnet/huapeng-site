@@ -4,282 +4,444 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>N35 Neodymium Block Magnets | Huapeng Magnetics</title>
-  <meta name="description" content="Industrial N35 grade neodymium block magnets. Rectangular shape with strong magnetic force. Custom sizes available from Huapeng Magnetics." />
-  
-  <!-- Schema.org Product Markup -->
+  <meta name="description" content="N35 grade sintered NdFeB block magnets from a Chinese manufacturer. Reference price $0.6307 at 1K-500K pcs. Custom grades, sizes and coatings quoted within one working day." />
+  <link rel="canonical" href="https://huapeng-magnet.com/products/product-block-n35.html" />
+  <meta property="og:type" content="product" />
+  <meta property="og:title" content="N35 Neodymium Block Magnets | Huapeng Magnetics" />
+  <meta property="og:description" content="N35 grade sintered NdFeB block magnets from a Chinese manufacturer. Reference price $0.6307 at 1K-500K pcs. Custom grades, sizes and coatings quoted within one working day." />
+  <meta property="og:url" content="https://huapeng-magnet.com/products/product-block-n35.html" />
+  <meta property="og:image" content="https://huapeng-magnet.com/assets/block.png" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": "N35 Neodymium Block Magnets",
-    "image": "/assets/block_n35.jpg",
-    "description": "High-performance N35 grade NdFeB block magnets for industrial applications",
-    "brand": {
-      "@type": "Brand",
-      "name": "Huapeng Magnetics"
-    },
+    "image": [
+      "https://huapeng-magnet.com/assets/block.png",
+      "https://huapeng-magnet.com/assets/block_1.jpg"
+    ],
+    "description": "N35 grade sintered NdFeB block magnets, 20 x 10 x 5 mm. Custom sizes, grades and coatings to your drawing.",
+    "brand": { "@type": "Brand", "name": "Huapeng Magnetics" },
     "sku": "N35-BLOCK",
-    "category": "Neodymium Magnets > Block Magnets > N35 Grade"
+    "material": "Sintered neodymium iron boron (NdFeB)",
+    "category": "Neodymium Magnets > Block Magnets > N35 Grade",
+    "offers": {
+      "@type": "AggregateOffer",
+      "priceCurrency": "USD",
+      "lowPrice": "0.6307",
+      "highPrice": "0.6639",
+      "offerCount": "1",
+      "availability": "https://schema.org/InStock",
+      "priceValidUntil": "2026-12-31",
+      "seller": { "@type": "Organization", "name": "Huapeng Magnetics" }
+    },
+    "manufacturer": { "@type": "Organization", "name": "Huapeng Magnetics", "url": "https://huapeng-magnet.com/" }
   }
   </script>
-  
-  <link rel="stylesheet" href="../css/style.css" />
   <style>
-    .product-hero {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 3rem;
-      padding: 3rem 0;
-    }
-    .magnetic-field-viz {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 80%;
-      height: 80%;
-      pointer-events: none;
-    }
-    .spec-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 1.5rem 0;
-    }
-    .spec-table th,
-    .spec-table td {
-      padding: 0.75rem;
-      text-align: left;
-      border-bottom: 1px solid #e2e8f0;
-    }
-    .pole-demo-btn {
-      background: linear-gradient(135deg, #22d3ee, #3b82f6);
-      color: #fff;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    .magnetic-simulation {
-      margin-top: 3rem;
-      padding: 2rem;
-      background: #f8fafc;
-      border-radius: 12px;
-    }
+:root{
+  --bg:#070b14; --bg-2:#0b1220; --panel:rgba(17,27,46,.72);
+  --panel-br:rgba(56,189,248,.22); --ink:#e8f1ff; --ink-soft:#9fb3d1;
+  --ink-dim:#8ba0bd; --cyan:#22d3ee; --blue:#3b82f6;
+  --green:#34d399; --amber:#fbbf24; --radius:16px; --maxw:1200px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  background:
+    radial-gradient(1200px 600px at 80% -10%,rgba(59,130,246,.18),transparent 60%),
+    radial-gradient(900px 500px at 0% 10%,rgba(34,211,238,.12),transparent 55%),
+    var(--bg);
+  color:var(--ink); line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.container{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 22px}
+
+/* header */
+.header{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);
+  background:rgba(7,11,20,.82);border-bottom:1px solid rgba(56,189,248,.14)}
+.header__inner{display:flex;align-items:center;justify-content:space-between;
+  min-height:66px;gap:18px;flex-wrap:wrap}
+.brand__text{font-weight:800;letter-spacing:.06em;font-size:1.05rem;color:var(--ink)}
+.brand__text span{color:var(--cyan);margin-left:.25em}
+.nav{display:flex;gap:22px;flex-wrap:wrap}
+.nav a{color:var(--ink-soft);font-size:.92rem;transition:color .2s}
+.nav a:hover,.nav a.active{color:var(--cyan)}
+
+/* breadcrumb + hero */
+.crumb{padding:22px 0 0;font-size:.82rem;color:var(--ink-dim)}
+.crumb a{color:var(--ink-soft)}
+.crumb a:hover{color:var(--cyan)}
+.crumb span{margin:0 .45em;opacity:.5}
+
+.product-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);
+  gap:42px;align-items:start;padding:26px 0 8px}
+.gallery{border:1px solid var(--panel-br);border-radius:var(--radius);
+  background:linear-gradient(150deg,#0d1526 0%,#0a1020 60%,#0b1220 100%);
+  padding:26px;display:flex;align-items:center;justify-content:center;
+  box-shadow:inset 0 0 60px rgba(34,211,238,.05)}
+.grade-badge{display:inline-block;background:linear-gradient(135deg,var(--cyan),var(--blue));
+  color:#04121f;padding:.22rem .8rem;border-radius:20px;font-size:.8rem;
+  font-weight:700;letter-spacing:.04em;margin-bottom:.85rem}
+h1{font-size:clamp(1.5rem,3vw,2.05rem);line-height:1.22;margin-bottom:.6rem}
+.lede{color:var(--ink-soft);margin-bottom:1.4rem;font-size:.97rem}
+
+table.spec{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.92rem}
+table.spec th,table.spec td{padding:.62rem .7rem;text-align:left;
+  border-bottom:1px solid rgba(148,163,184,.16);vertical-align:top}
+table.spec th{color:var(--ink-dim);font-weight:600;width:44%}
+table.spec td{color:var(--ink)}
+table.spec tr:last-child th,table.spec tr:last-child td{border-bottom:0}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:.45rem;padding:.72rem 1.35rem;
+  border-radius:10px;font-size:.94rem;font-weight:600;cursor:pointer;border:1px solid transparent;
+  transition:transform .18s,box-shadow .18s,background .18s}
+.btn--primary{background:linear-gradient(135deg,var(--cyan),var(--blue));color:#04121f;
+  box-shadow:0 8px 26px rgba(34,211,238,.22)}
+.btn--primary:hover{transform:translateY(-2px)}
+.btn--ghost{background:transparent;border-color:var(--panel-br);color:var(--ink)}
+.btn--ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn-row{display:flex;gap:.7rem;flex-wrap:wrap}
+
+/* sections */
+section.block{padding:2.6rem 0}
+h2{font-size:1.32rem;margin-bottom:.9rem}
+h2+p{color:var(--ink-soft);font-size:.94rem;margin-top:-.5rem;margin-bottom:1.1rem}
+.panel{border:1px solid var(--panel-br);border-radius:var(--radius);
+  background:var(--panel);padding:1.4rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
+.card{border:1px solid rgba(148,163,184,.16);border-radius:12px;
+  background:rgba(255,255,255,.03);padding:1.05rem 1.15rem}
+.card h3{font-size:1rem;margin-bottom:.32rem;color:var(--ink)}
+.card p{color:var(--ink-soft);font-size:.88rem}
+
+/* reference price */
+.price-panel{border:1px solid var(--panel-br);border-radius:var(--radius);
+  background:linear-gradient(135deg,rgba(34,211,238,.07),rgba(59,130,246,.05));
+  padding:1.35rem 1.4rem;margin-top:1.1rem}
+.price-panel h3{font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--cyan);margin-bottom:.7rem;font-weight:700}
+.price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.price-cell{border:1px solid rgba(148,163,184,.18);border-radius:10px;
+  padding:.75rem .85rem;background:rgba(7,11,20,.5)}
+.price-cell .qty{display:block;font-size:.74rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ink-dim);margin-bottom:.25rem}
+.price-cell .amt{font-size:1.08rem;font-weight:700;color:var(--ink)}
+.price-cell .disc{display:block;font-size:.72rem;color:var(--green);margin-top:.15rem}
+.price-cell .fw{display:block;font-size:.72rem;color:var(--ink-dim);margin-top:.3rem}
+.price-foot{margin-top:.95rem;font-size:.8rem;color:var(--ink-dim);line-height:1.65}
+.price-foot b{color:var(--ink-soft);font-weight:600}
+
+/* canvas demo */
+.sim-wrap{border:1px solid var(--panel-br);border-radius:var(--radius);
+  background:var(--panel);padding:1.3rem;margin-top:1.1rem}
+.sim-canvas{width:100%;background:#050a14;border:1px solid rgba(148,163,184,.14);
+  border-radius:12px;overflow:hidden;margin-top:.9rem}
+.sim-canvas canvas{width:100%;height:auto;display:block}
+.sim-legend{display:flex;gap:1.1rem;flex-wrap:wrap;margin-top:.85rem;font-size:.82rem;color:var(--ink-soft)}
+.sim-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:.4rem}
+
+/* grade + shape navigation */
+.switcher{display:flex;gap:.55rem;flex-wrap:wrap;margin-top:.9rem}
+.chip{padding:.42rem .95rem;border-radius:999px;border:1px solid rgba(148,163,184,.24);
+  font-size:.86rem;color:var(--ink-soft);transition:.18s}
+.chip:hover{border-color:var(--cyan);color:var(--cyan)}
+.chip--on{background:linear-gradient(135deg,var(--cyan),var(--blue));color:#04121f;
+  border-color:transparent;font-weight:700}
+
+/* footer */
+.footer{border-top:1px solid rgba(56,189,248,.14);margin-top:2.6rem;padding:1.8rem 0;
+  color:var(--ink-dim);font-size:.85rem}
+.footer__row{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.footer a:hover{color:var(--cyan)}
+
+@media(max-width:760px){
+  .product-hero{grid-template-columns:1fr;gap:26px}
+  .gallery{padding:16px}
+}
   </style>
 </head>
 <body>
+
   <header class="header">
     <div class="container header__inner">
-      <a href="../index.html" class="brand">
-        <span class="brand__text">HUAPENG<span>MAGNETICS</span></span>
-      </a>
+      <a href="/index.html" class="brand"><span class="brand__text">HUAPENG<span>MAGNETICS</span></span></a>
       <nav class="nav">
-        <a href="../index.html">Home</a>
-        <a href="../index.html#products">Products</a>
-        <a href="javascript:void(0)" class="active">Product Detail</a>
-        <a href="../request-quote.html">Quotation</a>
+        <a href="/index.html">Home</a>
+        <a href="/index.html#products">Products</a>
+        <a href="/request-quote.html">Quotation</a>
+        <a href="/index.html#contact">Contact</a>
       </nav>
     </div>
   </header>
 
-  <main>
-    <section class="product-hero">
-      <div class="product-gallery">
-        <div class="product-gallery__main">
-          <!-- Block Magnet SVG -->
-          
-          <svg viewBox="0 0 200 200" width="300" height="300" aria-label="Magnet - Axial Magnetization">
-            <defs>
-              <linearGradient id="block3d" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#f1f5f9"/>
-                <stop offset="50%" stop-color="#94a3b8"/>
-                <stop offset="100%" stop-color="#475569"/>
-              </linearGradient>
-              <marker id="arrowN2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                <path d="M0,0 L0,6 L9,3 z" fill="#ef4444"/>
-              </marker>
-              <marker id="arrowS2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                <path d="M0,0 L0,6 L9,3 z" fill="#3b82f6"/>
-              </marker>
-            </defs>
-            <!-- Block body (3D) -->
-            <rect x="45" y="55" width="110" height="90" rx="6" fill="url(#block3d)" stroke="#475569" stroke-width="2"/>
-            <!-- N pole (top face) -->
-            <rect x="45" y="55" width="110" height="20" fill="#ef4444" opacity="0.85"/>
-            <!-- S pole (bottom face) -->
-            <rect x="45" y="125" width="110" height="20" fill="#3b82f6" opacity="0.85"/>
-            <!-- Field arrows (N upward) -->
-            <line x1="70" y1="55" x2="70" y2="25" stroke="#ef4444" stroke-width="3" marker-end="url(#arrowN2)"/>
-            <line x1="100" y1="55" x2="100" y2="20" stroke="#ef4444" stroke-width="3" marker-end="url(#arrowN2)"/>
-            <line x1="130" y1="55" x2="130" y2="25" stroke="#ef4444" stroke-width="3" marker-end="url(#arrowN2)"/>
-            <!-- Field arrows (S downward) -->
-            <line x1="70" y1="145" x2="70" y2="175" stroke="#3b82f6" stroke-width="3" marker-end="url(#arrowS2)"/>
-            <line x1="100" y1="145" x2="100" y2="180" stroke="#3b82f6" stroke-width="3" marker-end="url(#arrowS2)"/>
-            <line x1="130" y1="145" x2="130" y2="175" stroke="#3b82f6" stroke-width="3" marker-end="url(#arrowS2)"/>
-            <!-- Labels -->
-            <text x="100" y="45" text-anchor="middle" fill="#ef4444" font-size="18" font-weight="bold">N</text>
-            <text x="100" y="165" text-anchor="middle" fill="#3b82f6" font-size="18" font-weight="bold">S</text>
-          </svg>
+  <main class="container">
+    <nav class="crumb">
+      <a href="/index.html">Home</a><span>/</span>
+      <a href="/index.html#products">Products</a><span>/</span>
+      Block magnets &middot; N35
+    </nav>
 
-        </div>
+    <section class="product-hero">
+      <div class="gallery">
+  <svg viewBox="0 0 200 200" width="290" height="290" role="img" aria-label="{alt}">
+    <defs>
+      <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#e2e8f0"/>
+        <stop offset="45%" stop-color="#a8b6c9"/>
+        <stop offset="100%" stop-color="#64748b"/>
+      </linearGradient>
+      <radialGradient id="metalGradR" cx="35%" cy="30%" r="70%">
+        <stop offset="0%" stop-color="#f1f5ff"/>
+        <stop offset="45%" stop-color="#b7c4d6"/>
+        <stop offset="100%" stop-color="#5c6b80"/>
+      </radialGradient>
+      <marker id="arrowN" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#f87171"/></marker>
+      <marker id="arrowS" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#60a5fa"/></marker>
+    </defs>
+    <rect x="42" y="54" width="116" height="92" rx="4" fill="url(#metalGrad)" stroke="#8296ad" stroke-width="1.5"/>
+    <rect x="42" y="54" width="116" height="22" fill="#ef4444" opacity="0.82"/>
+    <rect x="42" y="124" width="116" height="22" fill="#3b82f6" opacity="0.82"/>
+    <line x1="68" y1="54" x2="68" y2="28" stroke="#f87171" stroke-width="3" marker-end="url(#arrowN)"/>
+    <line x1="100" y1="54" x2="100" y2="24" stroke="#f87171" stroke-width="3" marker-end="url(#arrowN)"/>
+    <line x1="132" y1="54" x2="132" y2="28" stroke="#f87171" stroke-width="3" marker-end="url(#arrowN)"/>
+    <line x1="68" y1="146" x2="68" y2="172" stroke="#60a5fa" stroke-width="3" marker-end="url(#arrowS)"/>
+    <line x1="100" y1="146" x2="100" y2="176" stroke="#60a5fa" stroke-width="3" marker-end="url(#arrowS)"/>
+    <line x1="132" y1="146" x2="132" y2="172" stroke="#60a5fa" stroke-width="3" marker-end="url(#arrowS)"/>
+    <text x="100" y="48" text-anchor="middle" fill="#f87171" font-size="17" font-weight="700">N</text>
+    <text x="100" y="164" text-anchor="middle" fill="#60a5fa" font-size="17" font-weight="700">S</text>
+  </svg>
       </div>
 
-      <div class="product-info">
+      <div class="info">
         <span class="grade-badge">N35 Grade</span>
-        <h1>Neodymium Block Magnets</h1>
-        <p class="product-desc">Rectangular N35 grade NdFeB block magnets with excellent magnetic retention. Perfect for industrial fixtures, magnetic assemblies, and holding applications.</p>
-        
-        <table class="spec-table">
+        <h1>Block Neodymium Magnets</h1>
+        <p class="lede">Rectangular NdFeB blocks that give you more pull per unit of height than a disc of the same footprint. Suited to fixtures, separators and anywhere you need a flat mating face.</p>
+
+        <table class="spec">
           <tr><th>Grade</th><td>N35</td></tr>
           <tr><th>Shape</th><td>Block (Rectangular)</td></tr>
-          <tr><th>Max Energy</th><td>35 MGOe (278 kJ/m³)</td></tr>
-          <tr><th>Remanence</th><td>1.17-1.24 T</td></tr>
-          <tr><th>Intrinsic Coercivity</th><td>≥ 955 kA/m</td></tr>
-          <tr><th>Operating Temp</th><td>-40°C to +80°C</td></tr>
-          <tr><th>Coating</th><td>Ni-Cu-Ni / Zn (optional)</td></tr>
+          <tr><th>Max energy product</th><td>33 - 36 MGOe (263 - 287 kJ/m3)</td></tr>
+          <tr><th>Remanence (Br)</th><td>1.17 - 1.22 T</td></tr>
+          <tr><th>Coercivity (Hcb / Hcj)</th><td>>= 868 kA/m / >= 955 kA/m</td></tr>
+          <tr><th>Max operating temperature</th><td>+80 C</td></tr>
+          <tr><th>Magnetization</th><td>Axial (through thickness) or transverse, on request</td></tr>
+          <tr><th>Coating</th><td>Ni-Cu-Ni, zinc or black nickel</td></tr>
+          <tr><th>Tolerance</th><td>+/-0.05 mm (ground), +/-0.1 mm (as sintered)</td></tr>
         </table>
 
-        <button class="pole-demo-btn" onclick="openPoleDemo()">
-          🔬 View Magnetic Field Demo
-        </button>
-        
-        <a href="../request-quote.html" class="btn btn--primary" style="margin-left: 1rem;">
-          Get Quote
-        </a>
+        <div class="btn-row">
+          <a class="btn btn--primary" href="/request-quote.html">Request a quotation</a>
+          <a class="btn btn--ghost" href="#pricing">See reference price</a>
+        </div>
+
+        <div class="panel" style="margin-top:1.3rem">
+          <h3 style="font-size:.94rem;margin-bottom:.6rem">Sampling</h3>
+          <p style="color:var(--ink-soft);font-size:.88rem">
+            <b style="color:var(--ink)">100 pcs</b> per drawing in as little as
+            <b style="color:var(--ink)">3 days</b>, shipped door to door by UPS or DHL air
+            with duties and taxes included. The sample fee is credited against your first
+            bulk order.
+          </p>
+        </div>
       </div>
     </section>
 
-    <!-- Magnetic Simulation Section -->
-    <section class="magnetic-simulation">
-      <h2>Magnetic Pole Distribution</h2>
-      <p>Interactive visualization showing N/S pole distribution on N35 block magnet</p>
-      <div class="sim-canvas" id="simCanvas">
-        <canvas id="fieldCanvas" width="800" height="400"></canvas>
-      </div>
-      <div style="margin-top: 1rem; display: flex; gap: 1rem;">
-        <button class="btn btn--ghost" onclick="toggleFieldLines()">Toggle Field Lines</button>
-        <button class="btn btn--ghost" onclick="resetView()">Reset View</button>
+    <section class="block" id="pricing">
+      <h2>Reference price &mdash; EXW China, per piece</h2>
+      <p>Priced from the current cost model on <b>indicative reference for a 20 x 10 x 5 mm block, zinc plated</b>. FOB Ningbo is quoted from 50,000 pcs up.</p>
+      <div class="price-panel">
+        <div class="price-grid">
+          <div class="price-cell">
+            <span class="qty">1,000 pcs</span>
+            <span class="amt">$0.6639</span><span class="fw">EXW only &middot; freight collect</span>
+          </div>
+          <div class="price-cell">
+            <span class="qty">50,000 pcs</span>
+            <span class="amt">$0.6506</span><span class="disc">-2% volume</span><span class="fw">FOB Ningbo quoted</span>
+          </div>
+          <div class="price-cell">
+            <span class="qty">100,000 pcs</span>
+            <span class="amt">$0.6373</span><span class="disc">-4% volume</span><span class="fw">FOB Ningbo quoted</span>
+          </div>
+          <div class="price-cell">
+            <span class="qty">500,000 pcs</span>
+            <span class="amt">$0.6307</span><span class="disc">-5% volume</span><span class="fw">FOB Ningbo quoted</span>
+          </div>
+        </div>
+        <p class="price-foot">
+          <b>EXW China</b> = ex-works at our factory in Cixi, Ningbo.
+          <b>FOB Ningbo</b> = EXW plus a fixed RMB 1,500 per-shipment export fee
+          (customs declaration, port charges and trucking to the port) &mdash; quoted
+          from 50,000 pcs up, since below that the shipment fee outweighs the magnets.
+          All USD figures are <b>indicative</b>: the final price is fixed at the USD/CNY
+          market rate on the date your deposit is received.
+        </p>
       </div>
     </section>
 
-    <!-- Applications -->
-    <section style="padding: 3rem 0;">
-      <h2>Common Applications</h2>
-      <div class="product-grid">
-        <div class="product-card">
-          <h3>Magnetic Fixtures</h3>
-          <p>Workholding, jigs, and tooling</p>
+    <section class="block">
+      <h2>Magnetic pole distribution</h2>
+      <p>Interactive view of how the poles sit on a block magnet of this grade.</p>
+      <div class="sim-wrap">
+        <div class="btn-row">
+          <button class="btn btn--ghost" type="button" id="toggleLines">Toggle field lines</button>
+          <button class="btn btn--ghost" type="button" id="resetView">Reset view</button>
         </div>
-        <div class="product-card">
-          <h3>Magnetic Assemblies</h3>
-          <p>Magnetic separators, latches</p>
+        <div class="sim-canvas"><canvas id="sim" width="880" height="380"></canvas></div>
+        <div class="sim-legend">
+          <span><i style="background:#ef4444"></i>North pole</span>
+          <span><i style="background:#3b82f6"></i>South pole</span>
+          <span><i style="background:#94a3b8"></i>External field lines</span>
         </div>
-        <div class="product-card">
-          <h3>Sensors & Switches</h3>
-          <p>Magnetic reed switches, proximity sensors</p>
-        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Typical applications</h2>
+      <div class="cards">
+          <div class="card">
+            <h3>Magnetic fixtures</h3>
+            <p>Workholding, jigs and tooling</p>
+          </div>
+          <div class="card">
+            <h3>Magnetic separators</h3>
+            <p>Grates, traps and latches</p>
+          </div>
+          <div class="card">
+            <h3>Sensors &amp; switches</h3>
+            <p>Reed switches, proximity sensors</p>
+          </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Other block grades</h2>
+      <p>Same geometry, different energy product. Not sure which grade your design needs?</p>
+      <div class="switcher">
+        <a class="chip chip--on" href="product-block-n35.html">N35</a>
+        <a class="chip" href="product-block-n42.html">N42</a>
+        <a class="chip" href="product-block-n52.html">N52</a>
+      </div>
+      <h2 style="margin-top:1.8rem">Other shapes</h2>
+      <div class="switcher">
+        <a class="chip" href="product-disc-n35.html">Disc</a>
+        <a class="chip chip--on" href="product-block-n35.html">Block</a>
+        <a class="chip" href="product-ring-n35.html">Ring</a>
+        <a class="chip" href="product-arc-n35.html">Arc</a>
       </div>
     </section>
   </main>
 
   <footer class="footer">
-    <div class="container">
-      <p>&copy; 2026 Huapeng Magnetics. Precision NdFeB Magnets Manufacturer.</p>
+    <div class="container footer__row">
+      <span>&copy; 2026 Huapeng Magnetics &middot; Cixi, Ningbo, China</span>
+      <span><a href="/request-quote.html">Request a quotation</a></span>
     </div>
   </footer>
 
   <script>
-    const canvas = document.getElementById('fieldCanvas');
-    const ctx = canvas.getContext('2d');
-    let showFieldLines = true;
+  (function () {
+    var canvas = document.getElementById('sim');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var shape = 'block';
+    var showLines = true;
+    var W = canvas.width, H = canvas.height;
+    var cx = W / 2, cy = H / 2;
 
-    function drawMagnet() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      const cx = canvas.width / 2;
-      const cy = canvas.height / 2;
-      const width = 250;
-      const height = 100;
-      
-      // Block shape
-      ctx.fillStyle = '#e2e8f0';
-      ctx.fillRect(cx - width/2, cy - height/2, width, height);
-      ctx.strokeStyle = '#64748b';
-      ctx.strokeRect(cx - width/2, cy - height/2, width, height);
-      
-      // North pole (top half)
-      ctx.fillStyle = '#ef4444';
-      ctx.fillRect(cx - width/2, cy - height/2, width, height/2);
-      
-      // South pole (bottom half)
-      ctx.fillStyle = '#3b82f6';
-      ctx.fillRect(cx - width/2, cy, width, height/2);
-      
-      // Labels
-      ctx.fillStyle = '#fff';
-      ctx.font = 'bold 28px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText('N', cx, cy - height/4 + 10);
-      ctx.fillText('S', cx, cy + height/4 + 10);
+    function drawBody() {
+      ctx.lineWidth = 1.5;
+      if (shape === 'disc' || shape === 'ring') {
+        var r = shape === 'disc' ? 78 : 78;
+        if (shape === 'ring') {
+          ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.fillStyle = '#c3cfdf'; ctx.fill();
+          ctx.strokeStyle = '#8296ad'; ctx.stroke();
+          ctx.beginPath(); ctx.arc(cx, cy, r * 0.44, 0, Math.PI * 2);
+          ctx.fillStyle = '#0b1220'; ctx.fill(); ctx.stroke();
+        } else {
+          ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.fillStyle = '#c3cfdf'; ctx.fill();
+          ctx.strokeStyle = '#8296ad'; ctx.stroke();
+        }
+        ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, Math.PI * 2);
+        ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 12; ctx.stroke();
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI);
+        ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 12; ctx.stroke();
+        ctx.fillStyle = '#0b1220'; ctx.font = 'bold 24px Segoe UI, Arial';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('N', cx, cy - r * 0.6);
+        ctx.fillText('S', cx, cy + r * 0.6);
+      } else if (shape === 'block') {
+        var w = 260, h = 110;
+        ctx.fillStyle = '#c3cfdf';
+        ctx.fillRect(cx - w / 2, cy - h / 2, w, h);
+        ctx.strokeStyle = '#8296ad';
+        ctx.strokeRect(cx - w / 2, cy - h / 2, w, h);
+        ctx.fillStyle = '#ef4444'; ctx.fillRect(cx - w / 2, cy - h / 2, w, h / 2);
+        ctx.fillStyle = '#3b82f6'; ctx.fillRect(cx - w / 2, cy, w, h / 2);
+        ctx.fillStyle = '#0b1220'; ctx.font = 'bold 26px Segoe UI, Arial';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('N', cx, cy - h / 4);
+        ctx.fillText('S', cx, cy + h / 4);
+      } else {
+        ctx.beginPath();
+        ctx.moveTo(cx, cy); ctx.lineTo(cx, cy - 96);
+        ctx.arc(cx, cy, 96, -Math.PI / 2, -Math.PI / 6);
+        ctx.closePath();
+        ctx.fillStyle = '#c3cfdf'; ctx.fill();
+        ctx.strokeStyle = '#8296ad'; ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, cy - 56);
+        ctx.arc(cx, cy, 56, -Math.PI / 2, -Math.PI / 6);
+        ctx.closePath();
+        ctx.fillStyle = '#0b1220'; ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.arc(cx, cy, 96, -Math.PI / 2, -Math.PI / 6);
+        ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 11; ctx.stroke();
+        ctx.beginPath(); ctx.arc(cx, cy, 56, -Math.PI / 2, -Math.PI / 6);
+        ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 9; ctx.stroke();
+        ctx.fillStyle = '#0b1220'; ctx.font = 'bold 22px Segoe UI, Arial';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('N', cx - 14, cy - 76);
+        ctx.fillText('S', cx + 32, cy - 40);
+      }
     }
 
-    function drawFieldLines() {
-      if (!showFieldLines) return;
-      
-      const cx = canvas.width / 2;
-      const cy = canvas.height / 2;
-      
-      ctx.strokeStyle = 'rgba(100, 116, 139, 0.5)';
-      ctx.lineWidth = 1.5;
-      
-      for (let i = 0; i < 10; i++) {
-        const offset = (i - 4.5) * 25;
+    function drawLines() {
+      if (!showLines) return;
+      ctx.strokeStyle = 'rgba(148,163,184,.45)';
+      ctx.lineWidth = 1.2;
+      var span = shape === 'block' ? 150 : 108;
+      for (var i = 0; i < 9; i++) {
+        var off = (i - 4) * 22;
         ctx.beginPath();
-        ctx.moveTo(cx - 125, cy + offset);
-        ctx.quadraticCurveTo(
-          cx - 200, cy + offset - 80,
-          cx - 200, cy + offset + 80
-        );
-        ctx.quadraticCurveTo(
-          cx - 125, cy + offset + 160,
-          cx, cy + offset
-        );
+        ctx.moveTo(cx - span, cy + off);
+        ctx.bezierCurveTo(cx - span - 90, cy + off - 70, cx - span - 90, cy + off + 70, cx - span, cy + off);
         ctx.stroke();
-        
         ctx.beginPath();
-        ctx.moveTo(cx + 125, cy + offset);
-        ctx.quadraticCurveTo(
-          cx + 200, cy + offset - 80,
-          cx + 200, cy + offset + 80
-        );
-        ctx.quadraticCurveTo(
-          cx + 125, cy + offset + 160,
-          cx, cy + offset
-        );
+        ctx.moveTo(cx + span, cy + off);
+        ctx.bezierCurveTo(cx + span + 90, cy + off - 70, cx + span + 90, cy + off + 70, cx + span, cy + off);
         ctx.stroke();
       }
     }
 
-    function toggleFieldLines() {
-      showFieldLines = !showFieldLines;
-      drawMagnet();
-      drawFieldLines();
+    function render() {
+      ctx.clearRect(0, 0, W, H);
+      drawLines();
+      drawBody();
     }
 
-    function resetView() {
-      showFieldLines = true;
-      drawMagnet();
-      drawFieldLines();
-    }
-
-    function openPoleDemo() {
-      alert('Three.js 3D demo would open here\n(Implementation needed)');
-    }
-
-    drawMagnet();
-    drawFieldLines();
+    document.getElementById('toggleLines').addEventListener('click', function () {
+      showLines = !showLines; render();
+    });
+    document.getElementById('resetView').addEventListener('click', function () {
+      showLines = true; render();
+    });
+    render();
+  })();
   </script>
 </body>
 </html>
