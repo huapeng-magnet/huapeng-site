@@ -1,20 +1,23 @@
 /* ===========================================================
-   Huapeng Magnetics — shared pricing engine (V3 cost-based)
+   Huapeng Magnetics — shared pricing engine (V4 dual-price)
    Formula: effective cost (CNY/kg) × mass (kg) × 1.56 ÷ live exchange rate
    1.56 = 1.20 (shipping) × 1.30 (margin) × 1.09 (tax)
    Exchange rate loaded live from exchangerate-api.com
+   Dual pricing: Factory Net (FOB ex-works) + EXW (×1.1 trading cost)
    =========================================================== */
 (function () {
   "use strict";
 
-  /* ---------- V3 constants ----------
+  /* ---------- V4 constants ----------
      Effective N35 cost benchmark tuned to match the V3 report display prices.
-     Base material 162.93 CNY/kg + machining/loss allowance ≈ 177.5 CNY/kg. */
+     Base material 162.93 CNY/kg + machining/loss allowance ≈ 177.5 CNY/kg.
+     EXW margin: 10% trading company markup on factory net price. */
   var COST_CNY_KG = 177.5 * 1.5 * 1.3;    // effective N35 cost benchmark (raised +50%, then +30%)
   var DENSITY_G_CM3 = 7.5;    // sintered NdFeB density
   var MARKUP = 1.56;          // shipping + margin + tax combined
-  var DEFAULT_EXCHANGE = 7.2; // USD/CNY fallback
+  var DEFAULT_EXCHANGE = 6.71; // USD/CNY fallback (updated Sep 2026)
   var RATE_API = "https://api.exchangerate-api.com/v4/latest/USD";
+  var EXW_MARGIN = 1.10;      // trading company markup (10%)
 
   var currentExchange = DEFAULT_EXCHANGE;
 
@@ -105,11 +108,13 @@
       .then(function (data) {
         if (data && data.rates && data.rates.CNY) {
           currentExchange = parseFloat(data.rates.CNY);
+          window._rateLastUpdated = new Date().toISOString();
         } else {
           throw new Error("No CNY rate");
         }
       })
-      .catch(function () {
+      .catch(function (e) {
+        console.warn("Exchange rate API failed, using fallback:", e.message);
         currentExchange = DEFAULT_EXCHANGE;
       });
   }

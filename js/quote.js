@@ -325,9 +325,11 @@
     }
 
     var totalUsd = unitUsd * qty;
+    var exwUsd = Math.round(unitUsd * 1.10 * 100) / 100; // EXW price (factory net × 1.10)
+    var exwTotal = exwUsd * qty;
 
     var specText = specString(shape, dims, coating);
-    lastQuote = { grade: grade, shape: shape, coating: coating, qty: qty, dims: dims, specText: specText, unitUsd: unitUsd, totalUsd: totalUsd };
+    lastQuote = { grade: grade, shape: shape, coating: coating, qty: qty, dims: dims, specText: specText, unitUsd: unitUsd, totalUsd: totalUsd, exwUsd: exwUsd, exwTotal: exwTotal };
 
     // Save to history
     saveToHistory(lastQuote);
@@ -344,6 +346,15 @@
         '<div><span>' + L.spec + '</span><strong>' + specText + '</strong></div>' +
         '<div><span>' + L.grade + '</span><strong>' + grade + '</strong></div>' +
         '<div><span>' + L.coating + '</span><strong>' + coatingLabel(coating) + '</strong></div>' +
+        '<hr style="margin:15px 0;border:none;border-top:1px solid #e0e0e0;">' +
+        '<div style="background:#f8f9fa;padding:12px;border-radius:6px;">' +
+          '<div style="font-weight:600;margin-bottom:8px;color:#0c4a6e;">' + L.dualPricing + '</div>' +
+          '<div style="display:flex;gap:20px;flex-wrap:wrap;">' +
+            '<div><span style="color:#666;font-size:13px;">' + L.factoryNet + '</span><br><strong style="font-size:18px;">' + fmt$(unitUsd) + '</strong> <span style="font-size:12px;color:#666;">' + L.perPc + '</span></div>' +
+            '<div><span style="color:#666;font-size:13px;">' + L.exwPrice + '</span><br><strong style="font-size:18px;color:#059669;">' + fmt$(exwUsd) + '</strong> <span style="font-size:12px;color:#666;">' + L.perPc + '</span></div>' +
+          '</div>' +
+          '<p style="margin-top:10px;font-size:12px;color:#666;">' + L.pricingNote + '</p>' +
+        '</div>' +
       '</div>' +
       '<div class="calc-result__actions">' +
         '<button type="button" class="btn btn--primary" onclick="exportPDF()">' + L.exportPdf + '</button>' +
@@ -485,7 +496,13 @@
       needed: "* erforderlich",
       restore: "Wiederherstellen",
       del: "Löschen",
-      total: "Gesamt", allShapes: "Alle"
+      total: "Gesamt", allShapes: "Alle",
+      // Dual pricing labels
+      dualPricing: "Preisoptionen",
+      factoryNet: "Werkselfpreis (FOB ex-works)",
+      exwPrice: "EXW-Preis",
+      perPc: "/Stk",
+      pricingNote: "Werkselfpreis = direkt ab Fabrik. EXW = Werkselfpreis × 1,10 (inkl. Handelsmarge). Beide Preise unterliegen Währungsschwankungen."
     },
     es: {
       quoteTitle: "Solicitar este presupuesto",
@@ -502,7 +519,13 @@
       needed: "* obligatorio",
       restore: "Restaurar",
       del: "Eliminar",
-      total: "Total", allShapes: "Todos"
+      total: "Total", allShapes: "Todos",
+      // Dual pricing labels
+      dualPricing: "Opciones de Precio",
+      factoryNet: "Precio de Fábrica (FOB ex-works)",
+      exwPrice: "Precio EXW",
+      perPc: "/unidad",
+      pricingNote: "Precio de fábrica = directo de fábrica. EXW = precio de fábrica × 1.10 (incluye margen comercial). Ambos precios están sujetos a fluctuaciones cambiarias."
     }
   };
   var L = L10N[HTML_LANG.indexOf("de") === 0 ? "de" : HTML_LANG.indexOf("es") === 0 ? "es" : "en"];
