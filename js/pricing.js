@@ -3,15 +3,10 @@
    -----------------------------------------------------------
    PRICE LADDER (agreed with sales, Sep 2026):
 
-     [1] FACTORY NET  = V4.5 quotation system output (internal COST)
-                      = COST_CNY_KG × mass(kg) × 1.56 ÷ FX
-                         × grade × coating × qty
-                      >> NOT shown to customers <<
+     [1] EXW (China)  = published list rate × mass(kg) ÷ FX
+                         × grade × coating × qty    ← shown to customers
 
-     [2] EXW (China)  = FACTORY NET × 1.10     ← shown to customers
-                      (trading-company cost base)
-
-     [3] FOB (Ningbo) ≈ EXW + export charges   ← shown to customers
+     [2] FOB (Ningbo) ≈ EXW + export charges      ← shown to customers
                       export charges are billed PER SHIPMENT, not per kg:
                       RMB 1,500 covers customs declaration + Ningbo port
                       charges + Cixi→Ningbo trucking, however heavy the
@@ -21,7 +16,6 @@
                       (at 1,000 pcs it is ~USD 0.22/pc), so those tiers
                       show EXW only.
 
-   1.56 = 1.20 (shipping) × 1.30 (margin) × 1.09 (tax)
    Exchange rate loaded live from exchangerate-api.com.
    QUOTED PRICES FLOAT: final price is fixed at the USD/CNY market
    rate on the date the deposit is received.
@@ -29,16 +23,18 @@
 (function () {
   "use strict";
 
-  /* ---------- V5 constants ----------
-     Effective N35 cost benchmark tuned to match the V3 report display prices.
-     Base material 162.93 CNY/kg + machining/loss allowance ≈ 177.5 CNY/kg.
-     EXW margin: 10% trading-company markup on factory net price. */
-  var COST_CNY_KG = 177.5 * 1.5 * 1.3;    // effective N35 cost benchmark (raised +50%, then +30%)
+  /* ---------- Pricing constants ----------
+     EXW_CNY_PER_KG is the published EXW list rate: RMB per kg of sintered
+     NdFeB at grade N35 / nickel coating / entry quantity tier, before the
+     USD conversion. Everything that used to be itemised on its own —
+     material, conversion, freight, tax and margin — sits inside this single
+     figure, so no cost breakdown can be read off this file.
+
+     It is the only knob: move this number to move prices. */
+  var EXW_CNY_PER_KG = 593.9505;
   var DENSITY_G_CM3 = 7.5;    // sintered NdFeB density
-  var MARKUP = 1.56;          // shipping + margin + tax combined
   var DEFAULT_EXCHANGE = 6.71; // USD/CNY fallback (updated Sep 2026)
   var RATE_API = "https://api.exchangerate-api.com/v4/latest/USD";
-  var EXW_MARGIN = 1.10;      // trading-company markup on factory net (10%)
 
   /* ---------- FOB uplift: billed PER SHIPMENT (revised 19 Sep 2026) ----------
      One shipment = customs declaration + Ningbo port charges (THC / docs /
@@ -122,7 +118,7 @@
   }
 
   /*
-   * V3 cost-based unit price.
+   * EXW China unit price in USD — the figure customers are shown.
    * Returns null for shapes that cannot be auto-priced (arc / custom / assembly).
    */
   function estimatedUnitPrice(shape, dims, grade, coating, qty) {
@@ -132,7 +128,7 @@
     var m = massKg(item);
     if (!m || m <= 0) return null;
 
-    var baseUsd = COST_CNY_KG * m * MARKUP / currentExchange;
+    var baseUsd = EXW_CNY_PER_KG * m / currentExchange;
     var gradeFactor = GRADE_FACTORS[grade] || 1;
     var coatFactor = COATING_FACTORS[coating || "nickel"] || 1;
     var qtyFactor = QTY_FACTORS[qty] || 1;
@@ -144,8 +140,8 @@
     return estimatedUnitPrice(shape, dims, "N35", coating || "nickel", 10000);
   }
 
-  /* ---------- V5 price ladder helpers ----------
-     factoryNet → internal only. EXW / FOB → customer-facing. */
+  /* ---------- Price ladder helpers ----------
+     EXW / FOB → customer-facing. */
 
   /* Per-piece share of the per-shipment export fee (RMB → USD). */
   function exportFeeUsd(qty) {
@@ -159,11 +155,9 @@
   /* Is FOB quoted at this quantity? */
   function isFobQuoted(qty) { return !!qty && qty >= FOB_MIN_QTY; }
 
-  /* EXW China: factory net × 1.10 */
+  /* EXW China unit price — the customer-facing figure. */
   function exwUnitPrice(shape, dims, grade, coating, qty) {
-    var net = estimatedUnitPrice(shape, dims, grade, coating, qty);
-    if (net === null) return null;
-    return net * EXW_MARGIN;
+    return estimatedUnitPrice(shape, dims, grade, coating, qty);
   }
 
   /* FOB Ningbo: EXW + per-piece share of the shipment fee.
@@ -175,14 +169,13 @@
     return exw + exportFeeUsd(qty);
   }
 
-  /* Full ladder for one spec — handy for cards and tables. */
+  /* Full ladder for one spec — handy for cards and tables.
+     Carries EXW and FOB only; the internal cost layer is never returned. */
   function priceLadder(shape, dims, grade, coating, qty) {
-    var net = estimatedUnitPrice(shape, dims, grade, coating, qty);
-    if (net === null) return null;
-    var exw = net * EXW_MARGIN;
+    var exw = estimatedUnitPrice(shape, dims, grade, coating, qty);
+    if (exw === null) return null;
     var quoted = isFobQuoted(qty);
     return {
-      factoryNet: net,
       exw: exw,
       fob: quoted ? exw + exportFeeUsd(qty) : null,
       fobQuoted: quoted,
@@ -230,11 +223,8 @@
   }
 
   window.HPPricing = {
-    COST_CNY_KG: COST_CNY_KG,
     DENSITY_G_CM3: DENSITY_G_CM3,
-    MARKUP: MARKUP,
     DEFAULT_EXCHANGE: DEFAULT_EXCHANGE,
-    EXW_MARGIN: EXW_MARGIN,
     FOB_FIXED_FEE_CNY: FOB_FIXED_FEE_CNY,
     FOB_MIN_QTY: FOB_MIN_QTY,
     currentExchange: function () { return currentExchange; },

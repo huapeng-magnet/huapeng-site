@@ -80,13 +80,12 @@
     "N52": 1.80
   };
 
-  /* V5 three-tier cost ladder
-     FACTORY NET (internal) → EXW China (×1.10) → FOB Ningbo (+ shipment fee)
-     Keep in sync with the same constants in js/pricing.js. */
-  var COST_CNY_KG = 177.5 * 1.5 * 1.3;    // effective N35 cost benchmark (raised +50%, then +30%)
+  /* Pricing ladder — EXW China → FOB Ningbo (+ per-shipment export fee).
+     EXW_CNY_PER_KG is the published list rate; the cost and margin
+     breakdown behind it is deliberately not represented anywhere here.
+     Keep in sync with the same constant in js/pricing.js. */
+  var EXW_CNY_PER_KG = 593.9505;
   var DENSITY_G_CM3 = 7.5;    // sintered NdFeB density
-  var MARKUP = 1.56;          // 1.20 shipping × 1.30 margin × 1.09 tax
-  var EXW_MARGIN = 1.10;      // trading-company markup on factory net
 
   /* FOB uplift is billed PER SHIPMENT (customs + Ningbo port charges +
      Cixi→Ningbo trucking ≈ RMB 1,500 in total, however heavy the shipment).
@@ -136,7 +135,7 @@
     var m = massKg(item);
     if (!m || m <= 0) return null;
 
-    var baseUsd = COST_CNY_KG * m * MARKUP / rate;
+    var baseUsd = EXW_CNY_PER_KG * m / rate;
     var gradeFactor = GRADE_FACTORS[grade] || 1;
     var coatFactor = COATING_FACTORS[coating || "nickel"] || 1;
     var qtyFactor = QTY_FACTORS[qty] || 1;
@@ -161,9 +160,7 @@
   function isFobQuoted(qty) { return !!qty && qty >= FOB_MIN_QTY; }
 
   function exwUnitPrice(shape, dims, grade, coating, qty) {
-    var net = estimatedUnitPrice(shape, dims, grade, coating, qty);
-    if (net === null) return null;
-    return net * EXW_MARGIN;
+    return estimatedUnitPrice(shape, dims, grade, coating, qty);
   }
 
   function fobUnitPrice(shape, dims, grade, coating, qty) {
@@ -174,12 +171,10 @@
   }
 
   function priceLadder(shape, dims, grade, coating, qty) {
-    var net = estimatedUnitPrice(shape, dims, grade, coating, qty);
-    if (net === null) return null;
-    var exw = net * EXW_MARGIN;
+    var exw = estimatedUnitPrice(shape, dims, grade, coating, qty);
+    if (exw === null) return null;
     var quoted = isFobQuoted(qty);
     return {
-      factoryNet: net,
       exw: exw,
       fob: quoted ? exw + exportFeeUsd(qty) : null,
       fobQuoted: quoted,
