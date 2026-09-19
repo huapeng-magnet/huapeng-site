@@ -79,10 +79,7 @@
   } catch (e) { /* very old browser — ignore */ }
 
   if (SUPPORTED.indexOf(forced) !== -1) {
-    try {
-      if (forced === "en") localStorage.removeItem(STORAGE_KEY);
-      else localStorage.setItem(STORAGE_KEY, forced);
-    } catch (e) {}
+    try { localStorage.setItem(STORAGE_KEY, forced); } catch (e) {}
     if (forced !== here) {
       window.location.replace(buildPath(forced, bare) + window.location.hash);
     }
@@ -150,17 +147,17 @@
       go(langForBrowser(), false);
     });
 
-  /* ---------- Language switcher: remember explicit choices ---------- */
+  /* ---------- Language switcher: remember explicit choices ----------
+     Kept in sync with the same handler in js/main.js. Storing 'en' is
+     deliberate: clearing the key would let geo detection bounce an
+     English speaker straight back to /de/ or /es/. */
   document.addEventListener("DOMContentLoaded", function () {
     var links = document.querySelectorAll("a.lang-option, a[data-lang]");
     Array.prototype.forEach.call(links, function (a) {
       a.addEventListener("click", function () {
         var l = (a.getAttribute("data-lang") || "").toLowerCase();
         if (SUPPORTED.indexOf(l) === -1) return;
-        try {
-          if (l === "en") localStorage.removeItem(STORAGE_KEY);
-          else localStorage.setItem(STORAGE_KEY, l);
-        } catch (e) {}
+        try { localStorage.setItem(STORAGE_KEY, l); } catch (e) {}
       });
     });
   });

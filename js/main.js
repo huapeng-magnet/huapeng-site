@@ -1601,5 +1601,19 @@
         window.location.href = prefix || '/';
       });
     }
+
+    // Remember the visitor's explicit language choice. Without this,
+    // geo-redirect.js would keep bouncing them back to the IP-detected
+    // language and the switcher would look broken. Storing 'en' (rather
+    // than clearing the key) is what lets an English speaker in Germany
+    // stay on the English site.
+    Array.prototype.forEach.call(langDropdown.querySelectorAll('.lang-option'), function(a) {
+      a.addEventListener('click', function() {
+        var l = (a.getAttribute('data-lang') || '').toLowerCase();
+        if (l !== 'en' && l !== 'de' && l !== 'es') return;
+        try { localStorage.setItem('hp_lang_preference', l); } catch (err) {}
+        try { sessionStorage.setItem('hp_lang_chosen', '1'); } catch (err) {}
+      });
+    });
   }
 })();
