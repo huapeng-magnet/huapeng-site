@@ -8,6 +8,11 @@
    * EN request-quote uses qGrade/qShape/qCoating; DE uses qSorte/qForm/qBeschichtung;
    * ES uses qGrado/qForma/qRecubrimiento. All three pages use the same logic,
    * so look up the actual element id by language. */
+  /* ---------- i18n DOM ID aliases ----------
+   * EN request-quote uses qGrade/qShape/qCoating; DE uses qSorte/qForm/qBeschichtung;
+   * ES uses qGrado/qForma/qRecubrimiento. The Korean and Japanese pages reuse the
+   * ENGLISH element ids on purpose, so this lookup's default branch already covers
+   * them and nothing needs adding here when a new locale is introduced. */
   var HTML_LANG = (document.documentElement.getAttribute("lang") || "en").toLowerCase();
   var IDS = HTML_LANG.indexOf("de") === 0 ? {
     grade: "qSorte", shape: "qForm", coating: "qBeschichtung", qty: "qQty",
@@ -588,9 +593,67 @@
       approx: "aprox.",
       pricingNote: "EXW = en fábrica en China. FOB Ningbo = EXW más gastos de exportación (declaración aduanera, tasas portuarias y transporte al puerto), prorrateados por kg.",
       fxNote: "Los precios son indicativos y se convierten al tipo de cambio de mercado actual. El precio final se fija al tipo USD/CNY de la fecha en que se recibe el anticipo."
+    },
+    ko: {
+      quoteTitle: "이 견적 요청하기",
+      quoteDesc: "연락처를 남겨주시면 가격, 코팅, 공차 및 납기를 이메일로 확정해 드립니다.",
+      name: "이름", email: "이메일", company: "회사명", country: "국가",
+      notes: "비고 / 특별 요청사항",
+      notesPh: "공차, 착자 방향, 포장, 운송 조건...",
+      sendQuote: "견적 요청 보내기", sending: "전송 중…",
+      unitPrice: "단가", taxIncl: "세금 포함", quantity: "수량",
+      totalEst: "예상 합계", spec: "사양", grade: "등급", coating: "코팅",
+      exportPdf: "PDF 내보내기", estUsd: "예상 USD 가격",
+      standardList: "표준 가격표", n35List: "N35 니켈 코팅 가격표",
+      typicalUse: "주요 용도", contactSales: "영업팀 문의",
+      needed: "* 필수",
+      restore: "복원",
+      del: "삭제",
+      total: "합계", allShapes: "전체",
+      dualPricing: "가격 조건",
+      exwPrice: "EXW 중국",
+      fobPrice: "FOB 닝보",
+      perPc: "/개",
+      perPcExw: "개당 · EXW 중국",
+      totalExw: "합계 (EXW)",
+      totalFob: "합계 (FOB, 약)",
+      approx: "약",
+      pricingNote: "EXW = 중국 자사 공장 인도 조건입니다. FOB 닝보 = EXW에 수출 비용(통관 신고, 항만 부대비용, 공장에서 항구까지의 운송비)을 포함한 조건으로, 중량(kg) 기준으로 배분됩니다.",
+      fxNote: "가격은 참고용이며 현재 시장 환율로 환산한 금액입니다. 최종 가격은 계약금 입금일의 USD/CNY 환율로 확정됩니다."
+    },
+    ja: {
+      quoteTitle: "この見積もりを依頼する",
+      quoteDesc: "ご連絡先をご記入ください。価格・コーティング・公差・納期をメールでご確認いたします。",
+      name: "お名前", email: "メールアドレス", company: "会社名", country: "国",
+      notes: "備考／ご要望",
+      notesPh: "公差、着磁方向、梱包、輸送条件など...",
+      sendQuote: "見積もりを送信", sending: "送信中…",
+      unitPrice: "単価", taxIncl: "税込", quantity: "数量",
+      totalEst: "概算合計", spec: "仕様", grade: "グレード", coating: "コーティング",
+      exportPdf: "PDFを書き出す", estUsd: "推定USD価格",
+      standardList: "標準価格表", n35List: "N35 ニッケルコーティング価格表",
+      typicalUse: "主な用途", contactSales: "営業に問い合わせる",
+      needed: "※必須",
+      restore: "復元",
+      del: "削除",
+      total: "合計", allShapes: "すべて",
+      dualPricing: "価格条件",
+      exwPrice: "EXW 中国",
+      fobPrice: "FOB 寧波",
+      perPc: "/個",
+      perPcExw: "1個あたり · EXW 中国",
+      totalExw: "合計（EXW）",
+      totalFob: "合計（FOB、概算）",
+      approx: "概算",
+      pricingNote: "EXW = 中国自社工場渡し条件です。FOB 寧波 = EXW に輸出費用（通関申告、港湾諸費用、工場から港までの輸送費）を加えた条件で、重量（kg）あたりに按分されます。",
+      fxNote: "価格は参考値であり、現在の市場レートで換算しています。最終価格は手付金ご入金日の USD/CNY レートで確定します。"
     }
   };
-  var L = L10N[HTML_LANG.indexOf("de") === 0 ? "de" : HTML_LANG.indexOf("es") === 0 ? "es" : "en"];
+  var L = L10N[HTML_LANG.indexOf("de") === 0 ? "de"
+             : HTML_LANG.indexOf("es") === 0 ? "es"
+             : HTML_LANG.indexOf("ko") === 0 ? "ko"
+             : HTML_LANG.indexOf("ja") === 0 ? "ja"
+             : "en"];
 
   function quoteFormHTML() {
     return '<div class="quote-request">' +

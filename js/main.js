@@ -8,10 +8,15 @@
   var CART_KEY = "hp_cart";
   var FORMS_ENDPOINT = "https://huapeng-magnet.com";
 
-  /* ---------- i18n ---------- */
+  /* ---------- i18n ----------
+     Language comes from <html lang="...">, not from the URL, so a new locale
+     page only has to set the right lang attribute. Add the language here and
+     to the I18N table below; js/quote.js has its own matching pair. */
   var HTML_LANG = (document.documentElement.getAttribute("lang") || "en").toLowerCase();
   var PAGE_LANG = HTML_LANG.indexOf("de") === 0 ? "de"
                 : HTML_LANG.indexOf("es") === 0 ? "es"
+                : HTML_LANG.indexOf("ko") === 0 ? "ko"
+                : HTML_LANG.indexOf("ja") === 0 ? "ja"
                 : "en";
   var I18N = {
     en: {
@@ -100,6 +105,64 @@
       "addedPrefix": "Añadido: ",
       "pcsUnit": "unidades",
       "typicalUse": "Uso Típico"
+    },
+    ko: {
+      "slide": "슬라이드",
+      "noResults": "검색 또는 필터 조건에 맞는 제품이 없습니다.",
+      "disc": "원형 자석",
+      "block": "각형 자석",
+      "ring": "링 자석",
+      "arc": "아크 세그먼트",
+      "assembly": "맞춤 조립품",
+      "configureSubtitle": "등급, 치수 및 수량을 설정하세요",
+      "grade": "등급",
+      "coating": "코팅",
+      "qtyPcs": "수량 (개)",
+      "chooseJpg": "JPG 파일 선택",
+      "maxMb": "(최대 4MB)",
+      "priceCalc": "예상 단가: 계산 중…",
+      "priceReq": "가격 문의",
+      "addToCart": "장바구니에 담기",
+      "removeImage": "이미지 삭제",
+      "decrease": "감소",
+      "increase": "증가",
+      "quantity": "수량",
+      "remove": "삭제",
+      "subtotal": "소계",
+      "cartEmpty": "장바구니가 비어 있습니다.",
+      "cartEmptyHint": "시작하려면 자석을 추가하세요.",
+      "addedPrefix": "추가됨: ",
+      "pcsUnit": "개",
+      "typicalUse": "주요 용도"
+    },
+    ja: {
+      "slide": "スライド",
+      "noResults": "検索またはフィルター条件に一致する製品がありません。",
+      "disc": "円形磁石",
+      "block": "角形磁石",
+      "ring": "リング磁石",
+      "arc": "アークセグメント",
+      "assembly": "カスタムアセンブリ",
+      "configureSubtitle": "グレード・寸法・数量を設定してください",
+      "grade": "グレード",
+      "coating": "コーティング",
+      "qtyPcs": "数量（個）",
+      "chooseJpg": "JPGファイルを選択",
+      "maxMb": "（最大4MB）",
+      "priceCalc": "推定単価：計算中…",
+      "priceReq": "価格はお問い合わせください",
+      "addToCart": "カートに追加",
+      "removeImage": "画像を削除",
+      "decrease": "減らす",
+      "increase": "増やす",
+      "quantity": "数量",
+      "remove": "削除",
+      "subtotal": "小計",
+      "cartEmpty": "カートは空です。",
+      "cartEmptyHint": "磁石を追加してください。",
+      "addedPrefix": "追加しました：",
+      "pcsUnit": "個",
+      "typicalUse": "主な用途"
     }
   };
   var dict = I18N[PAGE_LANG] || I18N.en;
