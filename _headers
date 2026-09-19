@@ -1,0 +1,19 @@
+# Cloudflare Pages / Workers Static Assets custom response headers
+# Deployed with the site (git push -> automatic build).
+#
+# noai / noimageai tell cooperating AI crawlers not to use this content for
+# model training or generation. They do NOT stop Google or Bing indexing:
+# there is deliberately no "noindex" here.
+#
+# Content-Signal is the IAB machine-readable content permission signal.
+
+/*
+  X-Robots-Tag: noai, noimageai
+  Content-Signal: search=yes, ai-train=no, ai-input=no, genai=no
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+/assets/*
+  X-Robots-Tag: noai, noimageai
+  Content-Signal: search=yes, ai-train=no, ai-input=no, genai=no
+  Access-Control-Allow-Origin: *
