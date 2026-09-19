@@ -90,18 +90,6 @@
     .hpmc__extras b{color:var(--hpmc-text);font-size:15px;display:block;margin-top:2px}
     .hpmc__note{margin-top:14px;font-size:12px;line-height:1.65;color:var(--hpmc-muted)}
 
-    /* ---- formulas panel ---- */
-    .formula-panel{max-width:760px;margin:2.6rem auto 0;padding:1.6rem 1.8rem;
-      background:var(--panel);border:1px solid var(--panel-br);border-radius:16px}
-    .formula-panel h2{font-size:1.15rem;margin:0 0 1.1rem;color:var(--ink)}
-    .formula-panel .fitem{margin-bottom:1.15rem}
-    .formula-panel .fitem:last-child{margin-bottom:0}
-    .formula-panel .ftitle{color:var(--cyan);font-weight:700;font-size:14px;margin-bottom:5px}
-    .formula-panel .fmath{font-family:"Cambria Math","Times New Roman",Georgia,serif;
-      background:#0f172a;border:1px solid var(--panel-br);border-radius:9px;padding:11px 14px;
-      color:#e2e8f0;font-size:15px;overflow-x:auto}
-    .formula-panel .fnote{color:#9fb3d1;font-size:12px;margin-top:5px;line-height:1.65}
-
     .calc-cta{margin:2.2rem auto 0;text-align:center}
     .calc-cta .btn{margin:0 6px 10px}
   </style>
@@ -180,27 +168,6 @@
     </section>
 
     <div id="magnet-calculator"></div>
-
-    <section class="formula-panel">
-      <h2>Formulas used</h2>
-      <div class="fitem">
-        <div class="ftitle">1. Surface flux density B (Gauss, on-axis at pole face)</div>
-        <div class="fmath">Disc&nbsp;&nbsp; B = (Br / 2) &middot; T / &radic;(R&sup2; + T&sup2;) &nbsp;&times;&nbsp; 10&#8308;<br>
-          Block&nbsp; B = (Br / 2) &middot; [ 1 &minus; (2/&pi;)&middot;atan( L&middot;W / (2&middot;T&middot;&radic;(4T&sup2;+L&sup2;+W&sup2;)) ) ] &nbsp;&times;&nbsp; 10&#8308;<br>
-          Ring&nbsp;&nbsp; B = B_disc &middot; (A_out &minus; A_bore) / A_out</div>
-        <div class="fnote">Br = remanence of the grade (N35&ndash;N52: 1.17&ndash;1.45 T). R = D/2, L/W/T in mm. A thin plate tends to 0; a long prism tends to Br/2.</div>
-      </div>
-      <div class="fitem">
-        <div class="ftitle">2. Magnetic moment m (A&middot;m&sup2;)</div>
-        <div class="fmath">m = (Br / &mu;&#8320;) &middot; V</div>
-        <div class="fnote">&mu;&#8320; = 4&pi;&times;10&#8315;&#8327; H/m. V = magnet volume (m&sup3;). Equivalent G&middot;cm&sup3; = m &times; 1000.</div>
-      </div>
-      <div class="fitem">
-        <div class="ftitle">3. Pull force F (Newton, Maxwell stress + image method)</div>
-        <div class="fmath">F = 2 &middot; B&sup2; &middot; A / &mu;&#8320;</div>
-        <div class="fnote">B = surface field (Tesla), A = pole-face area (m&sup2;). Theoretical at zero gap; the real contact force runs 30&ndash;50% below this. kgf = F / 9.80665, lbf = F / 4.44822.</div>
-      </div>
-    </section>
 
     <div class="calc-cta">
       <a class="btn btn--primary" href="/request-quote.html">Request a quotation</a>

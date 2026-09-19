@@ -90,18 +90,6 @@
     .hpmc__extras b{color:var(--hpmc-text);font-size:15px;display:block;margin-top:2px}
     .hpmc__note{margin-top:14px;font-size:12px;line-height:1.65;color:var(--hpmc-muted)}
 
-    /* ---- formulas panel ---- */
-    .formula-panel{max-width:760px;margin:2.6rem auto 0;padding:1.6rem 1.8rem;
-      background:var(--panel);border:1px solid var(--panel-br);border-radius:16px}
-    .formula-panel h2{font-size:1.15rem;margin:0 0 1.1rem;color:var(--ink)}
-    .formula-panel .fitem{margin-bottom:1.15rem}
-    .formula-panel .fitem:last-child{margin-bottom:0}
-    .formula-panel .ftitle{color:var(--cyan);font-weight:700;font-size:14px;margin-bottom:5px}
-    .formula-panel .fmath{font-family:"Cambria Math","Times New Roman",Georgia,serif;
-      background:#0f172a;border:1px solid var(--panel-br);border-radius:9px;padding:11px 14px;
-      color:#e2e8f0;font-size:15px;overflow-x:auto}
-    .formula-panel .fnote{color:#9fb3d1;font-size:12px;margin-top:5px;line-height:1.65}
-
     .calc-cta{margin:2.2rem auto 0;text-align:center}
     .calc-cta .btn{margin:0 6px 10px}
   </style>
@@ -181,27 +169,6 @@
     </section>
 
     <div id="magnet-calculator"></div>
-
-    <section class="formula-panel">
-      <h2>F&oacute;rmulas utilizadas</h2>
-      <div class="fitem">
-        <div class="ftitle">1. Densidad de flujo superficial B (Gauss, axial en la cara polar)</div>
-        <div class="fmath">Disco&nbsp;&nbsp;&nbsp; B = (Br / 2) &middot; T / &radic;(R&sup2; + T&sup2;) &nbsp;&times;&nbsp; 10&#8308;<br>
-          Bloque&nbsp;&nbsp; B = (Br / 2) &middot; [ 1 &minus; (2/&pi;)&middot;atan( L&middot;W / (2&middot;T&middot;&radic;(4T&sup2;+L&sup2;+W&sup2;)) ) ] &nbsp;&times;&nbsp; 10&#8308;<br>
-          Anillo&nbsp;&nbsp; B = B_disco &middot; (A_exterior &minus; A_agujero) / A_exterior</div>
-        <div class="fnote">Br = remanencia del grado (N35&ndash;N52: 1,17&ndash;1,45 T). R = D/2, L/W/T en mm. Una placa fina tiende a 0; un prisma largo tiende a Br/2.</div>
-      </div>
-      <div class="fitem">
-        <div class="ftitle">2. Momento magn&eacute;tico m (A&middot;m&sup2;)</div>
-        <div class="fmath">m = (Br / &mu;&#8320;) &middot; V</div>
-        <div class="fnote">&mu;&#8320; = 4&pi;&times;10&#8315;&#8327; H/m. V = volumen del im&aacute;n (m&sup3;). Equivalente G&middot;cm&sup3; = m &times; 1000.</div>
-      </div>
-      <div class="fitem">
-        <div class="ftitle">3. Fuerza de atracci&oacute;n F (Newton, tensi&oacute;n de Maxwell + m&eacute;todo de imagen)</div>
-        <div class="fmath">F = 2 &middot; B&sup2; &middot; A / &mu;&#8320;</div>
-        <div class="fnote">B = campo superficial (Tesla), A = &aacute;rea de la cara polar (m&sup2;). Te&oacute;rica sin entrehierro; la fuerza de contacto real es un 30&ndash;50&nbsp;% inferior. kgf = F / 9,80665, lbf = F / 4,44822.</div>
-      </div>
-    </section>
 
     <div class="calc-cta">
       <a class="btn btn--primary" href="/es/request-quote.html">Solicitar presupuesto</a>
