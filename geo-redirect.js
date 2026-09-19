@@ -11,7 +11,7 @@
    Priority order:
      1. ?lang=en|de|es  (explicit link — always wins, also persisted)
      2. saved preference from a previous visit (language switcher)
-     3. IP geolocation (ipapi.co, fallback api.country.is)
+     3. IP geolocation (api.country.is, fallback ipapi.co)
      4. browser language (navigator.language)
 
    Safe by design:
@@ -166,10 +166,15 @@
     }), GEO_TIMEOUT);
   }
 
-  fetchJSON("https://ipapi.co/json/")
-    .then(function (d) { return d && d.country_code; })
+  /* api.country.is is the primary: it is fast and sends `Access-Control-
+     Allow-Origin: *`. ipapi.co used to lead, but it now sits behind a
+     Cloudflare interstitial, so a browser fetch from this page gets a 403
+     challenge with no CORS header and always fails — keep it as the backup
+     only. */
+  fetchJSON("https://api.country.is/")
+    .then(function (d) { return d && d.country; })
     .catch(function () {
-      return fetchJSON("https://api.country.is/").then(function (d) { return d && d.country; });
+      return fetchJSON("https://ipapi.co/json/").then(function (d) { return d && d.country_code; });
     })
     .then(function (cc) {
       var lang = cc ? langForCountry(cc) : langForBrowser();
