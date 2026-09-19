@@ -243,17 +243,22 @@ h2+p{color:var(--ink-soft);font-size:.94rem;margin-top:-.5rem;margin-bottom:1.1r
       <marker id="arrowN" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#f87171"/></marker>
       <marker id="arrowS" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#60a5fa"/></marker>
     </defs>
-    <rect x="42" y="54" width="116" height="92" rx="4" fill="url(#metalGrad)" stroke="#8296ad" stroke-width="1.5"/>
-    <rect x="42" y="54" width="116" height="22" fill="#ef4444" opacity="0.82"/>
-    <rect x="42" y="124" width="116" height="22" fill="#3b82f6" opacity="0.82"/>
-    <line x1="68" y1="54" x2="68" y2="28" stroke="#f87171" stroke-width="3" marker-end="url(#arrowN)"/>
-    <line x1="100" y1="54" x2="100" y2="24" stroke="#f87171" stroke-width="3" marker-end="url(#arrowN)"/>
-    <line x1="132" y1="54" x2="132" y2="28" stroke="#f87171" stroke-width="3" marker-end="url(#arrowN)"/>
-    <line x1="68" y1="146" x2="68" y2="172" stroke="#60a5fa" stroke-width="3" marker-end="url(#arrowS)"/>
-    <line x1="100" y1="146" x2="100" y2="176" stroke="#60a5fa" stroke-width="3" marker-end="url(#arrowS)"/>
-    <line x1="132" y1="146" x2="132" y2="172" stroke="#60a5fa" stroke-width="3" marker-end="url(#arrowS)"/>
-    <text x="100" y="48" text-anchor="middle" fill="#f87171" font-size="17" font-weight="700">N</text>
-    <text x="100" y="164" text-anchor="middle" fill="#60a5fa" font-size="17" font-weight="700">S</text>
+    <path d="M148 62 C 186 60 186 138 148 136" fill="none" stroke="#94a3b8" stroke-width="1.5" opacity=".55"/>
+    <path d="M52 62 C 14 60 14 138 52 136" fill="none" stroke="#94a3b8" stroke-width="1.5" opacity=".55"/>
+    <path d="M183 107 l-5 -9 h10 z" fill="#94a3b8" opacity=".85"/>
+    <path d="M17 107 l-5 -9 h10 z" fill="#94a3b8" opacity=".85"/>
+    <rect x="40" y="64" width="120" height="72" fill="url(#metalGrad)" stroke="#8296ad" stroke-width="1.5"/>
+    <rect x="40" y="64" width="120" height="10" fill="#ef4444" opacity=".9"/>
+    <rect x="40" y="126" width="120" height="10" fill="#3b82f6" opacity=".9"/>
+    <line x1="70" y1="118" x2="70" y2="93" stroke="#0b1220" stroke-width="3"/>
+    <path d="M64 94 L76 94 L70 82 z" fill="#0b1220"/>
+    <line x1="100" y1="118" x2="100" y2="93" stroke="#0b1220" stroke-width="3"/>
+    <path d="M94 94 L106 94 L100 82 z" fill="#0b1220"/>
+    <line x1="130" y1="118" x2="130" y2="93" stroke="#0b1220" stroke-width="3"/>
+    <path d="M124 94 L136 94 L130 82 z" fill="#0b1220"/>
+    <text x="100" y="52" text-anchor="middle" fill="#f87171" font-size="17" font-weight="700">N</text>
+    <text x="100" y="158" text-anchor="middle" fill="#60a5fa" font-size="17" font-weight="700">S</text>
+    <text x="100" y="182" text-anchor="middle" fill="#9fb3d1" font-size="12" font-weight="600">Axial magnetization</text>
   </svg>
       </div>
 
@@ -404,79 +409,139 @@ h2+p{color:var(--ink-soft);font-size:.94rem;margin-top:-.5rem;margin-bottom:1.1r
     var W = canvas.width, H = canvas.height;
     var cx = W / 2, cy = H / 2;
 
+    function tri(x, y, ang, col) {
+      ctx.fillStyle = col;
+      ctx.beginPath();
+      ctx.moveTo(x + Math.cos(ang) * 9, y + Math.sin(ang) * 9);
+      ctx.lineTo(x + Math.cos(ang + 2.5) * 7, y + Math.sin(ang + 2.5) * 7);
+      ctx.lineTo(x + Math.cos(ang - 2.5) * 7, y + Math.sin(ang - 2.5) * 7);
+      ctx.closePath(); ctx.fill();
+    }
+
+    function arrowUp(x, yFrom, yTo) {
+      ctx.strokeStyle = '#0b1220'; ctx.fillStyle = '#0b1220';
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(x, yFrom); ctx.lineTo(x, yTo + 9); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x, yTo); ctx.lineTo(x - 6, yTo + 10); ctx.lineTo(x + 6, yTo + 10);
+      ctx.closePath(); ctx.fill();
+      ctx.lineWidth = 1.5;
+    }
+
     function drawBody() {
       ctx.lineWidth = 1.5;
-      if (shape === 'disc' || shape === 'ring') {
-        var r = shape === 'disc' ? 78 : 78;
-        if (shape === 'ring') {
-          ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
-          ctx.fillStyle = '#c3cfdf'; ctx.fill();
-          ctx.strokeStyle = '#8296ad'; ctx.stroke();
-          ctx.beginPath(); ctx.arc(cx, cy, r * 0.44, 0, Math.PI * 2);
-          ctx.fillStyle = '#0b1220'; ctx.fill(); ctx.stroke();
-        } else {
-          ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
-          ctx.fillStyle = '#c3cfdf'; ctx.fill();
-          ctx.strokeStyle = '#8296ad'; ctx.stroke();
-        }
-        ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, Math.PI * 2);
-        ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 12; ctx.stroke();
-        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI);
-        ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 12; ctx.stroke();
-        ctx.fillStyle = '#0b1220'; ctx.font = 'bold 24px Segoe UI, Arial';
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText('N', cx, cy - r * 0.6);
-        ctx.fillText('S', cx, cy + r * 0.6);
-      } else if (shape === 'block') {
-        var w = 260, h = 110;
-        ctx.fillStyle = '#c3cfdf';
-        ctx.fillRect(cx - w / 2, cy - h / 2, w, h);
-        ctx.strokeStyle = '#8296ad';
-        ctx.strokeRect(cx - w / 2, cy - h / 2, w, h);
-        ctx.fillStyle = '#ef4444'; ctx.fillRect(cx - w / 2, cy - h / 2, w, h / 2);
-        ctx.fillStyle = '#3b82f6'; ctx.fillRect(cx - w / 2, cy, w, h / 2);
-        ctx.fillStyle = '#0b1220'; ctx.font = 'bold 26px Segoe UI, Arial';
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText('N', cx, cy - h / 4);
-        ctx.fillText('S', cx, cy + h / 4);
-      } else {
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      if (shape === 'arc') {
+        // Radial magnetization: flux crosses the segment from the outer
+        // curved face (N) to the inner curved face (S).
+        var RO = 170, RI = 100;
         ctx.beginPath();
-        ctx.moveTo(cx, cy); ctx.lineTo(cx, cy - 96);
-        ctx.arc(cx, cy, 96, -Math.PI / 2, -Math.PI / 6);
+        ctx.moveTo(cx, cy); ctx.lineTo(cx, cy - RO);
+        ctx.arc(cx, cy, RO, -Math.PI / 2, -Math.PI / 6);
         ctx.closePath();
         ctx.fillStyle = '#c3cfdf'; ctx.fill();
         ctx.strokeStyle = '#8296ad'; ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, cy - 56);
-        ctx.arc(cx, cy, 56, -Math.PI / 2, -Math.PI / 6);
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, cy - RI);
+        ctx.arc(cx, cy, RI, -Math.PI / 2, -Math.PI / 6);
         ctx.closePath();
         ctx.fillStyle = '#0b1220'; ctx.fill(); ctx.stroke();
-        ctx.beginPath(); ctx.arc(cx, cy, 96, -Math.PI / 2, -Math.PI / 6);
-        ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 11; ctx.stroke();
-        ctx.beginPath(); ctx.arc(cx, cy, 56, -Math.PI / 2, -Math.PI / 6);
-        ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 9; ctx.stroke();
-        ctx.fillStyle = '#0b1220'; ctx.font = 'bold 22px Segoe UI, Arial';
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText('N', cx - 14, cy - 76);
-        ctx.fillText('S', cx + 32, cy - 40);
+        ctx.beginPath(); ctx.arc(cx, cy, RO, -Math.PI / 2, -Math.PI / 6);
+        ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 14; ctx.stroke();
+        ctx.beginPath(); ctx.arc(cx, cy, RI, -Math.PI / 2, -Math.PI / 6);
+        ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 12; ctx.stroke();
+        var ma = -Math.PI / 3, ca = Math.cos(ma), sa = Math.sin(ma);
+        ctx.strokeStyle = '#f87171'; ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.moveTo(cx + ca * 176, cy + sa * 176);
+        ctx.lineTo(cx + ca * 202, cy + sa * 202); ctx.stroke();
+        tri(cx + ca * 208, cy + sa * 208, ma, '#f87171');
+        ctx.strokeStyle = '#60a5fa';
+        ctx.beginPath(); ctx.moveTo(cx + ca * 94, cy + sa * 94);
+        ctx.lineTo(cx + ca * 76, cy + sa * 76); ctx.stroke();
+        tri(cx + ca * 70, cy + sa * 70, ma + Math.PI, '#60a5fa');
+        ctx.lineWidth = 1.5;
+        ctx.font = 'bold 30px Segoe UI, Arial';
+        ctx.fillStyle = '#f87171';
+        ctx.fillText('N', cx + 66, cy - 178);
+        ctx.fillStyle = '#60a5fa';
+        ctx.fillText('S', cx + 46, cy - 34);
+        ctx.font = '600 19px Segoe UI, Arial';
+        ctx.fillStyle = '#9fb3d1';
+        ctx.fillText('Radial magnetization', cx, H - 30);
+      } else {
+        // Axial magnetization, side cross-section: the whole top face is the
+        // north pole and the whole bottom face is the south pole. Flux runs
+        // bottom to top inside the magnet and returns outside.
+        var bodyH = shape === 'block' ? 96 : 64;
+        var topY = cy - bodyH / 2, botY = cy + bodyH / 2;
+        var segs;
+        if (shape === 'ring') segs = [[cx - 190, 130], [cx + 60, 130]];
+        else segs = [[cx - 190, 380]];
+        segs.forEach(function (s) {
+          ctx.fillStyle = '#c3cfdf';
+          ctx.fillRect(s[0], topY, s[1], bodyH);
+          ctx.fillStyle = '#ef4444';
+          ctx.fillRect(s[0], topY, s[1], 12);
+          ctx.fillStyle = '#3b82f6';
+          ctx.fillRect(s[0], botY - 12, s[1], 12);
+          ctx.strokeStyle = '#8296ad';
+          ctx.strokeRect(s[0], topY, s[1], bodyH);
+          var n = s[1] > 200 ? 3 : 2;
+          for (var k = 1; k <= n; k++) {
+            arrowUp(s[0] + s[1] * k / (n + 1), botY - 20, topY + 22);
+          }
+        });
+        ctx.font = 'bold 24px Segoe UI, Arial';
+        ctx.fillStyle = '#f87171';
+        ctx.fillText('N', cx, topY - 26);
+        ctx.fillStyle = '#60a5fa';
+        ctx.fillText('S', cx, botY + 26);
+        ctx.font = '600 19px Segoe UI, Arial';
+        ctx.fillStyle = '#9fb3d1';
+        ctx.fillText('Axial magnetization', cx, H - 30);
       }
     }
 
     function drawLines() {
       if (!showLines) return;
       ctx.strokeStyle = 'rgba(148,163,184,.45)';
-      ctx.lineWidth = 1.2;
-      // Field lines leave the north face and return to the south face, so each
-      // one bows out from the body and comes back - never a closed loop.
-      var base = shape === 'block' ? 130 : 78;
-      for (var i = 1; i <= 5; i++) {
-        var rx = base + i * 44;              // canvas is 880x380, so keep
-        var ry = base * 1.02 + i * 11;       // |ry| under 190 and |rx| under 440
+      ctx.lineWidth = 1.4;
+      if (shape === 'arc') {
+        // Bowing lines around the segment, as before.
+        var base = 176;
+        for (var i = 1; i <= 5; i++) {
+          var rx = base + i * 38;
+          var ry = 104 + i * 16;
+          ctx.beginPath();
+          ctx.ellipse(cx, cy, rx, ry, 0, Math.PI * 0.62, Math.PI * 1.38);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.ellipse(cx, cy, rx, ry, 0, Math.PI * -0.38, Math.PI * 0.38);
+          ctx.stroke();
+        }
+        return;
+      }
+      // External flux: leaves the north face, bows out, re-enters the south
+      // face. One family of curves per side, direction N -> S outside.
+      var bodyH = shape === 'block' ? 96 : 64;
+      var topY = cy - bodyH / 2, botY = cy + bodyH / 2;
+      var halfW = 190;
+      for (var j = 1; j <= 4; j++) {
+        var bulge = 26 + j * 34;
+        var inset = shape === 'ring' ? 30 + (j - 1) * 30 : 30 + (j - 1) * 46;
+        var xa = cx + halfW - inset, xb = cx - halfW + inset;
+        var bx = cx + halfW + bulge, bx2 = cx - halfW - bulge;
         ctx.beginPath();
-        ctx.ellipse(cx, cy, rx, ry, 0, Math.PI * 0.62, Math.PI * 1.38);
+        ctx.moveTo(xa, topY);
+        ctx.bezierCurveTo(bx, topY - 6, bx, botY + 6, xa, botY);
         ctx.stroke();
         ctx.beginPath();
-        ctx.ellipse(cx, cy, rx, ry, 0, Math.PI * -0.38, Math.PI * 0.38);
+        ctx.moveTo(xb, topY);
+        ctx.bezierCurveTo(bx2, topY - 6, bx2, botY + 6, xb, botY);
         ctx.stroke();
+        var ay = (topY + botY) / 2;
+        var midX = cx + 0.25 * (halfW - inset) + 0.75 * (halfW + bulge);
+        var midX2 = cx - 0.25 * (halfW - inset) - 0.75 * (halfW + bulge);
+        tri(midX, ay, Math.PI / 2, 'rgba(148,163,184,.8)');
+        tri(midX2, ay, Math.PI / 2, 'rgba(148,163,184,.8)');
       }
     }
 
