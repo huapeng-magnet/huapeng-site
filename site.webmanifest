@@ -1,0 +1,26 @@
+{
+  "name": "Huapeng Magnetics",
+  "short_name": "Huapeng",
+  "description": "Precision sintered NdFeB magnets — disc, block, ring, arc and custom shapes, N35-N52.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#070b14",
+  "theme_color": "#070b14",
+  "icons": [
+    {
+      "src": "/assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

@@ -73,6 +73,10 @@
     }
     .nf__hint a { color: #60a5fa; }
   </style>
+  <link rel="icon" href="/assets/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
 </head>
 <body>
   <main class="nf">
@@ -86,20 +90,20 @@
 
     <div class="nf__links">
       <a class="btn btn--primary" href="/" id="nfHome">Back to homepage</a>
-      <a class="btn btn--ghost" href="/request-quote.html" id="nfQuote">Request a quotation</a>
+      <a class="btn btn--ghost" href="/request-quote" id="nfQuote">Request a quotation</a>
     </div>
 
     <nav class="nf__quick" aria-label="Popular pages">
-      <a href="/index.html#products">Products</a>
-      <a href="/products/product-disc-n52.html">Disc magnets</a>
-      <a href="/products/product-block-n52.html">Block magnets</a>
-      <a href="/products/product-ring-n42.html">Ring magnets</a>
-      <a href="/products/product-arc-n42.html">Arc segments</a>
-      <a href="/index.html#contact">Contact</a>
+      <a href="/#products">Products</a>
+      <a href="/products/product-disc-n52">Disc magnets</a>
+      <a href="/products/product-block-n52">Block magnets</a>
+      <a href="/products/product-ring-n42">Ring magnets</a>
+      <a href="/products/product-arc-n42">Arc segments</a>
+      <a href="/#contact">Contact</a>
     </nav>
 
     <p class="nf__hint" id="nfHint">
-      Arrived here from a link on our own site? <a href="/index.html#contact">Tell us</a> and we will fix it.
+      Arrived here from a link on our own site? <a href="/#contact">Tell us</a> and we will fix it.
     </p>
   </main>
 
@@ -113,22 +117,22 @@
            'Der Link ist m&ouml;glicherweise veraltet. Alles, was wir fertigen, ist weiterhin nur einen Klick entfernt &ndash; starten Sie auf der Startseite oder gehen Sie direkt zur Anfrage.',
            'Zur&uuml;ck zur Startseite',
            'Angebot anfordern',
-           'Sie sind &uuml;ber einen Link auf unserer eigenen Seite hierher gekommen? <a href="/de/index.html#contact">Sagen Sie uns Bescheid</a>, wir korrigieren ihn.'],
+           'Sie sind &uuml;ber einen Link auf unserer eigenen Seite hierher gekommen? <a href="/de/#contact">Sagen Sie uns Bescheid</a>, wir korrigieren ihn.'],
       es: ['Esta p&aacute;gina se ha movido o nunca existi&oacute;',
            'Es posible que el enlace est&eacute; desactualizado. Todo lo que fabricamos sigue a un clic de distancia: empiece en la p&aacute;gina de inicio o vaya directamente a solicitar una cotizaci&oacute;n.',
            'Volver al inicio',
            'Solicitar cotizaci&oacute;n',
-           '&iquest;Lleg&oacute; aqu&iacute; desde un enlace de nuestro propio sitio? <a href="/es/index.html#contact">Av&iacute;senos</a> y lo corregiremos.'],
+           '&iquest;Lleg&oacute; aqu&iacute; desde un enlace de nuestro propio sitio? <a href="/es/#contact">Av&iacute;senos</a> y lo corregiremos.'],
       ko: ['페이지를 찾을 수 없습니다',
            '링크가 오래되었을 수 있습니다. 모든 제품은 여전히 클릭 한 번이면 확인하실 수 있습니다. 홈페이지에서 시작하시거나 견적을 바로 요청하세요.',
            '홈페이지로 돌아가기',
            '견적 요청',
-           '저희 사이트의 링크를 통해 오셨나요? <a href="/index.html#contact">알려주시면</a> 수정하겠습니다.'],
+           '저희 사이트의 링크를 통해 오셨나요? <a href="/#contact">알려주시면</a> 수정하겠습니다.'],
       ja: ['ページが見つかりません',
            'リンクが古くなっている可能性があります。すべての製品はワンクリックでご確認いただけます。ホームページから始めるか、そのままお見積もりをご依頼ください。',
            'ホームページへ戻る',
            'お見積もりを依頼',
-           '当サイト内のリンクからいらっしゃいましたか？<a href="/index.html#contact">お知らせください</a>、修正いたします。']
+           '当サイト内のリンクからいらっしゃいましたか？<a href="/#contact">お知らせください</a>、修正いたします。']
     }[l];
     if (!t) return;
     document.getElementById('nfTitle').innerHTML = t[0];

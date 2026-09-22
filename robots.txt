@@ -88,3 +88,4 @@ Disallow: /
 User-agent: *
 Disallow: /x7f9/
 Disallow: /q2k8/
+Sitemap: https://huapeng-magnet.com/sitemap.xml
