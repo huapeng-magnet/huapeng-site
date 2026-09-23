@@ -13,8 +13,10 @@
   <link rel="alternate" hreflang="en" href="https://huapeng-magnet.com/calculator" />
   <link rel="alternate" hreflang="de" href="https://huapeng-magnet.com/de/calculator" />
   <link rel="alternate" hreflang="es" href="https://huapeng-magnet.com/es/calculator" />
+  <link rel="alternate" hreflang="ja" href="https://huapeng-magnet.com/ja/calculator" />
+  <link rel="alternate" hreflang="ko" href="https://huapeng-magnet.com/ko/calculator" />
   <link rel="alternate" hreflang="x-default" href="https://huapeng-magnet.com/calculator" />
-  <meta property="og:type" content="website" />
+<meta property="og:type" content="website" />
   <meta property="og:title" content="Magnet Calculator | Huapeng Magnetics" />
   <meta property="og:description" content="Calculate surface flux density, magnetic moment and estimated pull force for NdFeB block, disc and ring magnets. Free online tool, grades N35 to N52." />
   <meta property="og:url" content="https://huapeng-magnet.com/calculator.html" />
@@ -110,11 +112,13 @@
         <a href="/#promotions">Promotions</a>
         <a href="/#about">About</a>
         <a href="/#contact">Contact</a>
-        <span class="topbar__lang" id="langBtn">🌐 English ▼
+                <span class="topbar__lang" id="langBtn">🌐 English ▼
           <div class="topbar__lang-dropdown" id="langDropdown">
+            <a href="/calculator" class="lang-option lang-option--active" data-lang="en">🇬🇧 English</a>
             <a href="/de/calculator" class="lang-option" data-lang="de">🇩🇪 Deutsch</a>
             <a href="/es/calculator" class="lang-option" data-lang="es">🇪🇸 Español</a>
-            <a href="/calculator" class="lang-option lang-option--active" data-lang="en">🇬🇧 English</a>
+            <a href="/ja/calculator" class="lang-option" data-lang="ja">🇯🇵 日本語</a>
+            <a href="/ko/calculator" class="lang-option" data-lang="ko">🇰🇷 한국어</a>
           </div>
         </span>
       </span>
@@ -850,7 +854,7 @@
     /* remember the visitor's explicit language choice. Same localStorage key
        the IP language router and js/main.js use; without it, picking English on a
        /de/ page would be bounced straight back to German. */
-    var SUPPORTED = ['en', 'de', 'es'];
+    var SUPPORTED = ['en', 'de', 'es', 'ja', 'ko'];
     Array.prototype.forEach.call(
       document.querySelectorAll('a.lang-option, a[data-lang]'),
       function (a) {

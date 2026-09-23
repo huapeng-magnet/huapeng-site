@@ -6,10 +6,12 @@
      IP in DE / AT / CH          → /de/
      IP in a Spanish-speaking
        country (ES + LatAm)      → /es/
+     IP in JP                    → /ja/
+     IP in KR                    → /ko/
      everything else             → English (site root)
 
    Priority order:
-     1. ?lang=en|de|es  (explicit link — always wins, also persisted)
+     1. ?lang=en|de|es|ja|ko  (explicit link — always wins, also persisted)
      2. saved preference from a previous visit (language switcher)
      3. IP geolocation (api.country.is, fallback ipapi.co)
      4. browser language (navigator.language)
@@ -22,7 +24,7 @@
 (function () {
   "use strict";
 
-  var SUPPORTED = ["en", "de", "es"];
+  var SUPPORTED = ["en", "de", "es", "ja", "ko"];
   var STORAGE_KEY = "hp_lang_preference";
   var GEO_TIMEOUT = 2500;
 
@@ -36,6 +38,8 @@
   function currentLang(path) {
     if (path.indexOf("/de/") === 0 || path === "/de") return "de";
     if (path.indexOf("/es/") === 0 || path === "/es") return "es";
+    if (path.indexOf("/ja/") === 0 || path === "/ja") return "ja";
+    if (path.indexOf("/ko/") === 0 || path === "/ko") return "ko";
     return "en";
   }
 
@@ -58,7 +62,7 @@
   var query = window.location.search || "";
 
   /* Only redirect on pages that actually have localised versions
-     (de/ and es/ currently ship index, request-quote and calculator).
+     (de/, es/, ja/ and ko/ currently ship index, request-quote and calculator).
      Any other page keeps its language so we never send a visitor to a 404. */
   var REDIRECTABLE = ["/", "/index.html", "/request-quote.html", "/request-quote",
                       "/calculator.html", "/calculator"];
@@ -107,6 +111,12 @@
   /* German-speaking */
   var DE_COUNTRIES = ["de", "at", "ch", "li", "lu"];
 
+  /* Japanese-speaking */
+  var JA_COUNTRIES = ["jp"];
+
+  /* Korean-speaking */
+  var KO_COUNTRIES = ["kr"];
+
   /* Spanish-speaking: Spain + Latin America */
   var ES_COUNTRIES = ["es", "mx", "ar", "co", "cl", "pe", "ve", "cr", "pa", "uy", "py", "bo", "ec", "gt", "hn", "ni", "sv", "do", "cu", "pr", "ad"];
 
@@ -134,6 +144,8 @@
     cc = (cc || "").toLowerCase();
     if (DE_COUNTRIES.indexOf(cc) !== -1) return "de";
     if (ES_COUNTRIES.indexOf(cc) !== -1) return "es";
+    if (JA_COUNTRIES.indexOf(cc) !== -1) return "ja";
+    if (KO_COUNTRIES.indexOf(cc) !== -1) return "ko";
     if (EN_COUNTRIES.indexOf(cc) !== -1) return "en";
     return "en"; // anything unlisted also gets English
   }
@@ -146,6 +158,8 @@
       var l = (list[i] || "").toLowerCase();
       if (l.indexOf("de") === 0) return "de";
       if (l.indexOf("es") === 0) return "es";
+      if (l.indexOf("ja") === 0) return "ja";
+      if (l.indexOf("ko") === 0) return "ko";
       if (l.indexOf("en") === 0) return "en";
     }
     return "en";
