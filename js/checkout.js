@@ -51,7 +51,7 @@
       '<h3>Order Summary</h3>' + rows +
       '<div class="summary-row summary-row--total"><span>Subtotal</span><span>' + fmt(total) + '</span></div>' +
       '<p class="summary-note">Final price, shipping &amp; lead time confirmed by email. ' +
-      'Promo code <strong>WELCOME10</strong> applies to first orders.</p>';
+      'Promo code <strong>WELCOME5</strong> applies to first orders.</p>';
   }
 
   renderSummary();

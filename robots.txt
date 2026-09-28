@@ -11,10 +11,6 @@
 # ---------------------------------------------------------------
 User-agent: *
 Allow: /
-Disallow: /_tools/
-Disallow: /_deploy-2026-09-18/
-Disallow: /*?add-to-cart=
-Disallow: /*?wc-ajax=
 Crawl-delay: 10
 
 # ---------------------------------------------------------------
